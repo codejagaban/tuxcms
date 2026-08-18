@@ -5,10 +5,8 @@ import Input from '../../components/ui/Input';
 import Spinner from '../../components/ui/Spinner';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { settingsAPI } from '../../lib/api';
-import { useAuth } from '../../lib/auth';
 
 const Settings = () => {
-  const { currentTenant, isSuperAdmin } = useAuth();
   const [settings, setSettings] = useState({
     site_name: '',
     site_description: '',
@@ -28,12 +26,8 @@ const Settings = () => {
   const [savingGroups, setSavingGroups] = useState({});
 
   useEffect(() => {
-    if (currentTenant || isSuperAdmin) {
       fetchSettings();
-    } else {
-      setIsLoading(false);
-    }
-  }, [currentTenant, isSuperAdmin]);
+  }, []);
 
   const fetchSettings = async () => {
     try {

@@ -3,12 +3,9 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
-  Menu,
-  FormInput,
   Image,
   Settings,
   Search,
-  Building2,
   LogOut,
   ChevronDown,
   Menu as MenuIcon,
@@ -18,28 +15,18 @@ import { useAuth } from '../lib/auth';
 import Button from '../components/ui/Button';
 
 const DashboardLayout = () => {
-  const { user, currentTenant, tenants, isSuperAdmin, logout, switchTenant } =
-    useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const navItems = [
+  const allNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/dashboard/pages', label: 'Pages', icon: FileText },
-    { path: '/dashboard/menus', label: 'Menus', icon: Menu },
-    { path: '/dashboard/forms', label: 'Forms', icon: FormInput },
     { path: '/dashboard/media', label: 'Media', icon: Image },
     { path: '/dashboard/seo', label: 'SEO', icon: Search },
     { path: '/dashboard/settings', label: 'Settings', icon: Settings },
   ];
-
-  const adminNavItems = isSuperAdmin
-    ? [{ path: '/dashboard/tenants', label: 'Tenants', icon: Building2 }]
-    : [];
-
-  const allNavItems = [...navItems, ...adminNavItems];
 
   const isActive = (path) => location.pathname === path;
 
@@ -83,50 +70,6 @@ const DashboardLayout = () => {
           })}
         </nav>
 
-        {/* Tenant Switcher */}
-        {tenants.length > 1 && (
-          <div className="px-4 py-4 border-t border-gray-800">
-            <div className="relative">
-              <button
-                onClick={() => setTenantDropdownOpen(!tenantDropdownOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-left text-sm"
-              >
-                <div className="flex-1">
-                  <div className="text-xs text-gray-400">Current Tenant</div>
-                  <div className="font-medium text-white truncate">
-                    {currentTenant?.name || 'Select Tenant'}
-                  </div>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 ml-2 transition-transform ${
-                    tenantDropdownOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {tenantDropdownOpen && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 rounded-lg border border-gray-700 shadow-lg z-50">
-                  {tenants.map((tenant) => (
-                    <button
-                      key={tenant.id}
-                      onClick={() => {
-                        switchTenant(tenant.id);
-                        setTenantDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 text-sm transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                        currentTenant?.id === tenant.id
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700'
-                      }`}
-                    >
-                      {tenant.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Main Content */}

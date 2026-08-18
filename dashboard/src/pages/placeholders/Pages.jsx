@@ -10,11 +10,9 @@ import Modal, { ModalHeader, ModalTitle, ModalContent, ModalFooter } from '../..
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell, Pagination } from '../../components/ui/Table';
 import { pageAPI } from '../../lib/api';
-import { useAuth } from '../../lib/auth';
 
 const Pages = () => {
   const navigate = useNavigate();
-  const { currentTenant, isSuperAdmin } = useAuth();
   const [pages, setPages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,12 +24,8 @@ const Pages = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    if (currentTenant || isSuperAdmin) {
       fetchPages();
-    } else {
-      setIsLoading(false);
-    }
-  }, [currentPage, searchTerm, currentTenant, isSuperAdmin]);
+  }, [currentPage, searchTerm]);
 
   const fetchPages = async () => {
     try {

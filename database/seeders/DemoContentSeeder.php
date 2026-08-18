@@ -2,178 +2,58 @@
 
 namespace Database\Seeders;
 
-use App\Models\Form;
-use App\Models\Menu;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Seo;
-use App\Models\Setting;
-use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 /**
- * Seeds a self-contained "Demo Site" tenant with realistic sample content:
- * pages (with section-builder sections + SEO), forms, menus and settings.
+ * Seeds a realistic business website: pages with builder sections and SEO.
  *
- * Idempotent — running it again wipes the demo tenant's content and rebuilds
- * it, so it never accumulates duplicates. It only ever touches the Demo Site
- * tenant; any other tenant's data is left alone.
+ * Idempotent — re-running wipes the demo pages and rebuilds them, so it never
+ * accumulates duplicates.
  *
  *   php artisan db:seed --class=DemoContentSeeder
  */
 class DemoContentSeeder extends Seeder
 {
-    private Tenant $tenant;
+    private User $author;
 
     public function run(): void
     {
-        $this->resolveTenantAndAdmin();
-
-        // Bind tenant context so BelongsToTenant auto-scopes every write below.
-        app()->instance('current_tenant_id', $this->tenant->id);
-        app()->instance('current_tenant', $this->tenant);
-
-        $this->wipeExistingDemoContent();
-        $this->seedSettings();
-        $forms = $this->seedForms();
-        $pages = $this->seedPages($forms);
-        $this->seedMenus();
-
-        $this->command?->info("Demo content seeded into tenant '{$this->tenant->name}' (id {$this->tenant->id}).");
-        $this->command?->info('Pages: ' . count($pages) . ', Forms: ' . count($forms) . '. Log in as admin@tuxcms.com to see it.');
-    }
-
-    /**
-     * Find (or create) the demo tenant and make sure the super admin belongs
-     * to it — the dashboard only lists tenants attached via the pivot table,
-     * so without this the seeded content would be invisible after login.
-     */
-    private function resolveTenantAndAdmin(): void
-    {
-        $admin = User::where('email', 'admin@tuxcms.com')->first()
-            ?? User::factory()->create([
-                'name' => 'Super Admin',
-                'email' => 'admin@tuxcms.com',
-                'is_super_admin' => true,
-            ]);
-
-        $this->tenant = Tenant::firstOrCreate(
-            ['domain' => 'localhost'],
-            [
-                'name' => 'Demo Site',
-                'owner_id' => $admin->id,
-                'plan' => 'pro',
-                'is_active' => true,
-            ]
+        $this->author = User::firstOrCreate(
+            ['email' => 'admin@tuxcms.com'],
+            ['name' => 'Site Admin', 'password' => Hash::make('password')]
         );
 
-        // Attach the super admin as owner (no-op if already attached).
-        $this->tenant->users()->syncWithoutDetaching([
-            $admin->id => ['role' => 'owner'],
-        ]);
+        $this->wipeExistingPages();
+        $pages = $this->seedPages();
+
+        $this->command?->info('Demo content seeded: ' . count($pages) . ' pages.');
+        $this->command?->info('Log in as admin@tuxcms.com to edit it.');
     }
 
-    /**
-     * Remove any content previously seeded into the demo tenant so the seeder
-     * is safe to re-run. Scoped to the demo tenant via the global tenant scope.
-     */
-    private function wipeExistingDemoContent(): void
+    /** Remove previously seeded pages so the seeder is safe to re-run. */
+    private function wipeExistingPages(): void
     {
         foreach (Page::withTrashed()->get() as $page) {
             Seo::where('seoable_type', Page::class)->where('seoable_id', $page->id)->delete();
             $page->sections()->delete();
             $page->forceDelete();
         }
-
-        foreach (Form::all() as $form) {
-            $form->submissions()->delete();
-            $form->delete();
-        }
-
-        foreach (Menu::all() as $menu) {
-            $menu->allItems()->delete();
-            $menu->delete();
-        }
-
-        Setting::query()->delete();
     }
 
-    private function seedSettings(): void
-    {
-        $settings = [
-            // Site
-            ['key' => 'site_name', 'value' => ['Lumen Studio'], 'group' => 'site'],
-            ['key' => 'site_tagline', 'value' => ['Design & engineering for growing products'], 'group' => 'site'],
-            ['key' => 'site_description', 'value' => ['Lumen Studio is a small product studio that designs and builds web apps, brand systems and marketing sites.'], 'group' => 'site'],
-            ['key' => 'site_url', 'value' => ['http://localhost:5173'], 'group' => 'site'],
-            ['key' => 'timezone', 'value' => ['Europe/London'], 'group' => 'site'],
-
-            // SEO
-            ['key' => 'meta_keywords', 'value' => ['product design, web development, branding, ux'], 'group' => 'seo'],
-            ['key' => 'default_og_image', 'value' => ['/images/og-default.jpg'], 'group' => 'seo'],
-            ['key' => 'google_analytics_id', 'value' => [''], 'group' => 'seo'],
-
-            // Social
-            ['key' => 'social_twitter', 'value' => ['https://twitter.com/lumenstudio'], 'group' => 'social'],
-            ['key' => 'social_linkedin', 'value' => ['https://www.linkedin.com/company/lumenstudio'], 'group' => 'social'],
-            ['key' => 'social_github', 'value' => ['https://github.com/lumenstudio'], 'group' => 'social'],
-            ['key' => 'social_instagram', 'value' => ['https://instagram.com/lumen.studio'], 'group' => 'social'],
-
-            // Email
-            ['key' => 'contact_email', 'value' => ['hello@lumenstudio.test'], 'group' => 'email'],
-            ['key' => 'notification_email', 'value' => ['team@lumenstudio.test'], 'group' => 'email'],
-        ];
-
-        foreach ($settings as $setting) {
-            Setting::create($setting);
-        }
-    }
-
-    /**
-     * @return array<string, Form>
-     */
-    private function seedForms(): array
-    {
-        $contact = Form::create([
-            'name' => 'Contact Us',
-            'notification_email' => 'team@lumenstudio.test',
-            'success_message' => "Thanks for reaching out — we'll reply within one business day.",
-            'is_active' => true,
-            'fields' => [
-                ['name' => 'full_name', 'label' => 'Full name', 'type' => 'text', 'required' => true, 'placeholder' => 'Jane Doe', 'validation' => 'string|max:255'],
-                ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true, 'placeholder' => 'jane@company.com', 'validation' => 'email|max:255'],
-                ['name' => 'company', 'label' => 'Company', 'type' => 'text', 'required' => false, 'placeholder' => 'Acme Inc.', 'validation' => 'string|max:255'],
-                ['name' => 'budget', 'label' => 'Estimated budget', 'type' => 'select', 'required' => false, 'options' => ['< £5k', '£5k–£15k', '£15k–£50k', '£50k+'], 'validation' => 'string|max:50'],
-                ['name' => 'message', 'label' => 'What can we help with?', 'type' => 'textarea', 'required' => true, 'placeholder' => 'Tell us about your project…', 'validation' => 'string|max:5000'],
-            ],
-        ]);
-
-        $newsletter = Form::create([
-            'name' => 'Newsletter Signup',
-            'notification_email' => 'team@lumenstudio.test',
-            'success_message' => "You're on the list. Watch your inbox for the next issue.",
-            'is_active' => true,
-            'fields' => [
-                ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true, 'placeholder' => 'you@email.com', 'validation' => 'email|max:255'],
-            ],
-        ]);
-
-        return ['contact' => $contact, 'newsletter' => $newsletter];
-    }
-
-    /**
-     * @param array<string, Form> $forms
-     * @return array<int, Page>
-     */
-    private function seedPages(array $forms): array
+    /** @return array<int, Page> */
+    private function seedPages(): array
     {
         $home = $this->makePage([
             'title' => 'Home',
-            'template' => 'home',
+            'template' => 'default',
             'status' => 'published',
             'is_homepage' => true,
+            'show_in_nav' => true,
             'order' => 0,
             'excerpt' => 'Lumen Studio designs and builds digital products people actually enjoy using.',
             'content' => 'Lumen Studio is a compact product team combining design, engineering and strategy.',
@@ -183,9 +63,9 @@ class DemoContentSeeder extends Seeder
                 'content' => 'From first sketch to production, Lumen Studio ships polished web apps, brand systems and marketing sites for teams that care about the details.',
                 'data' => [
                     'subheading' => 'A product studio for founders and growing teams',
-                    'primary_cta' => ['label' => 'Start a project', 'url' => '/contact'],
-                    'secondary_cta' => ['label' => 'See our work', 'url' => '/services'],
-                    'background_image' => '/images/hero-home.jpg',
+                    'primary_cta' => ['label' => 'Start a project', 'url' => '/contact/'],
+                    'secondary_cta' => ['label' => 'See our work', 'url' => '/services/'],
+                    'background_image' => '',
                     'alignment' => 'center',
                 ],
             ],
@@ -224,7 +104,7 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'cta', 'type' => 'cta', 'title' => 'Have something in mind?',
                 'content' => 'Tell us about your project and we will get back within a day.',
-                'data' => ['primary_cta' => ['label' => 'Get in touch', 'url' => '/contact']],
+                'data' => ['primary_cta' => ['label' => 'Get in touch', 'url' => '/contact/']],
             ],
         ], [
             'meta_title' => 'Lumen Studio — Product design & engineering',
@@ -241,6 +121,7 @@ class DemoContentSeeder extends Seeder
             'title' => 'About',
             'template' => 'default',
             'status' => 'published',
+            'show_in_nav' => true,
             'order' => 1,
             'excerpt' => 'A small, senior team that treats your product like our own.',
             'content' => 'We started Lumen in 2014 with a simple idea: keep the team small, keep the quality high.',
@@ -248,7 +129,7 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'hero', 'type' => 'hero', 'title' => 'Small team, senior work',
                 'content' => 'No account managers, no handoffs to juniors. You work directly with the people doing the work.',
-                'data' => ['alignment' => 'left', 'background_image' => '/images/hero-about.jpg'],
+                'data' => ['alignment' => 'left', 'background_image' => ''],
             ],
             [
                 'key' => 'story', 'type' => 'text', 'title' => 'Our story',
@@ -275,6 +156,7 @@ class DemoContentSeeder extends Seeder
             'title' => 'Services',
             'template' => 'default',
             'status' => 'published',
+            'show_in_nav' => true,
             'order' => 2,
             'excerpt' => 'Design, engineering and brand — as a package or à la carte.',
             'content' => 'Engagements from a two-week design sprint to a full product build.',
@@ -312,11 +194,12 @@ class DemoContentSeeder extends Seeder
             'robots' => 'index, follow',
         ]);
 
-        // Nested child page under Services to exercise the page hierarchy.
+        // Nested child page — exercises the page hierarchy and path building.
         $webDesign = $this->makePage([
             'title' => 'Web Design',
             'template' => 'default',
             'status' => 'published',
+            'show_in_nav' => true,
             'order' => 0,
             'parent_id' => $services->id,
             'excerpt' => 'Marketing sites and web apps that look sharp and load fast.',
@@ -339,8 +222,9 @@ class DemoContentSeeder extends Seeder
 
         $contact = $this->makePage([
             'title' => 'Contact',
-            'template' => 'contact',
+            'template' => 'default',
             'status' => 'published',
+            'show_in_nav' => true,
             'order' => 3,
             'excerpt' => 'Tell us about your project.',
             'content' => 'We reply to every enquiry within one business day.',
@@ -360,10 +244,19 @@ class DemoContentSeeder extends Seeder
                 ],
             ],
             [
-                'key' => 'contact_form', 'type' => 'form', 'title' => 'Send a message',
+                // Submissions are handled by Web3Forms — no server-side forms.
+                'key' => 'contact_form', 'type' => 'contact_form', 'title' => 'Send a message',
                 'data' => [
-                    'form_slug' => $forms['contact']->slug,
-                    'form_id' => $forms['contact']->id,
+                    'access_key' => '',
+                    'subject' => 'New enquiry from the website',
+                    'button_label' => 'Send message',
+                    'success_message' => "Thanks for reaching out — we'll reply within one business day.",
+                    'fields' => [
+                        ['name' => 'name', 'label' => 'Full name', 'type' => 'text', 'required' => true, 'placeholder' => 'Jane Doe'],
+                        ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true, 'placeholder' => 'jane@company.com'],
+                        ['name' => 'company', 'label' => 'Company', 'type' => 'text', 'required' => false, 'placeholder' => 'Acme Inc.'],
+                        ['name' => 'message', 'label' => 'What can we help with?', 'type' => 'textarea', 'required' => true, 'placeholder' => 'Tell us about your project…'],
+                    ],
                 ],
             ],
             [
@@ -381,6 +274,7 @@ class DemoContentSeeder extends Seeder
             'title' => 'Careers',
             'template' => 'default',
             'status' => 'draft',
+            'show_in_nav' => false,
             'order' => 4,
             'excerpt' => 'Work with us (coming soon).',
             'content' => 'We are putting this page together — check back soon.',
@@ -399,15 +293,13 @@ class DemoContentSeeder extends Seeder
     }
 
     /**
-     * Create a page with its ordered sections and SEO record.
-     *
      * @param array<string, mixed> $attributes
      * @param array<int, array<string, mixed>> $sections
      * @param array<string, mixed> $seo
      */
     private function makePage(array $attributes, array $sections, array $seo): Page
     {
-        $attributes['author_id'] = $this->tenant->owner_id;
+        $attributes['author_id'] = $this->author->id;
 
         if (($attributes['status'] ?? null) === 'published' && empty($attributes['published_at'])) {
             $attributes['published_at'] = now();
@@ -431,41 +323,5 @@ class DemoContentSeeder extends Seeder
         $page->seo()->create($seo);
 
         return $page;
-    }
-
-    private function seedMenus(): void
-    {
-        $header = Menu::create(['name' => 'Header', 'slug' => 'header', 'location' => 'header']);
-        $this->addItems($header, [
-            ['title' => 'Home', 'url' => '/'],
-            ['title' => 'About', 'url' => '/about'],
-            ['title' => 'Services', 'url' => '/services'],
-            ['title' => 'Contact', 'url' => '/contact'],
-        ]);
-
-        $footer = Menu::create(['name' => 'Footer', 'slug' => 'footer', 'location' => 'footer']);
-        $this->addItems($footer, [
-            ['title' => 'Services', 'url' => '/services'],
-            ['title' => 'About', 'url' => '/about'],
-            ['title' => 'Careers', 'url' => '/careers'],
-            ['title' => 'Contact', 'url' => '/contact'],
-        ]);
-    }
-
-    /**
-     * @param array<int, array{title: string, url: string}> $items
-     */
-    private function addItems(Menu $menu, array $items): void
-    {
-        foreach ($items as $index => $item) {
-            MenuItem::create([
-                'menu_id' => $menu->id,
-                'title' => $item['title'],
-                'url' => $item['url'],
-                'target' => '_self',
-                'type' => 'custom',
-                'order' => $index,
-            ]);
-        }
     }
 }

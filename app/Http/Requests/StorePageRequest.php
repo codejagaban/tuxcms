@@ -15,7 +15,7 @@ class StorePageRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:pages,slug',
+            'slug' => 'nullable|string|max:255',
             'content' => 'nullable|string',
             'excerpt' => 'nullable|string|max:1000',
             'template' => 'nullable|string|max:100',
@@ -23,6 +23,8 @@ class StorePageRequest extends FormRequest
             'parent_id' => 'nullable|integer|exists:pages,id',
             'order' => 'nullable|integer|min:0',
             'is_homepage' => 'nullable|boolean',
+            'show_in_nav' => 'nullable|boolean',
+            'nav_label' => 'nullable|string|max:255',
             'custom_fields' => 'nullable|array',
             'published_at' => 'nullable|date',
 

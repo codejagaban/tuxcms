@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdatePageRequest extends FormRequest
 {
@@ -16,10 +15,7 @@ class UpdatePageRequest extends FormRequest
     {
         return [
             'title' => 'sometimes|string|max:255',
-            'slug' => [
-                'sometimes', 'string', 'max:255',
-                Rule::unique('pages', 'slug')->ignore($this->route('page')),
-            ],
+            'slug' => 'sometimes|string|max:255',
             'content' => 'nullable|string',
             'excerpt' => 'nullable|string|max:1000',
             'template' => 'nullable|string|max:100',
@@ -27,6 +23,8 @@ class UpdatePageRequest extends FormRequest
             'parent_id' => 'nullable|integer|exists:pages,id',
             'order' => 'nullable|integer|min:0',
             'is_homepage' => 'nullable|boolean',
+            'show_in_nav' => 'nullable|boolean',
+            'nav_label' => 'nullable|string|max:255',
             'custom_fields' => 'nullable|array',
             'published_at' => 'nullable|date',
 

@@ -6,10 +6,8 @@ import Spinner from '../../components/ui/Spinner';
 import Modal, { ModalHeader, ModalTitle, ModalContent, ModalFooter } from '../../components/ui/Modal';
 import { Card, CardContent } from '../../components/ui/Card';
 import { mediaAPI } from '../../lib/api';
-import { useAuth } from '../../lib/auth';
 
 const Media = () => {
-  const { currentTenant, isSuperAdmin } = useAuth();
   const [media, setMedia] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -23,12 +21,8 @@ const Media = () => {
   const itemsPerPage = 12;
 
   useEffect(() => {
-    if (currentTenant || isSuperAdmin) {
       fetchMedia();
-    } else {
-      setIsLoading(false);
-    }
-  }, [currentPage, currentTenant, isSuperAdmin]);
+  }, [currentPage]);
 
   const fetchMedia = async () => {
     try {

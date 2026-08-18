@@ -16,13 +16,8 @@ const Login = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await login(data.email, data.password);
-
-      if (response.tenants?.length > 0 || response.is_super_admin) {
-        navigate('/dashboard');
-      } else {
-        toast.error('No tenants assigned to your account');
-      }
+      await login(data.email, data.password);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
     } finally {

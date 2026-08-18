@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Monitor, Smartphone, Save, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pageAPI, formAPI } from '../lib/api';
+import { pageAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -23,7 +23,6 @@ export default function PageEditor() {
   const isNew = !id;
 
   const [page, setPage] = useState(null);
-  const [forms, setForms] = useState([]);
   const [selectedUid, setSelectedUid] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -36,8 +35,6 @@ export default function PageEditor() {
     (async () => {
       try {
         setLoading(true);
-        const formsRes = await formAPI.list().catch(() => ({ data: { data: [] } }));
-        if (active) setForms(formsRes.data.data || []);
 
         if (isNew) {
           const hero = createSection('hero');
@@ -272,7 +269,6 @@ export default function PageEditor() {
                       section={section}
                       update={(patch) => updateSection(section._uid, patch)}
                       updateData={(data) => updateData(section._uid, data)}
-                      forms={forms}
                     />
                   </div>
                 );
@@ -287,7 +283,6 @@ export default function PageEditor() {
         <Inspector
           page={page}
           selected={selected}
-          forms={forms}
           updatePage={updatePage}
           updateSeo={updateSeo}
           updateSection={updateSection}

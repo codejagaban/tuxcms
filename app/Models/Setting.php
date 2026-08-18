@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use HasFactory;
 
     protected $fillable = [
         'key',
@@ -29,6 +28,24 @@ class Setting extends Model
     {
         $setting = static::where('key', $key)->first();
         return $setting ? $setting->value : $default;
+    }
+
+    /**
+     * Get a setting as a plain string.
+     *
+     * `value` is cast to array, and values have historically been stored
+     * wrapped (`['Lumen Studio']`). Templates want the scalar, so unwrap
+     * single-element arrays defensively rather than trusting the shape.
+     */
+    public static function getString(string $key, ?string $default = null): ?string
+    {
+        $value = static::get($key);
+
+        if (is_array($value)) {
+            $value = reset($value);
+        }
+
+        return ($value === null || $value === '') ? $default : (string) $value;
     }
 
     /**

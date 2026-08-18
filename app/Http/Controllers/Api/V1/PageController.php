@@ -191,11 +191,6 @@ class PageController extends Controller
             $page->seo()->create($request->input('seo'));
         }
 
-        // Ensure only one homepage
-        if ($page->is_homepage) {
-            Page::where('id', '!=', $page->id)->update(['is_homepage' => false]);
-        }
-
         $page->load(['sections', 'seo', 'author']);
 
         return response()->json([
@@ -226,11 +221,6 @@ class PageController extends Controller
         // Sync SEO if provided
         if ($request->has('seo')) {
             $page->seo()->updateOrCreate([], $request->input('seo'));
-        }
-
-        // Ensure only one homepage
-        if ($page->is_homepage) {
-            Page::where('id', '!=', $page->id)->update(['is_homepage' => false]);
         }
 
         $page->load(['sections', 'seo', 'author']);

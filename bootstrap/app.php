@@ -13,16 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'resolve.tenant' => \App\Http\Middleware\ResolveTenant::class,
-            'tenant.required' => \App\Http\Middleware\EnsureTenantResolved::class,
-            'super.admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
             'json.response' => \App\Http\Middleware\EnsureJsonResponse::class,
         ]);
 
-        // Apply tenant resolution to all API routes
         $middleware->api(prepend: [
             \App\Http\Middleware\EnsureJsonResponse::class,
-            \App\Http\Middleware\ResolveTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

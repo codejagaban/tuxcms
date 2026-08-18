@@ -25,7 +25,7 @@ const inputCls =
  *  - SEO:     search / social metadata
  */
 export default function Inspector({
-  page, selected, forms,
+  page, selected,
   updatePage, updateSeo, updateSection, updateData,
   addSection, removeSection, moveSection, selectSection,
 }) {
@@ -71,7 +71,6 @@ export default function Inspector({
         {tab === 'section' && (
           <SectionTab
             selected={selected}
-            forms={forms}
             updateSection={updateSection}
             updateData={updateData}
             goToPage={() => setTab('page')}
@@ -192,7 +191,7 @@ function PageTab({
   );
 }
 
-function SectionTab({ selected, forms, updateSection, updateData, goToPage }) {
+function SectionTab({ selected, updateSection, updateData, goToPage }) {
   if (!selected) {
     return (
       <div className="text-center py-10">
@@ -273,22 +272,45 @@ function SectionTab({ selected, forms, updateSection, updateData, goToPage }) {
         </Field>
       )}
 
-      {selected.type === 'form' && (
-        <Field label="Form to embed">
-          <select
-            className={inputCls}
-            value={d.form_id || ''}
-            onChange={(e) => {
-              const form = forms.find((f) => String(f.id) === e.target.value);
-              updateData(selected._uid, { ...d, form_id: form ? form.id : null, form_slug: form ? form.slug : null });
-            }}
-          >
-            <option value="">Select a form…</option>
-            {forms.map((f) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
-            ))}
-          </select>
-        </Field>
+      {selected.type === 'contact_form' && (
+        <>
+          <Field label="Web3Forms access key">
+            <input
+              className={inputCls}
+              value={d.access_key || ''}
+              onChange={(e) => setData('access_key', e.target.value)}
+              placeholder="Leave blank to use the site default"
+            />
+          </Field>
+          <Field label="Email subject">
+            <input className={inputCls} value={d.subject || ''} onChange={(e) => setData('subject', e.target.value)} placeholder="New enquiry" />
+          </Field>
+          <Field label="Button label">
+            <input className={inputCls} value={d.button_label || ''} onChange={(e) => setData('button_label', e.target.value)} placeholder="Send message" />
+          </Field>
+          <Field label="Success message">
+            <textarea className={`${inputCls} h-16 resize-none`} value={d.success_message || ''} onChange={(e) => setData('success_message', e.target.value)} />
+          </Field>
+        </>
+      )}
+
+      {selected.type === 'map' && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Latitude">
+              <input className={inputCls} type="number" step="any" value={d.lat ?? ''} onChange={(e) => setData('lat', Number(e.target.value))} />
+            </Field>
+            <Field label="Longitude">
+              <input className={inputCls} type="number" step="any" value={d.lng ?? ''} onChange={(e) => setData('lng', Number(e.target.value))} />
+            </Field>
+          </div>
+          <Field label="Zoom">
+            <input className={inputCls} type="number" min="1" max="20" value={d.zoom ?? 14} onChange={(e) => setData('zoom', Number(e.target.value))} />
+          </Field>
+          <Field label="Label">
+            <input className={inputCls} value={d.label || ''} onChange={(e) => setData('label', e.target.value)} placeholder="Our office" />
+          </Field>
+        </>
       )}
 
       {/* Repeatable list management */}
@@ -332,7 +354,7 @@ function SectionTab({ selected, forms, updateSection, updateData, goToPage }) {
         </div>
       )}
 
-      {!listCfg && !['hero', 'cta', 'form', 'features'].includes(selected.type) && (
+      {!listCfg && !['hero', 'cta', 'contact_form', 'map', 'features'].includes(selected.type) && (
         <p className="text-sm text-gray-400">This section has no extra options — edit its text on the preview.</p>
       )}
     </div>

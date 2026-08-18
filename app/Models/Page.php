@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToTenant;
 use App\Traits\HasSeo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Page extends Model implements HasMedia
 {
-    use HasFactory, HasSlug, HasSeo, InteractsWithMedia, SoftDeletes, BelongsToTenant;
+    use HasFactory, HasSlug, HasSeo, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -26,6 +25,8 @@ class Page extends Model implements HasMedia
         'parent_id',
         'order',
         'is_homepage',
+        'show_in_nav',
+        'nav_label',
         'custom_fields',
         'published_at',
         'author_id',
@@ -34,6 +35,7 @@ class Page extends Model implements HasMedia
     protected $casts = [
         'custom_fields' => 'array',
         'is_homepage' => 'boolean',
+        'show_in_nav' => 'boolean',
         'published_at' => 'datetime',
         'order' => 'integer',
     ];
@@ -99,6 +101,12 @@ class Page extends Model implements HasMedia
         return $query->where('template', $template);
     }
 
+    /** Pages that should appear in the derived site navigation. */
+    public function scopeInNav($query)
+    {
+        return $query->where('show_in_nav', true)->orderBy('order');
+    }
+
     // ── Media Collections ──────────────────────────────────
 
     public function registerMediaCollections(): void
@@ -116,8 +124,25 @@ class Page extends Model implements HasMedia
             && ($this->published_at === null || $this->published_at->lte(now()));
     }
 
+    /**
+     * The page's URL path. Reads the materialized `path` column, falling back
+     * to walking the parent chain if it hasn't been computed yet.
+     */
     public function getFullPath(): string
     {
+        return $this->path ?: $this->computePath();
+    }
+
+    /**
+     * Build the path from the parent chain. The homepage is always '/',
+     * whatever its slug happens to be.
+     */
+    public function computePath(): string
+    {
+        if ($this->is_homepage) {
+            return '/';
+        }
+
         $segments = collect([$this->slug]);
         $parent = $this->parent;
 
@@ -127,5 +152,25 @@ class Page extends Model implements HasMedia
         }
 
         return '/' . $segments->implode('/');
+    }
+
+    /** The label to show in navigation. */
+    public function navLabel(): string
+    {
+        return $this->nav_label ?: $this->title;
+    }
+
+    /** Ancestor chain, root first — used for breadcrumbs. */
+    public function ancestors(): \Illuminate\Support\Collection
+    {
+        $chain = collect();
+        $parent = $this->parent;
+
+        while ($parent) {
+            $chain->prepend($parent);
+            $parent = $parent->parent;
+        }
+
+        return $chain;
     }
 }

@@ -24,7 +24,6 @@ class RoleSeeder extends Seeder
             'approve comments',
             'delete comments',
             'manage settings',
-            'manage menus',
             'manage media',
             'manage users',
         ];
@@ -49,7 +48,6 @@ class RoleSeeder extends Seeder
             'create comments',
             'approve comments',
             'delete comments',
-            'manage menus',
             'manage media',
         ]);
 

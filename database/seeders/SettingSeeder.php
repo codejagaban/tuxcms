@@ -9,36 +9,41 @@ class SettingSeeder extends Seeder
 {
     public function run(): void
     {
+        // Values are stored as scalars. Setting::getString() unwraps legacy
+        // array-wrapped values defensively, but new data should be flat.
         $settings = [
-            // Site settings
-            ['key' => 'site_name', 'value' => ['TuxCMS'], 'group' => 'site'],
-            ['key' => 'site_description', 'value' => ['A headless CMS with full SEO support'], 'group' => 'site'],
-            ['key' => 'site_url', 'value' => [config('app.url')], 'group' => 'site'],
-            ['key' => 'posts_per_page', 'value' => [10], 'group' => 'site'],
-            ['key' => 'comments_enabled', 'value' => [true], 'group' => 'site'],
-            ['key' => 'moderate_comments', 'value' => [true], 'group' => 'site'],
+            // Site
+            ['key' => 'site_name', 'value' => 'TuxCMS Site', 'group' => 'site'],
+            ['key' => 'site_tagline', 'value' => '', 'group' => 'site'],
+            ['key' => 'site_description', 'value' => 'A business website built with TuxCMS.', 'group' => 'site'],
+            ['key' => 'site_url', 'value' => config('app.url'), 'group' => 'site'],
+            ['key' => 'site_logo', 'value' => '', 'group' => 'site'],
 
-            // SEO settings
-            ['key' => 'meta_keywords', 'value' => ['cms, blog, seo'], 'group' => 'seo'],
-            ['key' => 'google_analytics_id', 'value' => [''], 'group' => 'seo'],
-            ['key' => 'google_site_verification', 'value' => [''], 'group' => 'seo'],
+            // SEO
+            ['key' => 'meta_keywords', 'value' => '', 'group' => 'seo'],
+            ['key' => 'default_og_image', 'value' => '', 'group' => 'seo'],
+            ['key' => 'google_analytics_id', 'value' => '', 'group' => 'seo'],
+            ['key' => 'google_site_verification', 'value' => '', 'group' => 'seo'],
+            ['key' => 'robots_extra', 'value' => '', 'group' => 'seo'],
+            ['key' => 'site_noindex', 'value' => '', 'group' => 'seo'],
 
-            // Social settings
-            ['key' => 'social_facebook', 'value' => [''], 'group' => 'social'],
-            ['key' => 'social_twitter', 'value' => [''], 'group' => 'social'],
-            ['key' => 'social_instagram', 'value' => [''], 'group' => 'social'],
-            ['key' => 'social_linkedin', 'value' => [''], 'group' => 'social'],
+            // Forms — Web3Forms handles submissions; this is the site-wide key.
+            ['key' => 'web3forms_access_key', 'value' => '', 'group' => 'forms'],
 
-            // Email settings
-            ['key' => 'contact_email', 'value' => [config('mail.from.address')], 'group' => 'email'],
-            ['key' => 'notification_email', 'value' => [config('mail.from.address')], 'group' => 'email'],
+            // Social
+            ['key' => 'social_facebook', 'value' => '', 'group' => 'social'],
+            ['key' => 'social_twitter', 'value' => '', 'group' => 'social'],
+            ['key' => 'social_instagram', 'value' => '', 'group' => 'social'],
+            ['key' => 'social_linkedin', 'value' => '', 'group' => 'social'],
+
+            // Contact
+            ['key' => 'contact_email', 'value' => config('mail.from.address'), 'group' => 'contact'],
+            ['key' => 'contact_phone', 'value' => '', 'group' => 'contact'],
+            ['key' => 'contact_address', 'value' => '', 'group' => 'contact'],
         ];
 
         foreach ($settings as $setting) {
-            Setting::updateOrCreate(
-                ['key' => $setting['key']],
-                $setting
-            );
+            Setting::updateOrCreate(['key' => $setting['key']], $setting);
         }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
@@ -10,7 +9,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class PageSection extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, BelongsToTenant;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'page_id',

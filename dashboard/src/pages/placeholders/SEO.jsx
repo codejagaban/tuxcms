@@ -5,10 +5,8 @@ import Input from '../../components/ui/Input';
 import Spinner from '../../components/ui/Spinner';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/Card';
 import { pageAPI, seoAPI } from '../../lib/api';
-import { useAuth } from '../../lib/auth';
 
 const SEO = () => {
-  const { currentTenant, isSuperAdmin } = useAuth();
   const [pages, setPages] = useState([]);
   const [selectedPageId, setSelectedPageId] = useState(null);
   const [selectedPage, setSelectedPage] = useState(null);
@@ -30,12 +28,8 @@ const SEO = () => {
   });
 
   useEffect(() => {
-    if (currentTenant || isSuperAdmin) {
       fetchPages();
-    } else {
-      setIsLoading(false);
-    }
-  }, [currentTenant, isSuperAdmin]);
+  }, []);
 
   const fetchPages = async () => {
     try {

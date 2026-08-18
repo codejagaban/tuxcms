@@ -179,15 +179,43 @@ export const SECTION_REGISTRY = {
     }),
   },
 
-  form: {
-    label: 'Embedded form',
-    blurb: 'Show one of your forms on the page.',
+  contact_form: {
+    label: 'Contact form',
+    blurb: 'A contact form powered by Web3Forms.',
     create: () => ({
-      key: 'form',
-      type: 'form',
+      key: 'contact_form',
+      type: 'contact_form',
       title: 'Send a message',
       content: '',
-      data: { form_id: null, form_slug: null },
+      data: {
+        // Falls back to the site-wide web3forms_access_key setting when blank.
+        access_key: '',
+        subject: 'New enquiry',
+        button_label: 'Send message',
+        success_message: "Thanks — we'll be in touch shortly.",
+        fields: [
+          { name: 'name', label: 'Name', type: 'text', required: true },
+          { name: 'email', label: 'Email', type: 'email', required: true },
+          { name: 'message', label: 'Message', type: 'textarea', required: true },
+        ],
+      },
+    }),
+    list: {
+      path: 'fields',
+      label: 'Field',
+      item: () => ({ name: 'field', label: 'New field', type: 'text', required: false }),
+    },
+  },
+
+  map: {
+    label: 'Map',
+    blurb: 'An embedded location map.',
+    create: () => ({
+      key: 'map',
+      type: 'map',
+      title: 'Find us',
+      content: '',
+      data: { lat: 51.5074, lng: -0.1278, zoom: 14, label: 'Our office' },
     }),
   },
 };
@@ -195,7 +223,7 @@ export const SECTION_REGISTRY = {
 // The order that the "Add section" menu presents types in.
 export const SECTION_MENU = [
   'hero', 'text', 'features', 'stats', 'testimonials',
-  'team', 'faq', 'cta', 'contact', 'form',
+  'team', 'faq', 'cta', 'contact', 'contact_form', 'map',
 ];
 
 export const sectionLabel = (type) => SECTION_REGISTRY[type]?.label || type;
