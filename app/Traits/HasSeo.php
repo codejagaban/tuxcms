@@ -3,29 +3,22 @@
 namespace App\Traits;
 
 use App\Models\Seo;
+use App\Services\Seo\SchemaGenerator;
+use App\Support\Site;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 trait HasSeo
 {
-    /**
-     * Get the SEO metadata for this model.
-     */
     public function seo(): MorphOne
     {
         return $this->morphOne(Seo::class, 'seoable');
     }
 
-    /**
-     * Get or create SEO metadata.
-     */
     public function getSeoData()
     {
         return $this->seo ?? $this->seo()->create();
     }
 
-    /**
-     * Update SEO metadata.
-     */
     public function updateSeo(array $data)
     {
         return $this->seo()->updateOrCreate(
@@ -35,112 +28,83 @@ trait HasSeo
     }
 
     /**
-     * Get the canonical URL.
+     * The public canonical URL. Built from the configured site URL and the
+     * page's materialized path — never from the current request, which during
+     * a CLI build points nowhere useful.
      */
-    public function getCanonicalUrl()
+    public function getCanonicalUrl(): string
     {
-        $seo = $this->seo;
+        return $this->seo?->canonical_url ?: Site::urlFor($this);
+    }
 
-        if ($seo && $seo->canonical_url) {
-            return $seo->canonical_url;
+    /** Best available social share image, as an absolute URL. */
+    public function getShareImage(): ?string
+    {
+        $candidates = [
+            $this->seo?->og_image,
+            $this->relationLoaded('media') || $this->exists
+                ? ($this->getFirstMediaUrl('featured_image') ?: null)
+                : null,
+            Site::defaultOgImage(),
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (!empty($candidate)) {
+                return Site::absolute($candidate);
+            }
         }
 
-        return match (static::class) {
-            'App\Models\Post' => route('api.v1.posts.show', $this->slug),
-            'App\Models\Category' => route('api.v1.categories.show', $this->slug),
-            default => url()->current(),
-        };
+        return null;
     }
 
-    /**
-     * Get Open Graph tags as array.
-     */
-    public function getOgTags()
+    public function getMetaTags(): array
     {
         $seo = $this->seo;
 
-        return [
-            'og:title' => $seo?->og_title ?? $this->title ?? $this->name,
-            'og:description' => $seo?->og_description ?? $this->excerpt ?? substr($this->content ?? '', 0, 160),
-            'og:image' => $seo?->og_image ?? $this->featured_image,
-            'og:type' => $seo?->og_type ?? 'website',
-            'og:url' => $this->getCanonicalUrl(),
-        ];
-    }
-
-    /**
-     * Get Twitter Card tags as array.
-     */
-    public function getTwitterTags()
-    {
-        $seo = $this->seo;
-
-        return [
-            'twitter:card' => $seo?->twitter_card ?? 'summary_large_image',
-            'twitter:title' => $seo?->twitter_title ?? $this->title ?? $this->name,
-            'twitter:description' => $seo?->twitter_description ?? $this->excerpt ?? substr($this->content ?? '', 0, 160),
-            'twitter:image' => $seo?->twitter_image ?? $this->featured_image,
-        ];
-    }
-
-    /**
-     * Get meta tags as array.
-     */
-    public function getMetaTags()
-    {
-        $seo = $this->seo;
-
-        return [
-            'title' => $seo?->meta_title ?? $this->title ?? $this->name,
-            'description' => $seo?->meta_description ?? $this->excerpt ?? substr($this->content ?? '', 0, 160),
+        return array_filter([
+            'title' => $seo?->meta_title ?: $this->title,
+            'description' => $seo?->meta_description ?: $this->excerpt,
             'keywords' => $seo?->meta_keywords,
             'canonical' => $this->getCanonicalUrl(),
-            'robots' => $seo?->robots ?? 'index, follow',
-        ];
+            'robots' => $seo?->robots ?: 'index, follow',
+        ]);
     }
 
-    /**
-     * Get JSON-LD schema markup.
-     */
-    public function getSchemaMarkup()
+    public function getOgTags(): array
     {
         $seo = $this->seo;
 
-        if (!$seo || !$seo->schema_markup) {
-            // Generate default schema based on model type
-            return $this->generateDefaultSchema();
-        }
-
-        return $seo->schema_markup;
+        return array_filter([
+            'og:site_name' => Site::name(),
+            'og:title' => $seo?->og_title ?: $seo?->meta_title ?: $this->title,
+            'og:description' => $seo?->og_description ?: $seo?->meta_description ?: $this->excerpt,
+            'og:image' => $this->getShareImage(),
+            'og:type' => $seo?->og_type ?: 'website',
+            'og:url' => $this->getCanonicalUrl(),
+        ]);
     }
 
-    /**
-     * Generate default schema markup for the model.
-     */
-    private function generateDefaultSchema()
+    public function getTwitterTags(): array
     {
-        return match (static::class) {
-            'App\Models\Post' => [
-                '@context' => 'https://schema.org',
-                '@type' => 'BlogPosting',
-                'headline' => $this->title,
-                'description' => $this->excerpt ?? substr($this->content ?? '', 0, 160),
-                'image' => $this->featured_image,
-                'datePublished' => $this->published_at?->toIso8601String(),
-                'dateModified' => $this->updated_at->toIso8601String(),
-                'author' => [
-                    '@type' => 'Person',
-                    'name' => $this->author?->name,
-                ],
-            ],
-            'App\Models\Category' => [
-                '@context' => 'https://schema.org',
-                '@type' => 'CollectionPage',
-                'name' => $this->name,
-                'description' => $this->description,
-                'url' => $this->getCanonicalUrl(),
-            ],
-            default => [],
-        };
+        $seo = $this->seo;
+
+        return array_filter([
+            'twitter:card' => $seo?->twitter_card ?: 'summary_large_image',
+            'twitter:title' => $seo?->twitter_title ?: $seo?->meta_title ?: $this->title,
+            'twitter:description' => $seo?->twitter_description ?: $seo?->meta_description ?: $this->excerpt,
+            'twitter:image' => $seo?->twitter_image ? Site::absolute($seo->twitter_image) : $this->getShareImage(),
+        ]);
+    }
+
+    /** JSON-LD graph for this page. */
+    public function getSchemaMarkup(): array
+    {
+        return app(SchemaGenerator::class)->forPage($this);
+    }
+
+    /** True when this page asks search engines not to index it. */
+    public function isNoindex(): bool
+    {
+        return str_contains(strtolower($this->seo?->robots ?? ''), 'noindex');
     }
 }

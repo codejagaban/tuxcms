@@ -4,14 +4,38 @@
     {
       "name": "api",
       "runtimeExecutable": "php",
-      "runtimeArgs": ["artisan", "serve", "--port=8000"],
+      "runtimeArgs": [
+        "artisan",
+        "serve",
+        "--port=8000"
+      ],
       "port": 8000
     },
     {
       "name": "dashboard",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "dashboard", "--", "--port", "5173"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "dashboard",
+        "--",
+        "--port",
+        "5173"
+      ],
       "port": 5173
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "php",
+      "runtimeArgs": [
+        "-S",
+        "127.0.0.1:8080",
+        "-t",
+        "public",
+        "public/dev-router.php"
+      ],
+      "port": 8080
     }
   ]
 }

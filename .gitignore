@@ -26,3 +26,8 @@ Thumbs.db
 # Dashboard SPA
 /dashboard/node_modules
 /dashboard/dist
+
+# Generated static site output
+/public/*.html
+/public/sitemap.xml
+/public/.site-manifest.json
