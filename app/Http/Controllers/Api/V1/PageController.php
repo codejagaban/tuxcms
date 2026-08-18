@@ -9,11 +9,23 @@ use App\Http\Resources\PageResource;
 use App\Models\Page;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PageController extends Controller
 {
+    /**
+     * Read routes are public so the site can be built and previewed without a
+     * token, but an authenticated editor must still see drafts. These routes
+     * carry no auth middleware, so $request->user() is always null — the
+     * Sanctum guard has to be asked directly.
+     */
+    private function isEditor(Request $request): bool
+    {
+        return (bool) ($request->user() ?: Auth::guard('sanctum')->user());
+    }
+
     /**
      * List all published pages (public) or all pages (authenticated).
      */
@@ -40,7 +52,7 @@ class PageController extends Controller
         }
 
         // Public requests only see published pages
-        if (!$request->user()) {
+        if (!$this->isEditor($request)) {
             $query->published();
         }
 
@@ -65,7 +77,7 @@ class PageController extends Controller
         // Authenticated editors need every section (including hidden ones) so a
         // save doesn't silently drop them; public visitors only see visible.
         $query = Page::with(['sections' => function ($q) use ($request) {
-            if (!$request->user()) {
+            if (!$this->isEditor($request)) {
                 $q->visible();
             }
             $q->orderBy('order');
@@ -78,7 +90,7 @@ class PageController extends Controller
         }
 
         // Non-authenticated users can only view published pages
-        if (!$request->user() && !$page->isPublished()) {
+        if (!$this->isEditor($request) && !$page->isPublished()) {
             abort(404);
         }
 
@@ -116,11 +128,14 @@ class PageController extends Controller
             $parentId = $page->id;
         }
 
-        $page->load(['sections' => function ($q) {
-            $q->visible()->orderBy('order');
+        $page->load(['sections' => function ($q) use ($request) {
+            if (!$this->isEditor($request)) {
+                $q->visible();
+            }
+            $q->orderBy('order');
         }, 'seo', 'author', 'children', 'media']);
 
-        if (!$request->user() && !$page->isPublished()) {
+        if (!$this->isEditor($request) && !$page->isPublished()) {
             abort(404);
         }
 
@@ -138,7 +153,7 @@ class PageController extends Controller
             ->topLevel()
             ->orderBy('order');
 
-        if (!$request->user()) {
+        if (!$this->isEditor($request)) {
             $query->published();
         }
 

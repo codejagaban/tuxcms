@@ -71,6 +71,12 @@ export const mediaAPI = {
   delete: (mediaId) => api.delete(`/media/${mediaId}`),
 };
 
+// Publishing — regenerates the static site
+export const siteAPI = {
+  status: () => api.get('/site/status'),
+  build: () => api.post('/site/build'),
+};
+
 // SEO endpoints — page-scoped, matching GET|PUT /pages/{page}/seo
 export const seoAPI = {
   get: (pageId) => api.get(`/pages/${pageId}/seo`),

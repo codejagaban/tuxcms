@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import Button from '../components/ui/Button';
+import PublishButton from '../components/PublishButton';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -95,6 +96,7 @@ const DashboardLayout = () => {
 
             {/* User Menu */}
             <div className="flex items-center gap-4">
+              <PublishButton />
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}

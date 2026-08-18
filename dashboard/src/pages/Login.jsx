@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useAuth } from '../lib/auth';
@@ -79,18 +79,11 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-6 text-center text-sm">
-            <p className="text-gray-600">
-              Don't have an account?{' '}
-              <Link
-                to="/register"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
+          {/* Accounts are created with `php artisan user:create` — there is
+              no public registration on a single-site CMS. */}
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Need an account? Ask your site administrator.
+          </p>
         </CardContent>
       </Card>
     </div>

@@ -1,34 +1,6 @@
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | TuxCMS Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configuration settings for the TuxCMS headless CMS
-    |
-    */
-
-    'api' => [
-        'prefix' => 'api/v1',
-        'pagination' => [
-            'per_page' => 15,
-            'max_per_page' => 100,
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Multi-Tenancy
-    |--------------------------------------------------------------------------
-    |
-    | base_domain: Used for subdomain-based tenant resolution.
-    | e.g., if set to "tuxcms.com", requests to "acme.tuxcms.com"
-    | will resolve to the tenant with slug "acme".
-    |
-    */
-    'base_domain' => env('TUXCMS_BASE_DOMAIN', null),
 
     'pages' => [
         'per_page' => 15,
@@ -53,8 +25,4 @@ return [
         'twitter_card_type' => 'summary_large_image',
     ],
 
-    'cache' => [
-        'enabled' => false,
-        'ttl' => 3600,
-    ],
 ];

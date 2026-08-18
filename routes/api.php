@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\SeoController;
 use App\Http\Controllers\Api\V1\SettingController;
+use App\Http\Controllers\Api\V1\SiteBuildController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -60,5 +61,10 @@ Route::prefix('v1')->group(function () {
         // Media
         Route::post('media', [MediaController::class, 'uploadToModel']);
         Route::delete('media/{media}', [MediaController::class, 'destroy']);
+
+        // Publishing — regenerates the static site
+        Route::get('site/status', [SiteBuildController::class, 'status']);
+        Route::post('site/build', [SiteBuildController::class, 'store'])
+            ->middleware('throttle:10,1');
     });
 });
