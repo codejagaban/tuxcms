@@ -26,6 +26,38 @@ class SettingController extends Controller
         ]);
     }
 
+    /**
+     * Bulk update. The settings screen saves a whole group at once, and doing
+     * that as one request keeps it atomic instead of N partial writes.
+     */
+    public function updateMany(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'settings' => 'required|array',
+            'settings.*' => 'nullable',
+        ]);
+
+        foreach ($validated['settings'] as $key => $value) {
+            $existing = Setting::where('key', $key)->first();
+            Setting::set($key, $value, $existing?->group ?? 'general');
+        }
+
+        return response()->json([
+            'data' => $this->flatten(),
+            'message' => 'Settings updated successfully.',
+        ]);
+    }
+
+    /** key => value map, which is what the dashboard and templates want. */
+    private function flatten(): array
+    {
+        return Setting::all()
+            ->mapWithKeys(fn(Setting $s) => [
+                $s->key => is_array($s->value) ? (reset($s->value) ?: '') : $s->value,
+            ])
+            ->all();
+    }
+
     public function show($key): SettingResource
     {
         $setting = Setting::where('key', $key)->firstOrFail();

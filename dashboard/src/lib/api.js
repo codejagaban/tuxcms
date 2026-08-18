@@ -85,10 +85,24 @@ export const seoAPI = {
 
 // Settings endpoints
 export const settingsAPI = {
-  list: () => api.get('/settings'),
-  grouped: () => api.get('/settings/grouped'),
-  update: (key, data) => api.put(`/settings/${key}`, data),
-  create: (data) => api.post('/settings', data),
+  /**
+   * The API returns rows ({key, value, group}) and values may be array-wrapped
+   * for historical reasons. Screens want a flat key => string map, so normalise
+   * here rather than in every component.
+   */
+  get: async () => {
+    const res = await api.get('/settings');
+    const flat = {};
+
+    (res.data.data || []).forEach((row) => {
+      const value = Array.isArray(row.value) ? row.value[0] : row.value;
+      flat[row.key] = value ?? '';
+    });
+
+    return { data: { data: flat } };
+  },
+  update: (settings) => api.put('/settings', { settings }),
+  updateOne: (key, data) => api.put(`/settings/${key}`, data),
   delete: (key) => api.delete(`/settings/${key}`),
 };
 

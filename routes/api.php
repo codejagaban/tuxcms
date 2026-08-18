@@ -54,6 +54,7 @@ Route::prefix('v1')->group(function () {
         Route::put('pages/{page}/seo', [SeoController::class, 'update']);
 
         // Settings
+        Route::put('settings', [SettingController::class, 'updateMany']);
         Route::post('settings', [SettingController::class, 'store']);
         Route::put('settings/{key}', [SettingController::class, 'update']);
         Route::delete('settings/{key}', [SettingController::class, 'destroy']);

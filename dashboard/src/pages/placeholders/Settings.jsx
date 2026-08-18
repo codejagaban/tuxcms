@@ -19,7 +19,11 @@ const Settings = () => {
     social_instagram: '',
     social_linkedin: '',
     contact_email: '',
-    notification_email: '',
+    contact_phone: '',
+    contact_address: '',
+    site_tagline: '',
+    site_logo: '',
+    web3forms_access_key: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +51,11 @@ const Settings = () => {
         social_instagram: data.social_instagram || '',
         social_linkedin: data.social_linkedin || '',
         contact_email: data.contact_email || '',
-        notification_email: data.notification_email || '',
+        contact_phone: data.contact_phone || '',
+        contact_address: data.contact_address || '',
+        site_tagline: data.site_tagline || '',
+        site_logo: data.site_logo || '',
+        web3forms_access_key: data.web3forms_access_key || '',
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -113,12 +121,14 @@ const Settings = () => {
         description="Basic site information"
         fields={[
           { key: 'site_name', label: 'Site Name', placeholder: 'My Awesome Site' },
+          { key: 'site_tagline', label: 'Tagline', placeholder: 'Shown under the site name in the footer' },
           { key: 'site_description', label: 'Site Description', placeholder: 'Your site description' },
           { key: 'site_url', label: 'Site URL', placeholder: 'https://example.com' },
+          { key: 'site_logo', label: 'Logo URL', placeholder: '/media/logo.svg' },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Site', ['site_name', 'site_description', 'site_url'])}
+        onSave={() => saveGroup('Site', ['site_name', 'site_tagline', 'site_description', 'site_url', 'site_logo'])}
         isSaving={savingGroups.Site}
       />
 
@@ -153,18 +163,32 @@ const Settings = () => {
         isSaving={savingGroups.Social}
       />
 
-      {/* Email Settings */}
+      {/* Contact details — shown in the footer and the Organization schema */}
       <SettingsGroup
-        title="Email Settings"
-        description="Contact and notification email addresses"
+        title="Contact Details"
+        description="Shown in the site footer and in structured data"
         fields={[
           { key: 'contact_email', label: 'Contact Email', placeholder: 'contact@example.com', type: 'email' },
-          { key: 'notification_email', label: 'Notification Email', placeholder: 'notifications@example.com', type: 'email' },
+          { key: 'contact_phone', label: 'Contact Phone', placeholder: '+44 20 7946 0000' },
+          { key: 'contact_address', label: 'Address', placeholder: '1 Example St, London' },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Email', ['contact_email', 'notification_email'])}
-        isSaving={savingGroups.Email}
+        onSave={() => saveGroup('Contact', ['contact_email', 'contact_phone', 'contact_address'])}
+        isSaving={savingGroups.Contact}
+      />
+
+      {/* Forms — submissions are handled by Web3Forms, not this CMS */}
+      <SettingsGroup
+        title="Forms"
+        description="Contact forms post directly to Web3Forms. Paste your access key here so every contact form on the site works."
+        fields={[
+          { key: 'web3forms_access_key', label: 'Web3Forms Access Key', placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' },
+        ]}
+        settings={settings}
+        onChange={handleInputChange}
+        onSave={() => saveGroup('Forms', ['web3forms_access_key'])}
+        isSaving={savingGroups.Forms}
       />
     </div>
   );
