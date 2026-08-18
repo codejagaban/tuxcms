@@ -17,9 +17,10 @@ Route::prefix('v1')->group(function () {
     // ── Health Check (no tenant needed) ────────────────────
     Route::get('health', fn() => response()->json(['status' => 'ok', 'version' => '1.0.0']));
 
-    // ── Auth (no tenant needed) ────────────────────────────
-    Route::post('auth/register', [AuthController::class, 'register']);
-    Route::post('auth/login', [AuthController::class, 'login']);
+    // ── Auth ───────────────────────────────────────────────
+    // No public registration — accounts are made with `artisan user:create`.
+    Route::post('auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:5,1');
 
     // ════════════════════════════════════════════════════════
     // Public routes (tenant required via header or domain)
