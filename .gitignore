@@ -27,7 +27,10 @@ Thumbs.db
 /dashboard/node_modules
 /dashboard/dist
 
-# Generated static site output
-/public/*.html
+# Generated static site output (written by `php artisan site:build`)
+/public/index.html
+/public/404.html
+/public/**/index.html
 /public/sitemap.xml
+/public/robots.txt
 /public/.site-manifest.json
