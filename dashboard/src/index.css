@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent;
+  }
+}
+
+/* Inline-editable text on the visual page editor's preview. */
+.tux-editable {
+  outline: none;
+  cursor: text;
+  border-radius: 4px;
+  transition: box-shadow 0.12s ease, background-color 0.12s ease;
+}
+.tux-editable:hover {
+  box-shadow: 0 0 0 1px rgb(59 130 246 / 0.35);
+}
+.tux-editable:focus {
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.6);
+  background-color: rgb(59 130 246 / 0.04);
+}
+/* Placeholder shown when the field is empty and not focused. */
+.tux-editable[data-empty="true"]:not(:focus)::before {
+  content: attr(data-placeholder);
+  color: rgb(156 163 175);
+  font-style: italic;
+}

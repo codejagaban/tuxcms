@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TuxCMS - Multi-Tenant Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px 20px; }
+  h1 { text-align: center; font-size: 28px; margin-bottom: 8px; color: #f8fafc; }
+  .subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; font-size: 15px; }
+
+  .diagram { max-width: 1100px; margin: 0 auto; }
+
+  /* ── Layer Rows ── */
+  .layer { margin-bottom: 32px; }
+  .layer-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+    color: #64748b; margin-bottom: 12px; padding-left: 4px;
+  }
+  .layer-content {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ── Boxes ── */
+  .box {
+    border: 1px solid #334155; border-radius: 12px; padding: 20px;
+    background: #1e293b; min-width: 200px; flex: 1; max-width: 340px;
+    position: relative; transition: border-color .2s;
+  }
+  .box:hover { border-color: #4f8dff; }
+  .box h3 { font-size: 16px; color: #f1f5f9; margin-bottom: 6px; }
+  .box p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+  .box .tag {
+    display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 20px; margin-top: 8px;
+  }
+  .tag-blue { background: #1e3a5f; color: #60a5fa; }
+  .tag-green { background: #14532d; color: #4ade80; }
+  .tag-purple { background: #3b0764; color: #c084fc; }
+  .tag-orange { background: #431407; color: #fb923c; }
+  .tag-red { background: #450a0a; color: #f87171; }
+
+  /* Wide box */
+  .box.wide { max-width: 100%; flex-basis: 100%; }
+  .box.medium { max-width: 520px; }
+
+  /* ── Arrow connector ── */
+  .arrow-down {
+    text-align: center; padding: 8px 0; color: #475569; font-size: 24px;
+  }
+
+  /* ── DB Schema ── */
+  .schema-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+  .table-card {
+    background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px;
+  }
+  .table-card h4 { font-size: 13px; color: #60a5fa; margin-bottom: 6px; font-family: monospace; }
+  .table-card ul { list-style: none; font-size: 12px; color: #94a3b8; }
+  .table-card li { padding: 2px 0; font-family: monospace; }
+  .table-card li .pk { color: #fbbf24; }
+  .table-card li .fk { color: #f87171; }
+
+  /* ── Flow Diagram ── */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .flow-step {
+    background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+    padding: 12px 18px; font-size: 13px; text-align: center; min-width: 140px;
+  }
+  .flow-arrow { color: #4f8dff; font-size: 20px; padding: 0 8px; }
+
+  /* ── Tenant isolation visual ── */
+  .tenant-visual { display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .tenant-box {
+    border: 2px dashed #334155; border-radius: 16px; padding: 20px;
+    min-width: 280px; flex: 1; max-width: 340px; text-align: center;
+  }
+  .tenant-box.active { border-color: #4f8dff; background: rgba(79,141,255,.05); }
+  .tenant-box h4 { font-size: 14px; margin-bottom: 10px; }
+  .tenant-items { display: flex; flex-direction: column; gap: 6px; }
+  .tenant-item {
+    background: #0f172a; border-radius: 6px; padding: 6px 12px;
+    font-size: 12px; color: #94a3b8; font-family: monospace;
+  }
+
+  /* ── Section divider ── */
+  .divider { border-top: 1px solid #1e293b; margin: 40px 0; }
+
+  /* ── Legend ── */
+  .legend { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 30px 0 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<h1>TuxCMS Multi-Tenant Architecture</h1>
+<p class="subtitle">Each tenant = a website. Single database with tenant_id scoping. Super admin manages all.</p>
+
+<div class="diagram">
+
+  <!-- ════════ REQUEST FLOW ════════ -->
+  <div class="layer">
+    <div class="layer-label">Request Flow</div>
+    <div class="flow">
+      <div class="flow-step">Frontend<br><small style="color:#64748b">Next.js / Nuxt / Any</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">API Request<br><small style="color:#64748b">api.site.com/v1/*</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="border-color:#4f8dff">Tenant Resolver<br><small style="color:#60a5fa">Middleware</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">Scoped Query<br><small style="color:#64748b">tenant_id applied</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">JSON Response<br><small style="color:#64748b">tenant data only</small></div>
+    </div>
+  </div>
+
+  <div class="arrow-down">&darr;</div>
+
+  <!-- ════════ TENANT IDENTIFICATION ════════ -->
+  <div class="layer">
+    <div class="layer-label">Tenant Identification (3 strategies)</div>
+    <div class="layer-content">
+      <div class="box">
+        <h3>1. Domain / Subdomain</h3>
+        <p>Each website gets a subdomain or custom domain.<br><code style="color:#60a5fa; font-size:12px">acme.tuxcms.com</code> or <code style="color:#60a5fa; font-size:12px">www.acme.com</code></p>
+        <span class="tag tag-blue">Recommended for public sites</span>
+      </div>
+      <div class="box">
+        <h3>2. API Key Header</h3>
+        <p>Frontend sends <code style="color:#60a5fa; font-size:12px">X-Tenant-Key</code> header to identify which website's data to serve.</p>
+        <span class="tag tag-green">Recommended for headless</span>
+      </div>
+      <div class="box">
+        <h3>3. Auth-Based</h3>
+        <p>Authenticated user's <code style="color:#60a5fa; font-size:12px">tenant_id</code> determines scope. Used for the admin dashboard / CMS panel.</p>
+        <span class="tag tag-purple">Admin panel access</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">&darr;</div>
+
+  <!-- ════════ APPLICATION LAYER ════════ -->
+  <div class="layer">
+    <div class="layer-label">Application Layer</div>
+    <div class="layer-content">
+      <div class="box medium">
+        <h3>TenantScope (Global Scope)</h3>
+        <p>Auto-applied to all tenant-aware models. Every query automatically includes <code style="color:#60a5fa; font-size:12px">WHERE tenant_id = ?</code>. No data leakage between tenants. Applied via <code style="color:#60a5fa; font-size:12px">BelongsToTenant</code> trait.</p>
+        <span class="tag tag-red">Data isolation layer</span>
+      </div>
+      <div class="box medium">
+        <h3>Middleware Stack</h3>
+        <p><strong style="color:#f1f5f9">ResolveTenant</strong> &mdash; Identifies tenant from domain/header/auth<br>
+        <strong style="color:#f1f5f9">EnsureJsonResponse</strong> &mdash; Forces API JSON output<br>
+        <strong style="color:#f1f5f9">auth:sanctum</strong> &mdash; Token authentication<br>
+        <strong style="color:#f1f5f9">CheckTenantOwnership</strong> &mdash; Verifies user belongs to tenant</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">&darr;</div>
+
+  <!-- ════════ DATA ISOLATION VISUAL ════════ -->
+  <div class="layer">
+    <div class="layer-label">Data Isolation (Single DB, tenant_id on every row)</div>
+    <div class="tenant-visual">
+      <div class="tenant-box active">
+        <h4 style="color:#60a5fa">Tenant A &mdash; acme.com</h4>
+        <div class="tenant-items">
+          <div class="tenant-item">pages WHERE tenant_id = 1</div>
+          <div class="tenant-item">page_sections WHERE tenant_id = 1</div>
+          <div class="tenant-item">menus WHERE tenant_id = 1</div>
+          <div class="tenant-item">forms WHERE tenant_id = 1</div>
+          <div class="tenant-item">settings WHERE tenant_id = 1</div>
+          <div class="tenant-item">media WHERE tenant_id = 1</div>
+        </div>
+      </div>
+      <div class="tenant-box">
+        <h4 style="color:#4ade80">Tenant B &mdash; widget.co</h4>
+        <div class="tenant-items">
+          <div class="tenant-item">pages WHERE tenant_id = 2</div>
+          <div class="tenant-item">page_sections WHERE tenant_id = 2</div>
+          <div class="tenant-item">menus WHERE tenant_id = 2</div>
+          <div class="tenant-item">forms WHERE tenant_id = 2</div>
+          <div class="tenant-item">settings WHERE tenant_id = 2</div>
+          <div class="tenant-item">media WHERE tenant_id = 2</div>
+        </div>
+      </div>
+      <div class="tenant-box">
+        <h4 style="color:#fb923c">Tenant C &mdash; startup.io</h4>
+        <div class="tenant-items">
+          <div class="tenant-item">pages WHERE tenant_id = 3</div>
+          <div class="tenant-item">page_sections WHERE tenant_id = 3</div>
+          <div class="tenant-item">menus WHERE tenant_id = 3</div>
+          <div class="tenant-item">forms WHERE tenant_id = 3</div>
+          <div class="tenant-item">settings WHERE tenant_id = 3</div>
+          <div class="tenant-item">media WHERE tenant_id = 3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════ USER / ROLE HIERARCHY ════════ -->
+  <div class="layer">
+    <div class="layer-label">User &amp; Role Hierarchy</div>
+    <div class="layer-content">
+      <div class="box">
+        <h3>Super Admin</h3>
+        <p>Global access across ALL tenants. Can create/delete tenants, manage billing, impersonate users, view analytics across all sites.</p>
+        <span class="tag tag-red">Global scope (no tenant_id filter)</span>
+      </div>
+      <div class="box">
+        <h3>Tenant Owner</h3>
+        <p>Owns a specific website/tenant. Full control over their site's pages, menus, forms, settings, media. Can invite team members.</p>
+        <span class="tag tag-blue">Scoped to their tenant</span>
+      </div>
+      <div class="box">
+        <h3>Tenant Editor</h3>
+        <p>Invited by tenant owner. Can edit pages, manage form submissions, upload media. Cannot change site settings or invite others.</p>
+        <span class="tag tag-green">Scoped + limited permissions</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">&darr;</div>
+
+  <!-- ════════ DATABASE SCHEMA ════════ -->
+  <div class="layer">
+    <div class="layer-label">Database Schema (key tables)</div>
+    <div class="box wide">
+      <div class="schema-grid">
+        <div class="table-card">
+          <h4>tenants</h4>
+          <ul>
+            <li><span class="pk">id</span> (PK)</li>
+            <li>name</li>
+            <li>slug (unique)</li>
+            <li>domain (unique, nullable)</li>
+            <li>api_key (unique)</li>
+            <li>owner_id &rarr; <span class="fk">users.id</span></li>
+            <li>plan (free/pro/enterprise)</li>
+            <li>settings (JSON)</li>
+            <li>is_active (boolean)</li>
+            <li>timestamps</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>users</h4>
+          <ul>
+            <li><span class="pk">id</span> (PK)</li>
+            <li>name, email, password</li>
+            <li>is_super_admin (boolean)</li>
+            <li>timestamps</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>tenant_user (pivot)</h4>
+          <ul>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li><span class="fk">user_id</span> &rarr; users.id</li>
+            <li>role (owner/editor)</li>
+            <li>timestamps</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>pages</h4>
+          <ul>
+            <li><span class="pk">id</span> (PK)</li>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li>title, slug, content, excerpt</li>
+            <li>template, status, order</li>
+            <li>parent_id, is_homepage</li>
+            <li>custom_fields (JSON)</li>
+            <li>author_id &rarr; <span class="fk">users.id</span></li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>page_sections</h4>
+          <ul>
+            <li><span class="pk">id</span> (PK)</li>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li><span class="fk">page_id</span> &rarr; pages.id</li>
+            <li>key, type, title, content</li>
+            <li>data (JSON), order</li>
+            <li>is_visible</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>menus / menu_items</h4>
+          <ul>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li>name, slug, location</li>
+            <li>items: title, url, target, order</li>
+            <li>parent_id (nested)</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>forms / form_submissions</h4>
+          <ul>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li>name, slug, fields (JSON)</li>
+            <li>submissions: data (JSON)</li>
+            <li>notification_email</li>
+            <li>ip_address, is_read</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <h4>settings</h4>
+          <ul>
+            <li><span class="fk">tenant_id</span> &rarr; tenants.id</li>
+            <li>key (unique per tenant)</li>
+            <li>value (JSON)</li>
+            <li>group</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════ API STRUCTURE ════════ -->
+  <div class="layer">
+    <div class="layer-label">API Endpoint Structure</div>
+    <div class="layer-content">
+      <div class="box">
+        <h3>Public API (Frontend)</h3>
+        <p style="font-family:monospace; font-size:12px; line-height:2;">
+          GET /api/v1/pages<br>
+          GET /api/v1/pages/{slug}<br>
+          GET /api/v1/pages/resolve?path=...<br>
+          GET /api/v1/pages/homepage<br>
+          GET /api/v1/menus/{slug}<br>
+          GET /api/v1/forms/{slug}<br>
+          POST /api/v1/forms/{slug}/submit<br>
+          GET /api/v1/settings<br>
+          GET /api/v1/sitemap.xml
+        </p>
+        <span class="tag tag-green">Tenant resolved via domain or X-Tenant-Key</span>
+      </div>
+      <div class="box">
+        <h3>Tenant Admin API</h3>
+        <p style="font-family:monospace; font-size:12px; line-height:2;">
+          POST /api/v1/pages (CRUD)<br>
+          POST /api/v1/menus (CRUD)<br>
+          POST /api/v1/forms (CRUD)<br>
+          GET /api/v1/forms/{id}/submissions<br>
+          POST /api/v1/settings<br>
+          POST /api/v1/media<br>
+          PUT /api/v1/seo
+        </p>
+        <span class="tag tag-blue">auth:sanctum + tenant scoped</span>
+      </div>
+      <div class="box">
+        <h3>Super Admin API</h3>
+        <p style="font-family:monospace; font-size:12px; line-height:2;">
+          GET /api/v1/admin/tenants<br>
+          POST /api/v1/admin/tenants<br>
+          PUT /api/v1/admin/tenants/{id}<br>
+          DELETE /api/v1/admin/tenants/{id}<br>
+          GET /api/v1/admin/users<br>
+          POST /api/v1/admin/impersonate/{id}<br>
+          GET /api/v1/admin/stats
+        </p>
+        <span class="tag tag-red">Super admin only</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════ IMPLEMENTATION APPROACH ════════ -->
+  <div class="layer">
+    <div class="layer-label">Implementation Approach</div>
+    <div class="layer-content">
+      <div class="box" style="max-width:520px">
+        <h3>Why Single DB with tenant_id?</h3>
+        <p>
+          <strong style="color:#f1f5f9">Simpler</strong> &mdash; No managing multiple databases or connections per tenant<br><br>
+          <strong style="color:#f1f5f9">Scalable</strong> &mdash; Handles thousands of small-to-medium sites efficiently<br><br>
+          <strong style="color:#f1f5f9">Cost-effective</strong> &mdash; One database instance, one deployment<br><br>
+          <strong style="color:#f1f5f9">Easy migrations</strong> &mdash; Schema changes apply to all tenants at once<br><br>
+          <strong style="color:#f1f5f9">Global scope</strong> &mdash; Laravel's global query scope auto-filters every query by tenant_id, preventing data leaks
+        </p>
+      </div>
+      <div class="box" style="max-width:520px">
+        <h3>Key Files to Create/Modify</h3>
+        <p style="font-family:monospace; font-size:12px; line-height:2.2; color:#94a3b8;">
+          <span style="color:#4ade80">NEW</span> app/Models/Tenant.php<br>
+          <span style="color:#4ade80">NEW</span> app/Scopes/TenantScope.php<br>
+          <span style="color:#4ade80">NEW</span> app/Traits/BelongsToTenant.php<br>
+          <span style="color:#4ade80">NEW</span> app/Http/Middleware/ResolveTenant.php<br>
+          <span style="color:#4ade80">NEW</span> app/Http/Controllers/Api/V1/TenantController.php<br>
+          <span style="color:#4ade80">NEW</span> app/Http/Controllers/Api/V1/AdminController.php<br>
+          <span style="color:#4ade80">NEW</span> migration: create_tenants_table<br>
+          <span style="color:#4ade80">NEW</span> migration: create_tenant_user_table<br>
+          <span style="color:#fbbf24">MOD</span> migration: add tenant_id to pages, sections, menus, forms, settings<br>
+          <span style="color:#fbbf24">MOD</span> All models: add BelongsToTenant trait<br>
+          <span style="color:#fbbf24">MOD</span> User model: add tenants() relationship<br>
+          <span style="color:#fbbf24">MOD</span> routes/api.php: add admin routes
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Legend ── -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> Primary Key</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div> Foreign Key</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> New File</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> Modified File</div>
+  </div>
+
+</div>
+</body>
+</html>
