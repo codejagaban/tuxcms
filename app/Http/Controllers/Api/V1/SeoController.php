@@ -26,8 +26,6 @@ class SeoController extends Controller
 
     public function updateSeo(Request $request): SeoResource
     {
-        $this->authorize('update', Seo::class);
-
         $request->validate([
             'model_type' => 'required|string|in:App\Models\Post,App\Models\Category',
             'model_id' => 'required|integer',

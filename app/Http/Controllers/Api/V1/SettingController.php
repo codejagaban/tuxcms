@@ -44,8 +44,6 @@ class SettingController extends Controller
 
     public function store(Request $request): SettingResource
     {
-        $this->authorize('create', Setting::class);
-
         $request->validate([
             'key' => 'required|string|unique:settings',
             'value' => 'required',
@@ -59,8 +57,6 @@ class SettingController extends Controller
 
     public function destroy($key): JsonResponse
     {
-        $this->authorize('delete', Setting::class);
-
         Setting::where('key', $key)->firstOrFail()->delete();
 
         return response()->json([

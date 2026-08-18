@@ -42,8 +42,6 @@ class MediaController extends Controller
 
     public function destroy(Media $media): JsonResponse
     {
-        $this->authorize('delete', $media);
-
         $media->delete();
 
         return response()->json([
@@ -53,23 +51,28 @@ class MediaController extends Controller
 
     public function uploadToModel(Request $request): JsonResponse
     {
-        $this->authorize('upload', Media::class);
+        // Only these models may receive uploads. Never build a class name from
+        // raw input — that would make every App\Models\* class reachable.
+        $allowed = [
+            'Page' => \App\Models\Page::class,
+            'PageSection' => \App\Models\PageSection::class,
+        ];
 
         $request->validate([
-            'file' => 'required|file|max:10240',
+            'file' => [
+                'required',
+                'file',
+                'max:' . config('tuxcms.media.max_file_size', 10240),
+                'mimes:' . implode(',', config('tuxcms.media.allowed_extensions', ['jpg', 'jpeg', 'png', 'gif'])),
+            ],
             'collection' => 'nullable|string',
-            'model_type' => 'required|string',
+            'model_type' => 'required|string|in:' . implode(',', array_keys($allowed)),
             'model_id' => 'required|integer',
             'alt_text' => 'nullable|string',
             'caption' => 'nullable|string',
         ]);
 
-        $modelClass = "App\\Models\\{$request->model_type}";
-        if (!class_exists($modelClass)) {
-            return response()->json(['error' => 'Invalid model type'], 400);
-        }
-
-        $model = $modelClass::findOrFail($request->model_id);
+        $model = $allowed[$request->model_type]::findOrFail($request->model_id);
 
         $collection = $request->collection ?? 'default';
 

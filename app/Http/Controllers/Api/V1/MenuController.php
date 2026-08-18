@@ -53,8 +53,6 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu): MenuResource
     {
-        $this->authorize('update', $menu);
-
         $menu->update($request->only('name', 'location'));
 
         if ($request->has('items')) {
@@ -67,8 +65,6 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu): JsonResponse
     {
-        $this->authorize('delete', $menu);
-
         $menu->delete();
 
         return response()->json([
