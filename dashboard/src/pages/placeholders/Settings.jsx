@@ -24,6 +24,9 @@ const Settings = () => {
     site_tagline: '',
     site_logo: '',
     web3forms_access_key: '',
+    default_og_image: '',
+    robots_extra: '',
+    site_noindex: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +59,9 @@ const Settings = () => {
         site_tagline: data.site_tagline || '',
         site_logo: data.site_logo || '',
         web3forms_access_key: data.web3forms_access_key || '',
+        default_og_image: data.default_og_image || '',
+        robots_extra: data.robots_extra || '',
+        site_noindex: data.site_noindex || '',
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -138,12 +144,31 @@ const Settings = () => {
         description="Search engine optimization settings"
         fields={[
           { key: 'meta_keywords', label: 'Meta Keywords', placeholder: 'keyword1, keyword2, keyword3' },
+          {
+            key: 'default_og_image',
+            label: 'Default Social Share Image',
+            placeholder: 'https://example.com/share.jpg',
+            help: 'Used when a page has no share image of its own. 1200×630 works best.',
+          },
           { key: 'google_analytics_id', label: 'Google Analytics ID', placeholder: 'UA-123456789-0' },
           { key: 'google_site_verification', label: 'Google Site Verification', placeholder: 'verification code' },
+          {
+            key: 'robots_extra',
+            label: 'Extra robots.txt Rules',
+            type: 'textarea',
+            placeholder: 'Disallow: /private/',
+            help: 'Appended to the generated robots.txt. The sitemap line is added automatically.',
+          },
+          {
+            key: 'site_noindex',
+            label: 'Discourage search engines from indexing this site',
+            type: 'checkbox',
+            help: 'Serves "Disallow: /" and marks every page noindex. Non-production environments do this automatically.',
+          },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('SEO', ['meta_keywords', 'google_analytics_id', 'google_site_verification'])}
+        onSave={() => saveGroup('SEO', ['meta_keywords', 'default_og_image', 'google_analytics_id', 'google_site_verification', 'robots_extra', 'site_noindex'])}
         isSaving={savingGroups.SEO}
       />
 
@@ -207,18 +232,63 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {fields.map((field) => (
-          <Input
-            key={field.key}
-            label={field.label}
-            placeholder={field.placeholder}
-            name={field.key}
-            type={field.type || 'text'}
-            value={settings[field.key] || ''}
-            onChange={onChange}
-            containerClassName="w-full"
-          />
-        ))}
+        {fields.map((field) => {
+          const value = settings[field.key] || '';
+
+          if (field.type === 'checkbox') {
+            return (
+              <div key={field.key}>
+                <label className="flex items-start gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 rounded border-gray-300"
+                    name={field.key}
+                    checked={!!value}
+                    // Settings are stored as strings, so map the checked state
+                    // onto the same {name, value} shape the text inputs emit.
+                    onChange={(e) =>
+                      onChange({ target: { name: field.key, value: e.target.checked ? '1' : '' } })
+                    }
+                  />
+                  <span>{field.label}</span>
+                </label>
+                {field.help && <p className="mt-1 ml-6 text-xs text-gray-500">{field.help}</p>}
+              </div>
+            );
+          }
+
+          if (field.type === 'textarea') {
+            return (
+              <div key={field.key}>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{field.label}</label>
+                <textarea
+                  name={field.key}
+                  rows={3}
+                  placeholder={field.placeholder}
+                  value={value}
+                  onChange={onChange}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
+              </div>
+            );
+          }
+
+          return (
+            <div key={field.key}>
+              <Input
+                label={field.label}
+                placeholder={field.placeholder}
+                name={field.key}
+                type={field.type || 'text'}
+                value={value}
+                onChange={onChange}
+                containerClassName="w-full"
+              />
+              {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
+            </div>
+          );
+        })}
 
         <div className="flex items-center justify-end pt-4 border-t">
           <Button variant="primary" onClick={onSave} isLoading={isSaving}>
