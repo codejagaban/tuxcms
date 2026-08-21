@@ -29,6 +29,11 @@ class PageObserver
 
     public function saved(Page $page): void
     {
+        // computePath() walks the parent chain. If `parent` was loaded before
+        // parent_id changed, Eloquent hands back the *old* parent and the page
+        // keeps its previous path after being moved.
+        $page->unsetRelation('parent');
+
         $path = $page->computePath();
 
         if ($page->path !== $path) {

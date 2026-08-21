@@ -45,6 +45,11 @@ class Page extends Model implements HasMedia
         return SlugOptions::create()
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug')
+            // Slugs only need to be unique among siblings, matching the
+            // unique(parent_id, slug) constraint. Without this scope Spatie
+            // would suffix globally and turn /about/design into /about/design-1
+            // just because /services/design already exists.
+            ->extraScope(fn ($builder) => $builder->where('parent_id', $this->parent_id))
             ->doNotGenerateSlugsOnUpdate();
     }
 
