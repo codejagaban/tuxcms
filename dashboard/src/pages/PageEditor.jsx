@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, Smartphone, Save, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Monitor, Smartphone, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { pageAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
@@ -112,6 +112,8 @@ export default function PageEditor() {
         template: page.template || 'default',
         status: page.status || 'draft',
         is_homepage: !!page.is_homepage,
+        show_in_nav: page.show_in_nav !== false,
+        nav_label: page.nav_label || null,
         sections: page.sections.map((s, i) => ({
           key: s.key || s.type,
           type: s.type,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MediaResource;
 use Illuminate\Http\JsonResponse;
+use App\Models\MediaLibrary;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -49,6 +50,13 @@ class MediaController extends Controller
         ], 204);
     }
 
+    /**
+     * Upload a file.
+     *
+     * With `model_type`/`model_id` the file attaches to that page or section.
+     * Without them it goes to the site media library, which is how the Media
+     * screen uploads reusable assets.
+     */
     public function uploadToModel(Request $request): JsonResponse
     {
         // Only these models may receive uploads. Never build a class name from
@@ -66,15 +74,20 @@ class MediaController extends Controller
                 'mimes:' . implode(',', config('tuxcms.media.allowed_extensions', ['jpg', 'jpeg', 'png', 'gif'])),
             ],
             'collection' => 'nullable|string',
-            'model_type' => 'required|string|in:' . implode(',', array_keys($allowed)),
-            'model_id' => 'required|integer',
+            'model_type' => 'nullable|string|in:' . implode(',', array_keys($allowed)),
+            // Required only when attaching to a specific model.
+            'model_id' => 'required_with:model_type|integer',
             'alt_text' => 'nullable|string',
             'caption' => 'nullable|string',
         ]);
 
-        $model = $allowed[$request->model_type]::findOrFail($request->model_id);
-
-        $collection = $request->collection ?? 'default';
+        if ($request->filled('model_type')) {
+            $model = $allowed[$request->model_type]::findOrFail($request->model_id);
+            $collection = $request->collection ?? 'default';
+        } else {
+            $model = MediaLibrary::singleton();
+            $collection = $request->collection ?? 'library';
+        }
 
         $media = $model->addMediaFromRequest('file')
             ->withCustomProperties([

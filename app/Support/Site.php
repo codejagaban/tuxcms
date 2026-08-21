@@ -13,8 +13,6 @@ use App\Models\Setting;
  */
 class Site
 {
-    /** @var array<string, mixed>|null */
-    private static ?array $cache = null;
 
     /** The canonical site root, with no trailing slash. */
     public static function url(): string
@@ -152,9 +150,4 @@ class Site
         return '<link rel="stylesheet" href="/build/' . e($entry['file']) . '">';
     }
 
-    /** Reset memoised settings — used between builds. */
-    public static function flush(): void
-    {
-        self::$cache = null;
-    }
 }

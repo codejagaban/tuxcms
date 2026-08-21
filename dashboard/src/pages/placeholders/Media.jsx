@@ -278,7 +278,7 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
         <div className="aspect-square bg-gray-100 overflow-hidden">
           <img
             src={media.url}
-            alt={media.filename}
+            alt={media.file_name}
             className="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer"
             onClick={onViewDetails}
           />
@@ -294,7 +294,7 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
 
       <div className="p-4 space-y-3">
         <div>
-          <p className="font-medium text-gray-900 truncate">{media.filename}</p>
+          <p className="font-medium text-gray-900 truncate">{media.file_name}</p>
           <p className="text-xs text-gray-500 mt-1">{media.mime_type}</p>
         </div>
 
@@ -337,7 +337,7 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
           <div className="bg-gray-100 rounded-lg p-4 aspect-video flex items-center justify-center">
             <img
               src={media.url}
-              alt={media.filename}
+              alt={media.file_name}
               className="max-w-full max-h-full"
             />
           </div>
@@ -346,7 +346,7 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
         <div className="space-y-3 border-t pt-4">
           <div>
             <p className="text-xs font-medium text-gray-600 uppercase">Filename</p>
-            <p className="text-sm text-gray-900 mt-1 break-words">{media.filename}</p>
+            <p className="text-sm text-gray-900 mt-1 break-words">{media.file_name}</p>
           </div>
 
           <div>
@@ -367,7 +367,7 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
           <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
             <div>
               <p className="text-xs font-medium text-gray-600 uppercase">Size</p>
-              <p className="text-sm text-gray-900 mt-1">{formatFileSize(media.file_size)}</p>
+              <p className="text-sm text-gray-900 mt-1">{formatFileSize(media.size)}</p>
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600 uppercase">Type</p>

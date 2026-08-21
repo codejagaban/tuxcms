@@ -111,6 +111,29 @@ function PageTab({
           <input type="checkbox" className="rounded border-gray-300" checked={!!page.is_homepage} onChange={(e) => updatePage({ is_homepage: e.target.checked })} />
           Set as homepage
         </label>
+
+        {/* Site navigation is derived from the page tree, so these two fields
+            are the nav editor — there is no separate menu builder. */}
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            className="rounded border-gray-300"
+            checked={page.show_in_nav !== false}
+            onChange={(e) => updatePage({ show_in_nav: e.target.checked })}
+          />
+          Show in site navigation
+        </label>
+
+        {page.show_in_nav !== false && !page.is_homepage && (
+          <Field label="Navigation label">
+            <input
+              className={inputCls}
+              value={page.nav_label || ''}
+              onChange={(e) => updatePage({ nav_label: e.target.value })}
+              placeholder={page.title || 'Defaults to the page title'}
+            />
+          </Field>
+        )}
         <Field label="Excerpt">
           <textarea className={`${inputCls} h-20 resize-none`} value={page.excerpt || ''} onChange={(e) => updatePage({ excerpt: e.target.value })} />
         </Field>
