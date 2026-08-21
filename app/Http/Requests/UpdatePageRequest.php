@@ -29,6 +29,7 @@ class UpdatePageRequest extends FormRequest
             'published_at' => 'nullable|date',
 
             'sections' => 'nullable|array',
+            'sections.*.id' => 'nullable|integer',
             'sections.*.key' => 'nullable|string|max:100',
             'sections.*.type' => 'required_with:sections|string|max:50',
             'sections.*.title' => 'nullable|string|max:255',

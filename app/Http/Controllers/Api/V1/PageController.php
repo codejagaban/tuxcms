@@ -10,6 +10,7 @@ use App\Models\Page;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -219,24 +220,17 @@ class PageController extends Controller
      */
     public function update(UpdatePageRequest $request, Page $page): JsonResponse
     {
-        $page->update($request->validated());
+        DB::transaction(function () use ($request, $page) {
+            $page->update($request->validated());
 
-        // Sync sections if provided
-        if ($request->has('sections')) {
-            $page->sections()->delete();
-
-            foreach ($request->input('sections') as $index => $sectionData) {
-                $page->sections()->create([
-                    ...$sectionData,
-                    'order' => $sectionData['order'] ?? $index,
-                ]);
+            if ($request->has('sections')) {
+                $this->syncSections($page, $request->input('sections'));
             }
-        }
 
-        // Sync SEO if provided
-        if ($request->has('seo')) {
-            $page->seo()->updateOrCreate([], $request->input('seo'));
-        }
+            if ($request->has('seo')) {
+                $page->seo()->updateOrCreate([], $request->input('seo'));
+            }
+        });
 
         $page->load(['sections', 'seo', 'author']);
 
@@ -244,6 +238,50 @@ class PageController extends Controller
             'data' => new PageResource($page),
             'message' => 'Page updated successfully.',
         ]);
+    }
+
+    /**
+     * Reconcile a page's sections against the incoming list.
+     *
+     * Matches on section id so existing rows are updated in place. The previous
+     * delete-and-recreate approach churned ids on every save and — because a
+     * mass delete fires no model events — left every attached media file
+     * orphaned in storage, pointing at a section that no longer existed.
+     *
+     * @param array<int, array<string, mixed>> $incoming
+     */
+    private function syncSections(Page $page, array $incoming): void
+    {
+        $existing = $page->sections()->get()->keyBy('id');
+        $keptIds = [];
+
+        foreach ($incoming as $index => $data) {
+            $attributes = [
+                'key' => $data['key'] ?? null,
+                'type' => $data['type'] ?? 'text',
+                'title' => $data['title'] ?? null,
+                'content' => $data['content'] ?? null,
+                'data' => $data['data'] ?? null,
+                'order' => $data['order'] ?? $index,
+                'is_visible' => $data['is_visible'] ?? true,
+            ];
+
+            // Only reuse an id that genuinely belongs to this page — a client
+            // must not be able to hijack another page's section by id.
+            $section = isset($data['id']) ? $existing->get($data['id']) : null;
+
+            if ($section) {
+                $section->update($attributes);
+            } else {
+                $section = $page->sections()->create($attributes);
+            }
+
+            $keptIds[] = $section->id;
+        }
+
+        // Delete as models, not via a mass delete, so media-library's deleting
+        // hook runs and the section's files are removed with it.
+        $existing->except($keptIds)->each->delete();
     }
 
     /**

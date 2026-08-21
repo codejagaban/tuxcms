@@ -115,6 +115,9 @@ export default function PageEditor() {
         show_in_nav: page.show_in_nav !== false,
         nav_label: page.nav_label || null,
         sections: page.sections.map((s, i) => ({
+          // Sending the id lets the server update rows in place, so section
+          // ids stay stable and attached media isn't orphaned on every save.
+          id: s.id ?? null,
           key: s.key || s.type,
           type: s.type,
           title: s.title ?? '',
