@@ -26,7 +26,15 @@ export default function PublishButton() {
   useEffect(() => {
     refresh();
     const timer = setInterval(refresh, 30000);
-    return () => clearInterval(timer);
+
+    // Saving a published page republishes automatically; pick that up rather
+    // than waiting up to 30s to look stale.
+    window.addEventListener('tuxcms:published', refresh);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('tuxcms:published', refresh);
+    };
   }, [refresh]);
 
   const publish = async () => {

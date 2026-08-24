@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, Smartphone, Save } from 'lucide-react';
+import { ArrowLeft, Monitor, Smartphone, Save, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pageAPI } from '../lib/api';
+import { pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -28,6 +28,7 @@ export default function PageEditor() {
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [device, setDevice] = useState('desktop');
+  const [publishing, setPublishing] = useState(false);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -99,10 +100,33 @@ export default function PageEditor() {
       return { ...p, sections };
     });
 
+  /** Regenerate the static site so the saved changes go live. */
+  const runPublish = useCallback(async () => {
+    setPublishing(true);
+    try {
+      await siteAPI.build();
+      // Let the Publish button refresh its "pending changes" state.
+      window.dispatchEvent(new Event('tuxcms:published'));
+      toast.success('Published to the live site');
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Saved, but publishing failed');
+    } finally {
+      setPublishing(false);
+    }
+  }, []);
+
   // ── Save ────────────────────────────────────────────────
-  const save = useCallback(async () => {
+  /**
+   * @param {{publish?: boolean}} options When publishing, a draft is promoted
+   *   to published first — otherwise "Save & publish" would appear to do
+   *   nothing, since the builder only writes published pages.
+   */
+  const save = useCallback(async ({ publish = false } = {}) => {
     if (!page || saving) return;
     setSaving(true);
+
+    const status = publish ? 'published' : (page.status || 'draft');
+
     try {
       const payload = {
         title: page.title,
@@ -110,7 +134,7 @@ export default function PageEditor() {
         content: page.content ?? '',
         excerpt: page.excerpt ?? '',
         template: page.template || 'default',
-        status: page.status || 'draft',
+        status,
         is_homepage: !!page.is_homepage,
         show_in_nav: page.show_in_nav !== false,
         nav_label: page.nav_label || null,
@@ -145,6 +169,11 @@ export default function PageEditor() {
         setDirty(false);
         toast.success('Changes saved');
       }
+
+      // Only publish once the save actually succeeded.
+      if (publish) {
+        await runPublish();
+      }
     } catch (e) {
       console.error(e);
       const msg = e.response?.data?.message || 'Save failed';
@@ -152,7 +181,7 @@ export default function PageEditor() {
     } finally {
       setSaving(false);
     }
-  }, [page, saving, isNew, id, selectedUid, navigate]);
+  }, [page, saving, isNew, id, selectedUid, navigate, runPublish]);
 
   // Cmd/Ctrl+S to save
   const saveRef = useRef(save);
@@ -161,7 +190,7 @@ export default function PageEditor() {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        saveRef.current();
+        saveRef.current();  // plain save; publishing is deliberate
       }
     };
     window.addEventListener('keydown', onKey);
@@ -217,7 +246,9 @@ export default function PageEditor() {
             <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
             {dirty && <span className="h-2 w-2 rounded-full bg-amber-400" title="Unsaved changes" />}
           </div>
-          <div className="text-xs text-gray-400 truncate">/{page.slug || '…'}</div>
+          <div className="text-xs text-gray-400 truncate">
+            {publishing ? 'Publishing to the live site…' : `/${page.slug || '…'}`}
+          </div>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -237,9 +268,34 @@ export default function PageEditor() {
               <Smartphone className="h-4 w-4" />
             </button>
           </div>
-          <Button variant="primary" size="sm" onClick={save} isLoading={saving} disabled={!dirty && !isNew}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => save()}
+            isLoading={saving && !publishing}
+            disabled={(!dirty && !isNew) || publishing}
+          >
             <Save className="h-4 w-4" />
             Save
+          </Button>
+
+          {/* Saves, then regenerates the static site so the change is live.
+              A draft is promoted to published, since "publish" should mean
+              the page actually appears on the site. */}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => save({ publish: true })}
+            isLoading={publishing}
+            disabled={saving && !publishing}
+            title={
+              page.status === 'published'
+                ? 'Save and update the live site'
+                : 'Save, publish this page, and update the live site'
+            }
+          >
+            <Globe className="h-4 w-4" />
+            {publishing ? 'Publishing…' : 'Save & publish'}
           </Button>
         </div>
       </header>
@@ -261,12 +317,24 @@ export default function PageEditor() {
                   <div
                     key={section._uid}
                     onMouseDown={() => setSelectedUid(section._uid)}
-                    className={`relative transition-shadow ${
-                      isSel ? 'ring-2 ring-blue-500 ring-inset z-10' : 'hover:ring-1 hover:ring-blue-200 hover:ring-inset'
-                    } ${section.is_visible === false ? 'opacity-40' : ''}`}
+                    className={`group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
                   >
+                    {/* The outline lives in its own overlay rather than as a
+                        ring on this wrapper: an inset ring is painted beneath
+                        descendants, so any section with its own background
+                        (hero, stats, cta) would cover it and appear to have no
+                        highlight at all. */}
+                    <div
+                      aria-hidden="true"
+                      className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
+                        isSel
+                          ? 'ring-2 ring-inset ring-blue-500'
+                          : 'ring-0 ring-inset ring-blue-300 group-hover:ring-1'
+                      }`}
+                    />
+
                     {section.is_visible === false && (
-                      <div className="absolute top-2 right-2 z-20">
+                      <div className="absolute top-2 right-2 z-30">
                         <Badge variant="warning">Hidden</Badge>
                       </div>
                     )}
