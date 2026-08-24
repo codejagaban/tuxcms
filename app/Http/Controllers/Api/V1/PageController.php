@@ -42,6 +42,9 @@ class PageController extends Controller
             ])
             ->allowedSorts(['title', 'order', 'created_at', 'updated_at', 'published_at'])
             ->allowedIncludes(['sections', 'seo', 'author', 'children', 'parent', 'media'])
+            // The listing shows an author column, so load it by default rather
+            // than relying on the caller to request the include.
+            ->with('author')
             ->defaultSort('order');
 
         // Search by title or slug

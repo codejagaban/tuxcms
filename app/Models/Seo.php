@@ -12,6 +12,12 @@ class Seo extends Model
 
     protected $table = 'seos';
 
+    /**
+     * SEO changes alter the published output, so they count as changes to the
+     * page itself for the "Updated" column and publish tracking.
+     */
+    protected $touches = ['seoable'];
+
     protected $fillable = [
         'seoable_id',
         'seoable_type',

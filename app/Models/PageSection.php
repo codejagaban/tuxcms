@@ -11,6 +11,16 @@ class PageSection extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
+    /**
+     * Editing a section is editing the page.
+     *
+     * Without this, changing only section content leaves pages.updated_at
+     * untouched — the "Updated" column would look stale and, worse, the
+     * publish tracker (which compares pages.updated_at against the last
+     * publish) would report no pending changes for the most common edit.
+     */
+    protected $touches = ['page'];
+
     protected $fillable = [
         'page_id',
         'key',

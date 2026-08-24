@@ -88,12 +88,19 @@ const Pages = () => {
     return statusMap[status] || 'default';
   };
 
+  // A date alone hides same-day edits, which makes it look like a save didn't
+  // land. Show recency for anything from the last day.
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    if (!dateString) return '—';
+
+    const date = new Date(dateString);
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hr ago`;
+
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   return (
@@ -190,7 +197,7 @@ const Pages = () => {
                       {page.status || 'draft'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-600">{page.author_name || 'Unknown'}</TableCell>
+                  <TableCell className="text-gray-600">{page.author?.name || '—'}</TableCell>
                   <TableCell className="text-gray-600">{formatDate(page.updated_at)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
