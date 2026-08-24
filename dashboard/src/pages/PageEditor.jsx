@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, Smartphone, Save, Globe } from 'lucide-react';
+import { ArrowLeft, Monitor, Smartphone, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
@@ -118,8 +118,8 @@ export default function PageEditor() {
   // ── Save ────────────────────────────────────────────────
   /**
    * @param {{publish?: boolean}} options When publishing, a draft is promoted
-   *   to published first — otherwise "Save & publish" would appear to do
-   *   nothing, since the builder only writes published pages.
+   *   to published first — otherwise Publish would appear to do nothing,
+   *   since the builder only writes published pages.
    */
   const save = useCallback(async ({ publish = false } = {}) => {
     if (!page || saving) return;
@@ -268,26 +268,15 @@ export default function PageEditor() {
               <Smartphone className="h-4 w-4" />
             </button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => save()}
-            isLoading={saving && !publishing}
-            disabled={(!dirty && !isNew) || publishing}
-          >
-            <Save className="h-4 w-4" />
-            Save
-          </Button>
-
-          {/* Saves, then regenerates the static site so the change is live.
-              A draft is promoted to published, since "publish" should mean
-              the page actually appears on the site. */}
+          {/* One action: save, then regenerate the static site. A draft is
+              promoted to published, since "publish" should mean the page
+              actually appears on the site. ⌘S still saves without publishing,
+              for work you're not ready to make live. */}
           <Button
             variant="primary"
             size="sm"
             onClick={() => save({ publish: true })}
-            isLoading={publishing}
-            disabled={saving && !publishing}
+            isLoading={saving || publishing}
             title={
               page.status === 'published'
                 ? 'Save and update the live site'
@@ -295,7 +284,7 @@ export default function PageEditor() {
             }
           >
             <Globe className="h-4 w-4" />
-            {publishing ? 'Publishing…' : 'Save & publish'}
+            {publishing ? 'Publishing…' : saving ? 'Saving…' : 'Publish'}
           </Button>
         </div>
       </header>
