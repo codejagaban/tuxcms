@@ -25,12 +25,22 @@ ErrorDocument 404 /404.html
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    # Real files and directories (the generated site, assets, media) are served
-    # directly by the web server and never reach PHP.
+    # Real files and directories (the generated site, its assets, media and the
+    # dashboard under /admin) are served directly and never reach PHP.
+
+    # Laravel owns only the API and the health check.
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule ^(api|up)(/|$) index.php [L]
+
+    # Everything else on this host is static, so a request matching no real file
+    # is simply a missing page. Return a real 404 — which ErrorDocument renders
+    # as the generated 404.html — rather than booting PHP to say the same thing.
+    # Laravel's own 404 would arrive as a PHP-set status, so ErrorDocument would
+    # never fire and visitors would see the framework's error page instead.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ - [L,R=404]
 </IfModule>
 
 # The build manifest is internal bookkeeping.
