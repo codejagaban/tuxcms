@@ -15,4 +15,18 @@ return [
      * without touching PHP.
      */
     'output_path' => env('SITE_OUTPUT_PATH'),
+
+    /*
+     * Top-level slugs the static build must never claim. Everything here is a
+     * real directory in the docroot: a page at /admin would have `site:build`
+     * write admin/index.html straight over the dashboard, and one at /storage
+     * would write into the linked media directory.
+     */
+    'reserved_slugs' => [
+        'admin',
+        'api',
+        'build',
+        'storage',
+        'up',
+    ],
 ];

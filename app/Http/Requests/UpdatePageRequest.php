@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ChecksReservedSlugs;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UpdatePageRequest extends FormRequest
 {
+    use ChecksReservedSlugs;
+
     public function authorize(): bool
     {
         return true;
@@ -54,6 +58,23 @@ class UpdatePageRequest extends FormRequest
             'seo.robots' => 'nullable|string|max:100',
             'seo.schema_markup' => 'nullable|array',
             'seo.custom_head' => 'nullable|string|max:5000',
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            fn (Validator $validator) => $this->failOnReservedSlug(
+                $validator,
+                // Renaming a page leaves its slug alone, so only an explicit
+                // slug can introduce a collision here.
+                $this->input('slug'),
+                // A partial update need not resend parent_id; fall back to the
+                // page's current parent so a nested page is not falsely flagged.
+                $this->filled('parent_id')
+                    ? (int) $this->input('parent_id')
+                    : $this->route('page')?->parent_id,
+            ),
         ];
     }
 }
