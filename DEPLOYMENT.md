@@ -39,30 +39,26 @@ SSH, see "Without SSH" at the end.
 
 ---
 
-## 1. Build everything locally
+## 1. Build the release locally
 
-Shared hosting has no Node, so both front-end builds happen on your machine.
-
-```bash
-npm ci && npm run build          # site CSS -> public/build
-cd dashboard && npm ci && npm run build && cd ..   # dashboard -> public/admin
-```
-
-Then remove development dependencies from the PHP side:
+Shared hosting has no Node and usually no Composer, so the builds happen here:
 
 ```bash
-composer install --no-dev --optimize-autoloader
+bin/build-release.sh ~/Desktop/tuxcms-release
 ```
+
+That compiles the site CSS and the dashboard, copies the app into a *separate*
+directory, and installs production-only dependencies there. Your working tree
+keeps its dev dependencies and stays testable. The script refuses to finish if a
+`.env` ends up in the release.
 
 ## 2. Upload
 
-Upload the whole project directory to `~/tuxcms` (SFTP, or cPanel's File
-Manager with a zip). Include `vendor/`, `public/build/` and `public/admin/` —
-they are gitignored but they are exactly what the server cannot build itself.
+Zip the release directory and upload it to `~/tuxcms` via cPanel's File Manager
+(or rsync it over SSH). Extract it there.
 
-Leave out `node_modules/`, `dashboard/`, `tests/` and `.git/`.
-
-Do not upload your local `.env`.
+`vendor/`, `public/build/` and `public/admin/` are gitignored but they must be
+in the upload — they are exactly what the server cannot build for itself.
 
 ## 3. Point the domain at `public/`
 
@@ -191,7 +187,7 @@ confirm the change appears on the public URL.
 
 Content changes need no deployment — edit and hit Publish.
 
-For code changes: rebuild locally (step 1), upload the changed files, then
+For code changes: re-run `bin/build-release.sh`, upload, then
 
 ```bash
 php artisan migrate --force
