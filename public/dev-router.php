@@ -10,6 +10,18 @@ $root = __DIR__;
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $candidate = realpath($root . $path);
 
+// Laravel owns only these, exactly as the .htaccess does.
+if (preg_match('#^/(api|up)(/|$)#', $path)) {
+    return false;
+}
+
+// The dashboard SPA does its own routing below /admin.
+if (str_starts_with($path, '/admin') && !($candidate && is_file($candidate))) {
+    header('Content-Type: text/html; charset=UTF-8');
+    readfile($root . '/admin/index.html');
+    return true;
+}
+
 if ($candidate && is_dir($candidate) && is_file($candidate . '/index.html')) {
     header('Content-Type: text/html; charset=UTF-8');
     readfile($candidate . '/index.html');
