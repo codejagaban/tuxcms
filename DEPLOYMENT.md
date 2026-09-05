@@ -26,15 +26,16 @@ starts PHP. Only `/api/*` and `/up` reach Laravel. Anything else returns a real
 
 | Requirement | Why |
 |---|---|
-| PHP 8.2+ | Laravel 12 |
+| **PHP 8.3+** | `spatie/laravel-permission` and `spatie/laravel-translatable` both require it. Set it in cPanel > MultiPHP Manager *before* uploading; the default is often older. |
 | MySQL database | content storage |
 | SSH access | running `composer`, `artisan`, and creating the media symlink |
 | Cron | scheduled publishing |
 | Ability to set the domain's document root | pointing the domain at `public/` |
 
-Check the SSH and document-root items before you start; they decide which of
-the layouts in step 3 you use. If your plan has no SSH, see "Without SSH" at
-the end.
+Check the PHP version, SSH and document-root items before you start. The PHP
+version is the one that fails loudly and confusingly if you get it wrong, and
+the other two decide which of the layouts in step 3 you use. If your plan has no
+SSH, see "Without SSH" at the end.
 
 ---
 
