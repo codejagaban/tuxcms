@@ -6,9 +6,14 @@ import { AuthProvider } from './lib/auth'
 import './index.css'
 import App from './App.jsx'
 
+// Vite rewrites BASE_URL to '/admin/' for a production build and leaves it
+// as '/' in dev, so the router follows wherever the SPA is mounted without
+// a second place to keep in sync. React Router wants no trailing slash.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <App />
         <Toaster

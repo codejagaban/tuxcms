@@ -23,9 +23,10 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Dashboard SPA
+# Dashboard SPA — built into public/admin, from where the web server serves
+# it directly. A build artifact like public/build, so it is not tracked.
 /dashboard/node_modules
-/dashboard/dist
+/public/admin
 
 # Generated static site output (written by `php artisan site:build`)
 /public/index.html

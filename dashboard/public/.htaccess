@@ -1,0 +1,17 @@
+# Client-side routing for the dashboard SPA. The docroot .htaccess sends
+# anything that is not a real file to Laravel's index.php, which has no web
+# routes — so /admin/pages would 404 on a refresh or a direct link without
+# this. Vite copies dashboard/public/ into the build, so this ships with it.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /admin/
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# The admin UI must never appear in search results.
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
