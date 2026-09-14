@@ -8,7 +8,9 @@ const Spinner = ({ size = 'md', className = '' }) => {
 
   return (
     <div
-      className={`inline-block animate-spin rounded-full border-2 border-neutral-300 border-t-black ${sizes[size]} ${className}`}
+      role="status"
+      aria-label="Loading"
+      className={`inline-block animate-spin rounded-full border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] ${sizes[size]} ${className}`}
     />
   );
 };

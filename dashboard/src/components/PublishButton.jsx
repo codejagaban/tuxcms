@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Globe, Check, Loader2, AlertCircle } from 'lucide-react';
+import { GlobeHemisphereWest, Check, CircleNotch, WarningCircle } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import { siteAPI } from '../lib/api';
 
@@ -86,11 +86,11 @@ export default function PublishButton() {
       <div className="hidden text-right sm:block">
         <div className="flex items-center justify-end gap-1.5 text-xs text-gray-500">
           {failed ? (
-            <AlertCircle className="h-3.5 w-3.5 text-black" />
+            <WarningCircle className="h-3.5 w-3.5" weight="fill" />
           ) : pending > 0 ? (
             <span className="h-2 w-2 rounded-full bg-black" />
           ) : lastPublished ? (
-            <Check className="h-3.5 w-3.5 text-black" />
+            <Check className="h-3.5 w-3.5" weight="bold" />
           ) : null}
           {detail}
         </div>
@@ -99,12 +99,12 @@ export default function PublishButton() {
       <button
         onClick={publish}
         disabled={publishing}
-        className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-[var(--color-paper)] transition-colors hover:bg-[var(--color-ink-2)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
       >
         {publishing ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <CircleNotch className="h-4 w-4 animate-spin" weight="bold" />
         ) : (
-          <Globe className="h-4 w-4" />
+          <GlobeHemisphereWest className="h-4 w-4" weight="bold" />
         )}
         {label}
       </button>

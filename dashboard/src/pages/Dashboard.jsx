@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import { pageAPI, mediaAPI } from '../lib/api';
 import { Card, CardContent } from '../components/ui/Card';
@@ -59,11 +59,11 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-8 border-b border-black pb-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+      <section className="grid gap-8 border-b border-[var(--color-rule)] pb-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
         <div>
           <p className="mb-3 text-sm text-neutral-500">Good to see you, {user?.name?.split(' ')[0]}.</p>
-          <h2 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] sm:text-5xl lg:text-6xl">
-            Your website,<br />at a glance.
+          <h2 className="page-heading max-w-3xl">
+            Website status
           </h2>
         </div>
         <p className="max-w-sm text-sm leading-6 text-neutral-600 lg:pb-1">
@@ -71,11 +71,11 @@ const Dashboard = () => {
         </p>
       </section>
 
-      <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-neutral-300 lg:grid-cols-4">
+      <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule)] lg:grid-cols-4">
         {metrics.map(({ label, value, note }, index) => (
           <div
             key={label}
-            className={`px-1 py-6 sm:px-5 lg:py-8 ${index % 2 ? 'border-l border-neutral-300' : ''} ${index > 1 ? 'border-t border-neutral-300 lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
+            className={`px-1 py-6 sm:px-5 lg:py-8 ${index % 2 ? 'border-l border-[var(--color-rule)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
             <p className="text-xs font-medium text-neutral-500">{label}</p>
             <p className="tabular-nums mt-5 text-4xl font-semibold tracking-[-0.06em] sm:text-5xl">{value}</p>
@@ -92,7 +92,7 @@ const Dashboard = () => {
           </div>
           <Link to="/dashboard/pages" className="group flex shrink-0 items-center gap-2 text-sm font-semibold">
             View all
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="h-4 w-4" weight="bold" />
           </Link>
         </div>
 

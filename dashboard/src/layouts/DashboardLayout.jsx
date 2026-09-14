@@ -1,25 +1,25 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard,
+  SquaresFour,
   FileText,
-  Image,
-  Settings,
-  Search,
-  LogOut,
-  ChevronDown,
-  Menu as MenuIcon,
+  ImageSquare,
+  Gear,
+  MagnifyingGlass,
+  SignOut,
+  CaretDown,
+  List,
   X,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import PublishButton from '../components/PublishButton';
 
 const navItems = [
-  { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { path: '/dashboard', label: 'Overview', icon: SquaresFour },
   { path: '/dashboard/pages', label: 'Pages', icon: FileText },
-  { path: '/dashboard/media', label: 'Media', icon: Image },
-  { path: '/dashboard/seo', label: 'Search', icon: Search },
-  { path: '/dashboard/settings', label: 'Settings', icon: Settings },
+  { path: '/dashboard/media', label: 'Media', icon: ImageSquare },
+  { path: '/dashboard/seo', label: 'Search', icon: MagnifyingGlass },
+  { path: '/dashboard/settings', label: 'Settings', icon: Gear },
 ];
 
 const DashboardLayout = () => {
@@ -32,38 +32,38 @@ const DashboardLayout = () => {
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
 
   return (
-    <div className="min-h-screen bg-[#f4f4f2] text-black lg:flex">
+    <div className="min-h-dvh bg-[var(--color-paper-2)] text-[var(--color-ink)] lg:flex">
       {sidebarOpen && (
         <button
           type="button"
           aria-label="Close navigation"
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-30 bg-[oklch(18%_0.01_95_/_0.42)] lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-[17rem] flex-col bg-black text-white transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[16.5rem] flex-col bg-[var(--color-ink)] text-[var(--color-paper)] transition-transform duration-200 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex h-24 items-center justify-between px-7">
+        <div className="flex h-20 items-center justify-between px-6">
           <Link to="/dashboard" className="flex items-baseline gap-2" aria-label="TuxCMS overview">
-            <span className="text-[1.7rem] font-black tracking-[-0.08em]">TUX</span>
-            <span className="text-[0.68rem] font-medium tracking-[0.24em] text-neutral-400">CMS</span>
+            <span className="font-[var(--font-display)] text-[1.65rem] font-bold tracking-[-0.07em]">TUX</span>
+            <span className="text-xs text-[oklch(72%_0.008_95)]">CMS</span>
           </Link>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="p-2 text-neutral-400 hover:text-white lg:hidden"
+            className="icon-button text-[oklch(72%_0.008_95)] lg:hidden"
             aria-label="Close navigation"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" weight="bold" />
           </button>
         </div>
 
-        <div className="px-7 pb-5 text-xs leading-5 text-neutral-500">
-          Website operations<br />and publishing
+        <div className="px-6 pb-4 text-xs leading-5 text-[oklch(65%_0.008_95)]">
+          Publishing workbench
         </div>
 
         <nav className="flex-1 px-3 py-3" aria-label="Dashboard navigation">
@@ -75,37 +75,37 @@ const DashboardLayout = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`mb-1 flex items-center gap-3 rounded-sm px-4 py-3 text-sm font-medium transition-colors ${
-                  active ? 'bg-white text-black' : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
+                className={`mb-1 flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  active ? 'bg-[var(--color-paper)] text-[var(--color-ink)]' : 'text-[oklch(72%_0.008_95)] hover:bg-[oklch(24%_0.01_95)] hover:text-[var(--color-paper)]'
                 }`}
               >
-                <Icon className="h-[18px] w-[18px]" strokeWidth={1.7} />
+                <Icon className="h-[19px] w-[19px]" weight={active ? 'fill' : 'regular'} />
                 <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="mx-7 border-t border-neutral-800 py-6">
-          <div className="text-xs text-neutral-500">Signed in as</div>
-          <div className="mt-1 truncate text-sm font-medium text-neutral-200">{user?.email}</div>
+        <div className="mx-6 border-t border-[oklch(31%_0.009_95)] py-5">
+          <div className="text-xs text-[oklch(62%_0.008_95)]">Signed in</div>
+          <div className="mt-1 truncate text-sm font-medium text-[var(--color-paper)]">{user?.email}</div>
         </div>
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 border-b border-neutral-200 bg-[#f4f4f2]/95 backdrop-blur-sm">
+        <header className="sticky top-0 z-20 border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)]">
           <div className="mx-auto flex h-20 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="-ml-2 p-2 text-black hover:bg-neutral-200 lg:hidden"
+                className="icon-button -ml-2 lg:hidden"
                 aria-label="Open navigation"
               >
-                <MenuIcon className="h-5 w-5" />
+                <List className="h-5 w-5" weight="bold" />
               </button>
               <div>
-                <div className="text-[11px] font-medium text-neutral-500">Workspace</div>
+                <div className="text-xs text-[var(--color-muted)]">Workspace</div>
                 <h1 className="text-lg font-semibold tracking-[-0.025em]">{pageTitle}</h1>
               </div>
             </div>
@@ -116,19 +116,19 @@ const DashboardLayout = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen((open) => !open)}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-neutral-200 sm:px-3"
+                  className="flex min-h-11 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-[var(--color-paper-3)] sm:px-3"
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >
-                  <span className="grid h-8 w-8 place-items-center rounded-sm bg-black text-xs font-bold text-white">
+                  <span className="grid h-8 w-8 place-items-center rounded-sm bg-[var(--color-ink)] text-xs font-bold text-[var(--color-paper)]">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                   <span className="hidden max-w-32 truncate text-sm font-medium sm:block">{user?.name || 'User'}</span>
-                  <ChevronDown className="hidden h-4 w-4 text-neutral-500 sm:block" />
+                  <CaretDown className="hidden h-4 w-4 text-[var(--color-muted)] sm:block" weight="bold" />
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-md border border-neutral-200 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.10)]">
+                  <div className="absolute right-0 mt-2 w-64 rounded-md border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
                       <div className="mt-1 truncate text-xs text-neutral-500">{user?.email}</div>
@@ -138,7 +138,7 @@ const DashboardLayout = () => {
                       onClick={logout}
                       className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-neutral-100"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <SignOut className="h-4 w-4" />
                       Sign out
                     </button>
                   </div>
@@ -148,7 +148,7 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        <main className="dashboard-grain mx-auto max-w-[96rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <main className="dashboard-grain mx-auto min-h-[calc(100dvh-5rem)] max-w-[96rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
           <Outlet />
         </main>
       </div>

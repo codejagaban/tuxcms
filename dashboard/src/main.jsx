@@ -23,8 +23,8 @@ createRoot(document.getElementById('root')).render(
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#fff',
-              color: '#000',
+              background: 'oklch(97.8% 0.006 95)',
+              color: 'oklch(18% 0.01 95)',
               borderRadius: '8px',
               boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
             },

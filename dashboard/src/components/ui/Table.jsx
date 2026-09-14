@@ -1,11 +1,11 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import Button from './Button';
 
 const Table = ({ className = '', children, ...props }) => {
   return (
     <div className="overflow-x-auto">
       <table
-        className={`w-full text-sm text-left text-gray-600 ${className}`}
+        className={`w-full text-left text-sm text-[var(--color-neutral)] ${className}`}
         {...props}
       >
         {children}
@@ -17,7 +17,7 @@ const Table = ({ className = '', children, ...props }) => {
 const TableHeader = ({ className = '', children, ...props }) => {
   return (
     <thead
-      className={`text-xs font-semibold text-gray-700 bg-gray-50 border-b border-gray-200 ${className}`}
+      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-xs font-semibold text-[var(--color-ink-2)] ${className}`}
       {...props}
     >
       {children}
@@ -36,7 +36,7 @@ const TableBody = ({ className = '', children, ...props }) => {
 const TableRow = ({ className = '', children, ...props }) => {
   return (
     <tr
-      className={`border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150 ${className}`}
+      className={`border-b border-[var(--color-rule-2)] transition-colors duration-150 hover:bg-[var(--color-paper-2)] ${className}`}
       {...props}
     >
       {children}
@@ -69,9 +69,9 @@ const Pagination = ({
 }) => {
   return (
     <div
-      className={`flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white ${className}`}
+      className={`flex items-center justify-between border-t border-[var(--color-rule-2)] bg-[var(--color-paper)] px-6 py-4 ${className}`}
     >
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-[var(--color-muted)]">
         Page {currentPage} of {totalPages}
       </div>
       <div className="flex gap-2">
@@ -81,7 +81,7 @@ const Pagination = ({
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <CaretLeft className="h-4 w-4" weight="bold" />
           Previous
         </Button>
         <Button
@@ -91,7 +91,7 @@ const Pagination = ({
           onClick={() => onPageChange(currentPage + 1)}
         >
           Next
-          <ChevronRight className="h-4 w-4" />
+          <CaretRight className="h-4 w-4" weight="bold" />
         </Button>
       </div>
     </div>

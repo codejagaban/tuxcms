@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, Smartphone, Globe } from 'lucide-react';
+import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
@@ -208,14 +208,14 @@ export default function PageEditor() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex h-dvh items-center justify-center bg-[var(--color-paper-2)]">
         <Spinner size="lg" />
       </div>
     );
   }
   if (!page) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-gray-50">
+      <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-[var(--color-paper-2)]">
         <p className="text-gray-600">Page not found.</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard/pages')}>Back to pages</Button>
       </div>
@@ -260,18 +260,19 @@ export default function PageEditor() {
   });
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="flex h-dvh flex-col bg-[var(--color-paper-2)]">
       {/* Top bar */}
-      <header className="h-14 shrink-0 bg-white border-b border-gray-200 flex items-center gap-3 px-4">
+      <header className="flex min-h-16 shrink-0 items-center gap-3 border-b border-[var(--color-rule-2)] bg-[var(--color-paper)] px-3 sm:px-4">
         <button
           onClick={() => {
             if (dirty && !window.confirm('Discard unsaved changes?')) return;
             navigate('/dashboard/pages');
           }}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+          className="icon-button"
+          aria-label="Back to pages"
           title="Back to pages"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-5 w-5" weight="bold" />
         </button>
 
         <div className="min-w-0">
@@ -286,20 +287,20 @@ export default function PageEditor() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <div className="flex items-center rounded-lg border border-gray-200 p-0.5">
+          <div className="hidden items-center rounded-md border border-[var(--color-rule-2)] p-0.5 sm:flex">
             <button
               onClick={() => setDevice('desktop')}
-              className={`p-1.5 rounded-md ${device === 'desktop' ? 'bg-gray-100 text-gray-900' : 'text-gray-400'}`}
+              className={`icon-button min-h-9 min-w-9 ${device === 'desktop' ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)]' : 'text-[var(--color-muted)]'}`}
               title="Desktop"
             >
               <Monitor className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDevice('mobile')}
-              className={`p-1.5 rounded-md ${device === 'mobile' ? 'bg-gray-100 text-gray-900' : 'text-gray-400'}`}
+              className={`icon-button min-h-9 min-w-9 ${device === 'mobile' ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)]' : 'text-[var(--color-muted)]'}`}
               title="Mobile"
             >
-              <Smartphone className="h-4 w-4" />
+              <DeviceMobile className="h-4 w-4" />
             </button>
           </div>
           {/* One action: save, then regenerate the static site. A draft is
@@ -317,17 +318,17 @@ export default function PageEditor() {
                 : 'Save, publish this page, and update the live site'
             }
           >
-            <Globe className="h-4 w-4" />
+            <GlobeHemisphereWest className="h-4 w-4" weight="bold" />
             {publishing ? 'Publishing…' : saving ? 'Saving…' : 'Publish'}
           </Button>
         </div>
       </header>
 
       {/* Body: preview + inspector */}
-      <div className="flex-1 flex min-h-0">
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className={`mx-auto ${canvasWidth} transition-all duration-200`}>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex min-h-0 flex-1">
+        <main className="flex-1 overflow-y-auto p-3 pb-[48dvh] sm:p-6 sm:pb-[48dvh] md:pb-6">
+          <div className={`mx-auto ${canvasWidth} transition-[max-width] duration-200`}>
+            <div className="overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)]">
               {page.sections.length === 0 && (
                 <div className="py-24 text-center text-gray-400">
                   <p className="mb-3">This page has no sections yet.</p>

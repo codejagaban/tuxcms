@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Trash2, Copy, File, Image as ImageIcon, Music, Video } from 'lucide-react';
+import { UploadSimple, Trash, Copy, File, ImageSquare, MusicNote, VideoCamera } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
@@ -139,9 +139,9 @@ const Media = () => {
   };
 
   const getMediaIcon = (mimeType) => {
-    if (mimeType.startsWith('image/')) return <ImageIcon className="h-6 w-6 text-black" />;
-    if (mimeType.startsWith('audio/')) return <Music className="h-6 w-6 text-black" />;
-    if (mimeType.startsWith('video/')) return <Video className="h-6 w-6 text-black" />;
+    if (mimeType.startsWith('image/')) return <ImageSquare className="h-6 w-6 text-black" />;
+    if (mimeType.startsWith('audio/')) return <MusicNote className="h-6 w-6 text-black" />;
+    if (mimeType.startsWith('video/')) return <VideoCamera className="h-6 w-6 text-black" />;
     return <File className="h-6 w-6 text-gray-500" />;
   };
 
@@ -151,8 +151,8 @@ const Media = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Media</h1>
-          <p className="text-gray-600 mt-1">Manage your media files and images</p>
+          <h1 className="page-heading">Media</h1>
+          <p className="page-deck">Upload files, inspect details, and copy a public URL.</p>
         </div>
       </div>
 
@@ -165,10 +165,10 @@ const Media = () => {
             onDrop={handleDrop}
             className="cursor-pointer block"
           >
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-black transition-colors">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="font-semibold text-gray-900">Drag and drop files here</h3>
-              <p className="text-gray-600 mt-2">or click to select files</p>
+            <div className="rounded-lg border border-dashed border-[var(--color-rule)] p-8 text-center transition-colors sm:p-12">
+              <UploadSimple className="mx-auto mb-4 h-9 w-9 text-[var(--color-muted)]" />
+              <h3 className="font-semibold text-[var(--color-ink)]">Drop files here</h3>
+              <p className="mt-2 text-[var(--color-muted)]">or select files from your device</p>
               <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, PDF, and other formats</p>
             </div>
             <input
@@ -193,9 +193,7 @@ const Media = () => {
           <CardContent className="pt-12">
             <div className="text-center">
               <div className="text-gray-400 mb-4">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
-                  🖼️
-                </div>
+                <ImageSquare className="mx-auto h-9 w-9" />
               </div>
               <h3 className="text-lg font-medium text-gray-900">No media files</h3>
               <p className="text-gray-600 mt-2">
@@ -278,7 +276,7 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
           <img
             src={media.url}
             alt={media.file_name}
-            className="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer"
+            className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-90"
             onClick={onViewDetails}
           />
         </div>
@@ -312,7 +310,7 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
             size="sm"
             onClick={onDelete}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash className="h-4 w-4" weight="bold" />
           </Button>
         </div>
       </div>
@@ -385,7 +383,7 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
           Close
         </Button>
         <Button variant="danger" onClick={onDelete}>
-          <Trash2 className="h-4 w-4" />
+          <Trash className="h-4 w-4" weight="bold" />
           Delete
         </Button>
       </ModalFooter>

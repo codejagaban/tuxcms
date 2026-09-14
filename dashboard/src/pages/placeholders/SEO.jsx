@@ -144,9 +144,9 @@ const SEO = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">SEO Management</h1>
-          <p className="text-gray-600 mt-1">
-            Optimize your pages for search engines
+          <h1 className="page-heading">Search</h1>
+          <p className="page-deck">
+            Control how published pages appear in search and social previews.
           </p>
         </div>
 
@@ -154,9 +154,6 @@ const SEO = () => {
           <CardContent className="pt-12">
             <div className="text-center">
               <div className="text-gray-400 mb-4">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
-                  🔍
-                </div>
               </div>
               <h3 className="text-lg font-medium text-gray-900">No pages yet</h3>
               <p className="text-gray-600 mt-2">
@@ -172,9 +169,9 @@ const SEO = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">SEO Management</h1>
-        <p className="text-gray-600 mt-1">
-          Optimize your pages for search engines
+        <h1 className="page-heading">Search</h1>
+        <p className="page-deck">
+          Control how published pages appear in search and social previews.
         </p>
       </div>
 

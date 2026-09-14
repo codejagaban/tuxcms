@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
-  Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, X,
-} from 'lucide-react';
+  Plus, Trash, CaretUp, CaretDown, Eye, EyeSlash, X,
+} from '@phosphor-icons/react';
 import Input from '../ui/Input';
 import Badge from '../ui/Badge';
 import {
@@ -15,8 +15,7 @@ const Field = ({ label, children }) => (
   </label>
 );
 
-const inputCls =
-  'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black';
+const inputCls = 'field-control text-sm';
 
 /**
  * Right-hand control panel. Three tabs:
@@ -46,7 +45,7 @@ export default function Inspector({
   );
 
   return (
-    <aside className="w-[340px] shrink-0 border-l border-gray-200 bg-white flex flex-col h-full">
+    <aside className="flex h-full w-[340px] shrink-0 flex-col border-l border-[var(--color-rule-2)] bg-[var(--color-paper)] max-[767px]:fixed max-[767px]:inset-x-0 max-[767px]:bottom-0 max-[767px]:z-30 max-[767px]:h-[46dvh] max-[767px]:w-full max-[767px]:border-l-0 max-[767px]:border-t">
       <div className="flex border-b border-gray-200">
         {tabBtn('page', 'Page')}
         {tabBtn('section', 'Section')}
@@ -144,10 +143,11 @@ function PageTab({
           <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Sections</h3>
           <div className="relative">
             <button
+              type="button"
               onClick={() => setAddOpen((o) => !o)}
               className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium"
             >
-              <Plus className="h-4 w-4" /> Add
+              <Plus className="h-4 w-4" weight="bold" /> Add
             </button>
             {addOpen && (
               <>
@@ -193,16 +193,16 @@ function PageTab({
                 </div>
                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   <IconBtn title={s.is_visible ? 'Hide' : 'Show'} onClick={(e) => { e.stopPropagation(); updateSection(s._uid, { is_visible: !s.is_visible }); }}>
-                    {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
+                    {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeSlash className="h-4 w-4 text-gray-400" />}
                   </IconBtn>
                   <IconBtn title="Move up" disabled={i === 0} onClick={(e) => { e.stopPropagation(); moveSection(s._uid, -1); }}>
-                    <ChevronUp className="h-4 w-4" />
+                    <CaretUp className="h-4 w-4" weight="bold" />
                   </IconBtn>
                   <IconBtn title="Move down" disabled={i === page.sections.length - 1} onClick={(e) => { e.stopPropagation(); moveSection(s._uid, 1); }}>
-                    <ChevronDown className="h-4 w-4" />
+                    <CaretDown className="h-4 w-4" weight="bold" />
                   </IconBtn>
                   <IconBtn title="Delete" onClick={(e) => { e.stopPropagation(); removeSection(s._uid); }}>
-                    <Trash2 className="h-4 w-4 text-black" />
+                    <Trash className="h-4 w-4 text-black" weight="bold" />
                   </IconBtn>
                 </div>
               </li>
@@ -364,7 +364,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
               {listCfg.label} items ({listItems.length})
             </h3>
             <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium">
-              <Plus className="h-4 w-4" /> Add
+              <Plus className="h-4 w-4" weight="bold" /> Add
             </button>
           </div>
           <ul className="space-y-1.5">

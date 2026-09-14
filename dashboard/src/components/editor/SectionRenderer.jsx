@@ -1,16 +1,16 @@
 import {
-  Sparkles, Zap, Shield, Star, Compass, Code, Layers, PenTool,
-  Gauge, Users, Mail, Phone, MapPin, Clock, HelpCircle, Box,
-} from 'lucide-react';
+  Sparkle, Lightning, Shield, Star, Compass, Code, Stack, PenNib,
+  Gauge, Users, Envelope, Phone, MapPin, Clock, Question, Cube,
+} from '@phosphor-icons/react';
 import Editable from './Editable';
 import { setPath } from '../../lib/editorSchema';
 
-// Map the icon names stored in section data to lucide components.
+// Map persisted icon names to the dashboard's current icon system.
 const ICONS = {
-  sparkles: Sparkles, zap: Zap, shield: Shield, star: Star, compass: Compass,
-  code: Code, layers: Layers, 'pen-tool': PenTool, gauge: Gauge, users: Users,
+  sparkles: Sparkle, zap: Lightning, shield: Shield, star: Star, compass: Compass,
+  code: Code, layers: Stack, 'pen-tool': PenNib, gauge: Gauge, users: Users,
 };
-const iconFor = (name) => ICONS[name] || Box;
+const iconFor = (name) => ICONS[name] || Cube;
 
 /**
  * Renders one section as a visual block for the preview canvas. Text fields are
@@ -348,7 +348,7 @@ export default function SectionRenderer({ section, template, update, updateData 
           <div className="divide-y divide-gray-200 border-t border-gray-200">
             {items.map((item, i) => (
               <div key={i} className="py-4 flex gap-3">
-                <HelpCircle className="h-5 w-5 text-black shrink-0 mt-0.5" />
+                <Question className="h-5 w-5 text-black shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <Editable as="div" value={item.question} onChange={(v) => setItem('items', i, 'question', v)} placeholder="Question" className="font-semibold text-gray-900" />
                   <Editable as="div" multiline value={item.answer} onChange={(v) => setItem('items', i, 'answer', v)} placeholder="Answer" className="text-sm text-gray-600 mt-1" />
@@ -410,7 +410,7 @@ export default function SectionRenderer({ section, template, update, updateData 
           <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="text-2xl font-bold text-gray-900 mb-6" />
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
-              ['email', Mail, 'Email'],
+              ['email', Envelope, 'Email'],
               ['phone', Phone, 'Phone'],
               ['address', MapPin, 'Address'],
               ['hours', Clock, 'Hours'],

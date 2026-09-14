@@ -1,68 +1,57 @@
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V5
+ * macrostructure: Workbench · navigation: operational side rail
+ * theme: custom · vibe: "precise utilitarian monochrome publishing workbench"
+ * display: HK Grotesk · body: Satoshi · axes: light / grotesk-sans / neutral
+ * studied: no · context: inferred and confirmed · contrast: pass (40–41)
+ * nav: N3-adapted · footer: n/a · slop: pass (42–45) · mobile: pass (34, 49, 50–57) · v0.8.0
+ */
 @import "tailwindcss";
+@import "../../tokens.css";
+
+@font-face { font-family: "HK Grotesk"; src: url("/themes/crystal/webfonts/hk-grotesk/hkgrotesk-semibold-webfont.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "HK Grotesk"; src: url("/themes/crystal/webfonts/hk-grotesk/hkgrotesk-regular-webfont.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("/themes/crystal/webfonts/satoshi/Satoshi-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Satoshi"; src: url("/themes/crystal/webfonts/satoshi/Satoshi-Medium.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 
 @layer base {
-  :root {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #111;
-    background: #f4f4f2;
-    font-synthesis: none;
-  }
-
-  body {
-    @apply m-0 bg-[#f4f4f2] text-[#111];
-    min-width: 320px;
-  }
-
-  html {
-    @apply scroll-smooth;
-  }
-
-  button,
-  input,
-  textarea,
-  select {
-    font: inherit;
-  }
-
-  ::selection {
-    background: #111;
-    color: #fff;
-  }
+  :root { font-family: var(--font-body); color: var(--color-ink); background: var(--color-paper-2); font-synthesis: none; }
+  html, body { min-width: 320px; overflow-x: clip; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--color-paper-2); color: var(--color-ink); }
+  h1, h2, h3, h4 { font-family: var(--font-display); overflow-wrap: anywhere; min-width: 0; }
+  button, input, textarea, select { font: inherit; }
+  button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+  ::selection { background: var(--color-ink); color: var(--color-paper); }
 }
 
 @layer components {
-  .text-gradient {
-    @apply text-black;
-  }
+  .page-heading { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.05rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.045em; }
+  .page-deck { margin-top: .5rem; max-width: 62ch; color: var(--color-muted); font-size: .9375rem; line-height: 1.6; }
+  .field-control { min-height: var(--control-height); width: 100%; border: 1px solid var(--color-rule-2); border-radius: var(--radius-m); outline: 2px solid transparent; outline-offset: 1px; background: var(--color-paper); color: var(--color-ink); padding: .625rem .875rem; transition: background-color 120ms ease, border-color 120ms ease; }
+  .field-control::placeholder { color: var(--color-muted); }
+  .field-control:focus-visible { border-color: var(--color-ink-2); outline-color: var(--color-focus); }
+  .field-control:disabled { cursor: not-allowed; opacity: .55; }
+  textarea.field-control { min-height: 6rem; resize: vertical; }
+  .icon-button { display: inline-grid; min-width: 2.75rem; min-height: 2.75rem; place-items: center; border-radius: var(--radius-m); color: var(--color-neutral); }
+  .icon-button:disabled { cursor: not-allowed; opacity: .35; }
+  .work-surface { background: var(--color-paper); border: 1px solid var(--color-rule-2); border-radius: var(--radius-l); }
+  .text-gradient { color: var(--color-ink); }
 }
 
-/* Inline-editable text on the visual page editor's preview. */
-.tux-editable {
-  outline: none;
-  cursor: text;
-  border-radius: 4px;
-  transition: box-shadow 0.12s ease, background-color 0.12s ease;
+.tux-editable { outline: none; cursor: text; border-radius: 4px; transition: box-shadow 120ms ease, background-color 120ms ease; }
+.tux-editable:focus { box-shadow: 0 0 0 2px var(--color-focus); background-color: oklch(97% .008 95 / .9); }
+.tux-editable[data-empty="true"]:not(:focus)::before { content: attr(data-placeholder); color: var(--color-muted); font-style: italic; }
+
+@media (hover: hover) and (pointer: fine) {
+  .field-control:hover { background: var(--color-paper-2); }
+  .icon-button:hover { background: var(--color-paper-3); color: var(--color-ink); }
+  .tux-editable:hover { box-shadow: 0 0 0 1px var(--color-rule); }
 }
-.tux-editable:hover {
-  box-shadow: 0 0 0 1px rgb(17 17 17 / 0.35);
-}
-.tux-editable:focus {
-  box-shadow: 0 0 0 2px rgb(17 17 17 / 0.72);
-  background-color: rgb(17 17 17 / 0.035);
-}
-/* Placeholder shown when the field is empty and not focused. */
-.tux-editable[data-empty="true"]:not(:focus)::before {
-  content: attr(data-placeholder);
-  color: rgb(156 163 175);
-  font-style: italic;
-}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 @layer utilities {
-  .dashboard-grain {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
-  }
-
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  .dashboard-grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.018'/%3E%3C/svg%3E"); }
 }

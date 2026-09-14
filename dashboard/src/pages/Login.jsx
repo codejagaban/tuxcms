@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <div className="dashboard-grain grid min-h-screen bg-[#f4f4f2] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
+    <div className="dashboard-grain grid min-h-dvh bg-[var(--color-paper-2)] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
       <section className="relative hidden overflow-hidden bg-black p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-black tracking-[-0.09em]">TUX</span>
@@ -41,7 +41,7 @@ const Login = () => {
         <p className="text-xs text-neutral-600">TuxCMS / Private workspace</p>
       </section>
 
-      <main className="flex min-h-screen items-center px-6 py-12 sm:px-12 lg:px-20">
+      <main className="flex min-h-dvh items-center px-6 py-12 sm:px-12 lg:px-20">
         <div className="w-full max-w-md">
           <div className="mb-12 flex items-baseline gap-2 lg:hidden">
             <span className="text-2xl font-black tracking-[-0.08em]">TUX</span>

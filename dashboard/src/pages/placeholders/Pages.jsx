@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search } from 'lucide-react';
+import { Plus, PencilSimple, Trash, FileText } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
@@ -108,13 +108,13 @@ const Pages = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Pages</h1>
-          <p className="text-gray-600 mt-1">Manage your website pages</p>
+          <h1 className="page-heading">Pages</h1>
+          <p className="page-deck">Find, edit, and check the publishing state of every page.</p>
         </div>
         <Link to="/dashboard/pages/create">
           <Button variant="primary">
-            <Plus className="h-4 w-4" />
-            New Page
+            <Plus className="h-4 w-4" weight="bold" />
+            New page
           </Button>
         </Link>
       </div>
@@ -122,7 +122,8 @@ const Pages = () => {
       {/* Search Bar */}
       <Input
         type="text"
-        placeholder="Search pages by title or slug..."
+        aria-label="Search pages"
+        placeholder="Search by title or path"
         value={searchTerm}
         onChange={(e) => {
           setSearchTerm(e.target.value);
@@ -144,9 +145,7 @@ const Pages = () => {
           <CardContent className="pt-12">
             <div className="text-center">
               <div className="text-gray-400 mb-4">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
-                  📄
-                </div>
+                <FileText className="mx-auto h-9 w-9" />
               </div>
               <h3 className="text-lg font-medium text-gray-900">
                 {searchTerm ? 'No pages found' : 'No pages yet'}
@@ -203,7 +202,7 @@ const Pages = () => {
                     <div className="flex items-center justify-end gap-2">
                       <Link to={`/dashboard/pages/${page.id}/edit`}>
                         <Button variant="ghost" size="sm">
-                          <Edit2 className="h-4 w-4" />
+                          <PencilSimple className="h-4 w-4" weight="bold" />
                         </Button>
                       </Link>
                       <Button
@@ -211,7 +210,7 @@ const Pages = () => {
                         size="sm"
                         onClick={() => handleDeleteClick(page)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash className="h-4 w-4" weight="bold" />
                       </Button>
                     </div>
                   </TableCell>

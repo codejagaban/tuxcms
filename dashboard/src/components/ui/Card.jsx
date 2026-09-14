@@ -5,7 +5,7 @@ const Card = forwardRef(
     return (
       <div
         ref={ref}
-        className={`bg-white rounded-md border border-neutral-200 ${className}`}
+        className={`work-surface ${className}`}
         {...props}
       >
         {children}
@@ -18,7 +18,7 @@ Card.displayName = 'Card';
 
 const CardHeader = ({ className = '', children, ...props }) => {
   return (
-    <div className={`px-6 py-5 border-b border-neutral-200 ${className}`} {...props}>
+    <div className={`border-b border-[var(--color-rule-2)] px-6 py-5 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -26,7 +26,7 @@ const CardHeader = ({ className = '', children, ...props }) => {
 
 const CardTitle = ({ className = '', children, ...props }) => {
   return (
-    <h3 className={`text-lg font-semibold tracking-[-0.02em] text-black ${className}`} {...props}>
+    <h3 className={`text-lg font-bold tracking-[-0.02em] text-[var(--color-ink)] ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -34,7 +34,7 @@ const CardTitle = ({ className = '', children, ...props }) => {
 
 const CardDescription = ({ className = '', children, ...props }) => {
   return (
-    <p className={`text-sm leading-6 text-neutral-600 ${className}`} {...props}>
+    <p className={`text-sm leading-6 text-[var(--color-muted)] ${className}`} {...props}>
       {children}
     </p>
   );
@@ -51,7 +51,7 @@ const CardContent = ({ className = '', children, ...props }) => {
 const CardFooter = ({ className = '', children, ...props }) => {
   return (
     <div
-      className={`px-6 py-4 border-t border-neutral-200 bg-neutral-50 rounded-b-md ${className}`}
+      className={`rounded-b-md border-t border-[var(--color-rule-2)] bg-[var(--color-paper-2)] px-6 py-4 ${className}`}
       {...props}
     >
       {children}

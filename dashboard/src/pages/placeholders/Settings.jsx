@@ -119,8 +119,8 @@ const Settings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your site settings and configuration</p>
+        <h1 className="page-heading">Settings</h1>
+        <p className="page-deck">Manage identity, search defaults, contact details, and forms.</p>
       </div>
 
       {/* Site Settings */}
@@ -270,7 +270,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
                   placeholder={field.placeholder}
                   value={value}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-black"
+                  className="field-control font-mono text-sm"
                 />
                 {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
               </div>
