@@ -72,6 +72,19 @@ class SettingsAndMediaTest extends TestCase
         $this->getJson('/api/v1/media/1')->assertUnauthorized();
     }
 
+    public function test_media_list_respects_and_caps_page_size(): void
+    {
+        Sanctum::actingAs($this->editor());
+
+        $this->getJson('/api/v1/media?per_page=12')
+            ->assertOk()
+            ->assertJsonPath('meta.per_page', 12);
+
+        $this->getJson('/api/v1/media?per_page=10000')
+            ->assertOk()
+            ->assertJsonPath('meta.per_page', 100);
+    }
+
     public function test_upload_without_a_model_goes_to_the_site_library(): void
     {
         Sanctum::actingAs($this->editor());

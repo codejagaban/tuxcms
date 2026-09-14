@@ -61,7 +61,8 @@ class PageController extends Controller
             $query->published();
         }
 
-        $pages = $query->paginate($request->input('per_page', 15));
+        $perPage = min(max((int) $request->input('per_page', 15), 1), 100);
+        $pages = $query->paginate($perPage);
 
         return response()->json([
             'data' => PageResource::collection($pages),

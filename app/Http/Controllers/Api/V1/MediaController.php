@@ -26,7 +26,8 @@ class MediaController extends Controller
             $query->where('name', 'like', "%{$request->search}%");
         }
 
-        $media = $query->paginate(15);
+        $perPage = min(max((int) $request->input('per_page', 15), 1), 100);
+        $media = $query->paginate($perPage);
 
         return response()->json([
             'data' => MediaResource::collection($media),

@@ -24,6 +24,15 @@ class PageApiTest extends TestCase
         $this->assertNotContains('Later', $titles, 'A future published_at should not be live yet.');
     }
 
+    public function test_page_size_is_capped(): void
+    {
+        Page::factory()->create();
+
+        $this->getJson('/api/v1/pages?per_page=10000')
+            ->assertOk()
+            ->assertJsonPath('meta.per_page', 100);
+    }
+
     /**
      * Regression: read routes are public, so $request->user() is null even with
      * a valid token. Editors could never see their own drafts.
