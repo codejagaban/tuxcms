@@ -25,10 +25,28 @@ function editableFields(sections) {
   });
 }
 
+function editableImages(sections) {
+  return sections.flatMap((section) => {
+    const images = [];
+    if (section.data?.image) {
+      images.push({ sectionUid: section._uid, field: 'data.image', altField: 'data.image_alt', url: section.data.image, alt: section.data.image_alt || '' });
+    }
+    (section.data?.items || []).forEach((item, index) => {
+      if (item?.image) images.push({ sectionUid: section._uid, field: `data.items.${index}.image`, url: item.image, alt: item.image_alt || item.title || '' });
+    });
+    return images;
+  });
+}
+
+const imagePath = (url = '', base = 'http://localhost') => {
+  try { return new URL(url, base).pathname; } catch { return url; }
+};
+
 /** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], onEdit, onSelect }) {
+export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], onEdit, onSelect, onImageEdit }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
+  const images = useMemo(() => editableImages(sections), [sections]);
   const separator = path.includes('?') ? '&' : '?';
   const src = `${path}${separator}tuxcms_preview=${revision}`;
 
@@ -43,6 +61,8 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           [data-tuxcms-editable] { cursor: text; outline: 1px solid transparent; outline-offset: 5px; }
           [data-tuxcms-editable]:hover { outline-color: rgba(17, 17, 17, .38); }
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
+          [data-tuxcms-image-editable] { cursor: pointer; outline: 1px solid transparent; outline-offset: 5px; }
+          [data-tuxcms-image-editable]:hover { outline: 2px solid #111; }
         `;
         if (!style.isConnected) doc.head.appendChild(style);
 
@@ -83,6 +103,24 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             });
           });
         };
+
+        const claimedImages = new Set();
+        images.forEach((image) => {
+          const match = [...doc.images].find((element) => {
+            if (claimedImages.has(element)) return false;
+            return imagePath(element.src, doc.baseURI) === imagePath(image.url, doc.baseURI);
+          });
+          if (!match) return;
+          claimedImages.add(match);
+          match.dataset.tuxcmsImageEditable = 'true';
+          match.title = 'Click to replace image';
+          match.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onSelect?.(image.sectionUid);
+            onImageEdit?.(image, match);
+          });
+        });
 
         installEditors();
         const view = frameRef.current?.contentWindow;

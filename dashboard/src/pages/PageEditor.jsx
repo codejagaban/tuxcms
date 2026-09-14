@@ -10,6 +10,7 @@ import Spinner from '../components/ui/Spinner';
 import SectionRenderer from '../components/editor/SectionRenderer';
 import Inspector from '../components/editor/Inspector';
 import CrystalCanvas from '../components/editor/CrystalCanvas';
+import MediaPicker from '../components/editor/MediaPicker';
 
 // Give every section a stable client-side id for React keys + selection,
 // independent of the database id (new sections don't have one yet).
@@ -49,6 +50,7 @@ export default function PageEditor() {
   const [device, setDevice] = useState('desktop');
   const [publishing, setPublishing] = useState(false);
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
+  const [imageEdit, setImageEdit] = useState(null);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -378,6 +380,7 @@ export default function PageEditor() {
                     sections={page.sections}
                     onEdit={updateCrystalField}
                     onSelect={setSelectedUid}
+                    onImageEdit={(target, element) => setImageEdit({ target, element })}
                   />
                 : sectionPreview}
             </div>
@@ -402,6 +405,24 @@ export default function PageEditor() {
           selectSection={setSelectedUid}
         />
       </div>
+
+      <MediaPicker
+        isOpen={!!imageEdit}
+        currentUrl={imageEdit?.target.url}
+        currentAlt={imageEdit?.target.alt}
+        onClose={() => setImageEdit(null)}
+        onSelect={(url, alt) => {
+          const target = imageEdit?.target;
+          if (!target) return;
+          updateCrystalField(target.sectionUid, target.field, url);
+          if (target.altField) updateCrystalField(target.sectionUid, target.altField, alt);
+          if (imageEdit.element) {
+            imageEdit.element.src = url;
+            imageEdit.element.alt = alt;
+          }
+          setImageEdit(null);
+        }}
+      />
     </div>
   );
 }
