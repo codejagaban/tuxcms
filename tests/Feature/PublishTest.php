@@ -33,7 +33,7 @@ class PublishTest extends TestCase
 
     public function test_publishing_requires_authentication(): void
     {
-        $this->postJson('/api/v1/site/build')->assertUnauthorized();
+        $this->postJson('/api/v1/site/publish')->assertUnauthorized();
         $this->getJson('/api/v1/site/status')->assertUnauthorized();
     }
 
@@ -42,7 +42,7 @@ class PublishTest extends TestCase
         Sanctum::actingAs($this->editor());
         Page::factory()->homepage()->create(['title' => 'Welcome']);
 
-        $response = $this->postJson('/api/v1/site/build');
+        $response = $this->postJson('/api/v1/site/publish');
 
         $response->assertOk()->assertJsonPath('data.pages', 1);
         $this->assertFileExists($this->output.'/index.html');
@@ -65,7 +65,7 @@ class PublishTest extends TestCase
         Sanctum::actingAs($this->editor());
         Page::factory()->homepage()->create();
 
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
 
         $status = $this->getJson('/api/v1/site/status');
 
@@ -79,7 +79,7 @@ class PublishTest extends TestCase
         Sanctum::actingAs($this->editor());
         $page = Page::factory()->homepage()->create();
 
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
         $this->assertSame(0, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
 
         $this->travel(2)->minutes();
@@ -93,7 +93,7 @@ class PublishTest extends TestCase
         Sanctum::actingAs($this->editor());
         Page::factory()->homepage()->create();
         Setting::set('site_name', 'Before', 'site');
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
 
         $this->travel(2)->seconds();
         $this->putJson('/api/v1/settings', ['settings' => ['site_name' => 'After']])->assertOk();
@@ -105,7 +105,7 @@ class PublishTest extends TestCase
     {
         Sanctum::actingAs($this->editor());
         Page::factory()->homepage()->create();
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
 
         $this->travel(2)->seconds();
         $this->postJson('/api/v1/media', [
@@ -119,7 +119,7 @@ class PublishTest extends TestCase
     {
         Sanctum::actingAs($this->editor());
         $page = Page::factory()->homepage()->create();
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
 
         $this->travel(2)->seconds();
         $this->deleteJson("/api/v1/pages/{$page->id}")->assertOk();

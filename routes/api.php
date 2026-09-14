@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
 
         // Publishing — regenerates the static site
         Route::get('site/status', [SiteBuildController::class, 'status']);
-        Route::post('site/build', [SiteBuildController::class, 'store'])
+        Route::post('site/publish', [SiteBuildController::class, 'store'])
             ->middleware('throttle:10,1');
     });
 });

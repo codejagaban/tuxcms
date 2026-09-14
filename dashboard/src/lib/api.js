@@ -89,7 +89,7 @@ export const mediaAPI = {
 // Publishing — regenerates the static site
 export const siteAPI = {
   status: () => api.get('/site/status'),
-  build: () => api.post('/site/build'),
+  build: () => api.post('/site/publish', {}),
 };
 
 // SEO endpoints — page-scoped, matching GET|PUT /pages/{page}/seo

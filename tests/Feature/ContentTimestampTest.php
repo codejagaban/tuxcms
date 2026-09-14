@@ -107,7 +107,7 @@ class ContentTimestampTest extends TestCase
         $page->sections()->create(['key' => 'hero', 'type' => 'hero', 'title' => 'Before', 'order' => 0]);
         $page->refresh()->load('sections');
 
-        $this->postJson('/api/v1/site/build')->assertOk();
+        $this->postJson('/api/v1/site/publish')->assertOk();
         $this->assertSame(0, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
 
         $this->travel(1)->minute();
