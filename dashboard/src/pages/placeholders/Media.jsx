@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import Modal, { ModalHeader, ModalTitle, ModalContent, ModalFooter } from '../../components/ui/Modal';
 import { Card, CardContent } from '../../components/ui/Card';
+import { Pagination } from '../../components/ui/Table';
 import { mediaAPI } from '../../lib/api';
 
 const Media = () => {
@@ -16,12 +17,12 @@ const Media = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, mediaId: null, mediaName: '' });
   const [isDeleting, setIsDeleting] = useState(false);
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, media: null });
-  const fileInputRef = useState(null)[1];
-
   const itemsPerPage = 12;
 
   useEffect(() => {
       fetchMedia();
+    // fetchMedia is intentionally tied to the current page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const fetchMedia = async () => {
@@ -47,8 +48,7 @@ const Media = () => {
     }
   };
 
-  const handleFileSelect = async (e) => {
-    const files = Array.from(e.target.files || []);
+  const uploadFiles = async (files) => {
     if (files.length === 0) return;
 
     for (const file of files) {
@@ -65,6 +65,10 @@ const Media = () => {
     setIsUploading(false);
     setCurrentPage(1);
     fetchMedia();
+  };
+
+  const handleFileSelect = async (e) => {
+    await uploadFiles(Array.from(e.target.files || []));
 
     e.target.value = '';
   };
@@ -82,21 +86,7 @@ const Media = () => {
     e.preventDefault();
     e.currentTarget.classList.remove('bg-blue-50', 'border-blue-400');
 
-    const files = Array.from(e.dataTransfer.files || []);
-    if (files.length === 0) return;
-
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.files = e.dataTransfer.items[0].getAsFile() ? e.dataTransfer.files : null;
-
-    const event = new Event('change', { bubbles: true });
-    Object.defineProperty(event, 'target', {
-      writable: false,
-      value: { files },
-    });
-
-    handleFileSelect(event);
+    uploadFiles(Array.from(e.dataTransfer.files || []));
   };
 
   const handleDeleteClick = (mediaItem) => {
@@ -217,19 +207,28 @@ const Media = () => {
       )}
 
       {!isLoading && media.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {media.map((item) => (
-            <MediaCard
-              key={item.id}
-              media={item}
-              isImageMedia={isImageMedia(item.mime_type)}
-              onDelete={() => handleDeleteClick(item)}
-              onViewDetails={() => setDetailsModal({ isOpen: true, media: item })}
-              onCopyUrl={() => copyToClipboard(item.url)}
-              getMediaIcon={getMediaIcon}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {media.map((item) => (
+              <MediaCard
+                key={item.id}
+                media={item}
+                isImageMedia={isImageMedia(item.mime_type)}
+                onDelete={() => handleDeleteClick(item)}
+                onViewDetails={() => setDetailsModal({ isOpen: true, media: item })}
+                onCopyUrl={() => copyToClipboard(item.url)}
+                getMediaIcon={getMediaIcon}
+              />
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       <MediaDetailsModal

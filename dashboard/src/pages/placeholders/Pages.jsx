@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -12,7 +12,6 @@ import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell, Pagi
 import { pageAPI } from '../../lib/api';
 
 const Pages = () => {
-  const navigate = useNavigate();
   const [pages, setPages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +24,7 @@ const Pages = () => {
 
   useEffect(() => {
       fetchPages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, searchTerm]);
 
   const fetchPages = async () => {

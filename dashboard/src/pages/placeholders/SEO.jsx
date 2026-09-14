@@ -29,6 +29,8 @@ const SEO = () => {
 
   useEffect(() => {
       fetchPages();
+    // The initial load deliberately runs once; selection changes load directly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPages = async () => {

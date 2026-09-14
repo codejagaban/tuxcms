@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { useAuth } from '../lib/auth';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
