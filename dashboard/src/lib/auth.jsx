@@ -12,24 +12,38 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Restore the session from localStorage on mount.
+  // Restore only sessions the API still accepts. A token in localStorage is
+  // not proof that it has not expired or been revoked.
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('auth_token');
-      const storedUser = localStorage.getItem('user');
+    let active = true;
 
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-        setIsAuthenticated(true);
+    const restoreSession = async () => {
+      try {
+      const storedToken = localStorage.getItem('auth_token');
+
+        if (storedToken) {
+          const response = await authAPI.getMe();
+          const currentUser = response.data.data;
+
+          if (active) {
+            setToken(storedToken);
+            setUser(currentUser);
+            setIsAuthenticated(true);
+            localStorage.setItem('user', JSON.stringify(currentUser));
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring session:', error);
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
+      } finally {
+        if (active) setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading user:', error);
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    restoreSession();
+
+    return () => { active = false; };
   }, []);
 
   const login = async (email, password) => {
