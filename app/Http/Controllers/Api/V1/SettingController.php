@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
@@ -38,10 +39,12 @@ class SettingController extends Controller
             'settings.*' => 'nullable',
         ]);
 
-        foreach ($validated['settings'] as $key => $value) {
-            $existing = Setting::where('key', $key)->first();
-            Setting::set($key, $value, $existing?->group ?? 'general');
-        }
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['settings'] as $key => $value) {
+                $existing = Setting::where('key', $key)->first();
+                Setting::set($key, $value, $existing?->group ?? 'general');
+            }
+        });
 
         PublishState::markChanged();
 
