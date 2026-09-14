@@ -10,6 +10,20 @@ const api = axios.create({
   },
 });
 
+export const apiErrorMessage = (error, fallback = 'Request failed') => {
+  if (!error.response) {
+    return 'Cannot reach the CMS server. Check that it is running and try again.';
+  }
+
+  const validationErrors = error.response.data?.errors;
+  if (validationErrors) {
+    const first = Object.values(validationErrors).flat()[0];
+    if (first) return first;
+  }
+
+  return error.response.data?.message || fallback;
+};
+
 // Attach the bearer token to every request.
 api.interceptors.request.use(
   (config) => {

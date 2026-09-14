@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Monitor, Smartphone, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pageAPI, siteAPI } from '../lib/api';
+import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -109,7 +109,7 @@ export default function PageEditor() {
       window.dispatchEvent(new Event('tuxcms:published'));
       toast.success('Published to the live site');
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Saved, but publishing failed');
+      toast.error(apiErrorMessage(e, 'Saved, but publishing failed'));
     } finally {
       setPublishing(false);
     }
@@ -176,8 +176,7 @@ export default function PageEditor() {
       }
     } catch (e) {
       console.error(e);
-      const msg = e.response?.data?.message || 'Save failed';
-      toast.error(msg);
+      toast.error(apiErrorMessage(e, 'Save failed'));
     } finally {
       setSaving(false);
     }
