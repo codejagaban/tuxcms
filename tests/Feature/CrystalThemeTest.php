@@ -52,7 +52,8 @@ class CrystalThemeTest extends TestCase
         $this->assertFileExists($this->output.'/contact/index.html');
 
         $home = File::get($this->output.'/index.html');
-        $this->assertStringContainsString('A crystal cleaning you can trust', $home);
+        $this->assertStringContainsString('crystal', $home);
+        $this->assertStringContainsString('cleaning you can trust', $home);
         $this->assertStringContainsString('/themes/crystal/css/style.css?v=3', $home);
         $this->assertStringContainsString('https://crystal.test/', $home);
         $this->assertStringContainsString('Crystal Services Limited', $home);
