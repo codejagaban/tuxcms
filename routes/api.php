@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
 
     // ── Health ─────────────────────────────────────────────
-    Route::get('health', fn() => response()->json(['status' => 'ok', 'version' => '1.0.0']));
+    Route::get('health', fn () => response()->json(['status' => 'ok', 'version' => '1.0.0']));
 
     // ── Auth ───────────────────────────────────────────────
     // No public registration — accounts are made with `artisan user:create`.
@@ -28,14 +28,7 @@ Route::prefix('v1')->group(function () {
     Route::get('pages/resolve', [PageController::class, 'resolveByPath']);
     Route::get('pages/{slugOrId}', [PageController::class, 'show']);
 
-    Route::get('settings', [SettingController::class, 'index']);
-    Route::get('settings/grouped', [SettingController::class, 'getGrouped']);
-    Route::get('settings/{key}', [SettingController::class, 'show']);
-
     Route::get('search', [SearchController::class, 'search']);
-
-    Route::get('media', [MediaController::class, 'index']);
-    Route::get('media/{media}', [MediaController::class, 'show']);
 
     // ════════════════════════════════════════════════════════
     // Authenticated management
@@ -54,12 +47,17 @@ Route::prefix('v1')->group(function () {
         Route::put('pages/{page}/seo', [SeoController::class, 'update']);
 
         // Settings
+        Route::get('settings', [SettingController::class, 'index']);
+        Route::get('settings/grouped', [SettingController::class, 'getGrouped']);
+        Route::get('settings/{key}', [SettingController::class, 'show']);
         Route::put('settings', [SettingController::class, 'updateMany']);
         Route::post('settings', [SettingController::class, 'store']);
         Route::put('settings/{key}', [SettingController::class, 'update']);
         Route::delete('settings/{key}', [SettingController::class, 'destroy']);
 
         // Media
+        Route::get('media', [MediaController::class, 'index']);
+        Route::get('media/{media}', [MediaController::class, 'show']);
         Route::post('media', [MediaController::class, 'uploadToModel']);
         Route::delete('media/{media}', [MediaController::class, 'destroy']);
 

@@ -6,7 +6,6 @@ use App\Models\MediaLibrary;
 use App\Models\Page;
 use App\Models\Setting;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -29,6 +28,13 @@ class SettingsAndMediaTest extends TestCase
     {
         $this->putJson('/api/v1/settings', ['settings' => ['site_name' => 'Nope']])
             ->assertUnauthorized();
+    }
+
+    public function test_reading_settings_requires_authentication(): void
+    {
+        $this->getJson('/api/v1/settings')->assertUnauthorized();
+        $this->getJson('/api/v1/settings/grouped')->assertUnauthorized();
+        $this->getJson('/api/v1/settings/site_name')->assertUnauthorized();
     }
 
     public function test_editor_can_bulk_update_settings(): void
@@ -59,6 +65,12 @@ class SettingsAndMediaTest extends TestCase
     }
 
     // ── Media ──────────────────────────────────────────────
+
+    public function test_reading_media_metadata_requires_authentication(): void
+    {
+        $this->getJson('/api/v1/media')->assertUnauthorized();
+        $this->getJson('/api/v1/media/1')->assertUnauthorized();
+    }
 
     public function test_upload_without_a_model_goes_to_the_site_library(): void
     {
