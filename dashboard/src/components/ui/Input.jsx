@@ -15,20 +15,20 @@ const Input = forwardRef(
     return (
       <div className={`flex flex-col ${containerClassName}`}>
         {label && (
-          <label className="mb-2 text-sm font-medium text-gray-700">
+          <label className="mb-2 text-sm font-medium text-neutral-700">
             {label}
           </label>
         )}
         <input
           ref={ref}
           type={type}
-          className={`px-4 py-2 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 focus:border-transparent ${
-            error ? 'border-red-500' : 'border-gray-300'
+          className={`px-4 py-2.5 bg-white border rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1 ${
+            error ? 'border-black' : 'border-neutral-300'
           } ${className}`}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
+          <p className="mt-1.5 text-sm font-medium text-black">{error}</p>
         )}
       </div>
     );

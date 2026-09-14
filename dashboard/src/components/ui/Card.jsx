@@ -5,7 +5,7 @@ const Card = forwardRef(
     return (
       <div
         ref={ref}
-        className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+        className={`bg-white rounded-md border border-neutral-200 ${className}`}
         {...props}
       >
         {children}
@@ -18,7 +18,7 @@ Card.displayName = 'Card';
 
 const CardHeader = ({ className = '', children, ...props }) => {
   return (
-    <div className={`px-6 py-4 border-b border-gray-200 ${className}`} {...props}>
+    <div className={`px-6 py-5 border-b border-neutral-200 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -26,7 +26,7 @@ const CardHeader = ({ className = '', children, ...props }) => {
 
 const CardTitle = ({ className = '', children, ...props }) => {
   return (
-    <h3 className={`text-lg font-semibold text-gray-900 ${className}`} {...props}>
+    <h3 className={`text-lg font-semibold tracking-[-0.02em] text-black ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -34,7 +34,7 @@ const CardTitle = ({ className = '', children, ...props }) => {
 
 const CardDescription = ({ className = '', children, ...props }) => {
   return (
-    <p className={`text-sm text-gray-600 ${className}`} {...props}>
+    <p className={`text-sm leading-6 text-neutral-600 ${className}`} {...props}>
       {children}
     </p>
   );
@@ -42,7 +42,7 @@ const CardDescription = ({ className = '', children, ...props }) => {
 
 const CardContent = ({ className = '', children, ...props }) => {
   return (
-    <div className={`px-6 py-4 ${className}`} {...props}>
+    <div className={`px-6 py-5 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -51,7 +51,7 @@ const CardContent = ({ className = '', children, ...props }) => {
 const CardFooter = ({ className = '', children, ...props }) => {
   return (
     <div
-      className={`px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg ${className}`}
+      className={`px-6 py-4 border-t border-neutral-200 bg-neutral-50 rounded-b-md ${className}`}
       {...props}
     >
       {children}

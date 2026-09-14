@@ -1,18 +1,38 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #111;
+    background: #f4f4f2;
+    font-synthesis: none;
+  }
+
   body {
-    @apply bg-white text-gray-900;
+    @apply m-0 bg-[#f4f4f2] text-[#111];
+    min-width: 320px;
   }
 
   html {
     @apply scroll-smooth;
   }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background: #111;
+    color: #fff;
+  }
 }
 
 @layer components {
   .text-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent;
+    @apply text-black;
   }
 }
 
@@ -24,15 +44,25 @@
   transition: box-shadow 0.12s ease, background-color 0.12s ease;
 }
 .tux-editable:hover {
-  box-shadow: 0 0 0 1px rgb(59 130 246 / 0.35);
+  box-shadow: 0 0 0 1px rgb(17 17 17 / 0.35);
 }
 .tux-editable:focus {
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.6);
-  background-color: rgb(59 130 246 / 0.04);
+  box-shadow: 0 0 0 2px rgb(17 17 17 / 0.72);
+  background-color: rgb(17 17 17 / 0.035);
 }
 /* Placeholder shown when the field is empty and not focused. */
 .tux-editable[data-empty="true"]:not(:focus)::before {
   content: attr(data-placeholder);
   color: rgb(156 163 175);
   font-style: italic;
+}
+
+@layer utilities {
+  .dashboard-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }

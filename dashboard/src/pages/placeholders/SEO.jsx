@@ -192,7 +192,7 @@ const SEO = () => {
                   onClick={() => handlePageSelect(page.id)}
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                     selectedPageId === page.id
-                      ? 'bg-blue-100 text-blue-900 font-medium'
+                      ? 'bg-neutral-100 text-black font-medium'
                       : 'hover:bg-gray-100 text-gray-700'
                   }`}
                 >
@@ -239,7 +239,7 @@ const SEO = () => {
                           meta_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                       rows="3"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -266,10 +266,10 @@ const SEO = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                    <div className="text-blue-600 text-sm font-medium truncate">
+                    <div className="text-black text-sm font-medium truncate">
                       {seoData.meta_title || selectedPage.title}
                     </div>
-                    <div className="text-green-700 text-xs mt-1">
+                    <div className="text-black text-xs mt-1">
                       example.com/{selectedPage.slug}
                     </div>
                     <div className="text-gray-700 text-sm mt-2 line-clamp-2">
@@ -311,7 +311,7 @@ const SEO = () => {
                           og_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                       rows="3"
                     />
                   </div>
@@ -385,7 +385,7 @@ const SEO = () => {
                       onChange={(e) =>
                         setSeoData({ ...seoData, twitter_card: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                     >
                       <option value="summary">Summary</option>
                       <option value="summary_large_image">
@@ -419,7 +419,7 @@ const SEO = () => {
                           twitter_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                       rows="3"
                     />
                   </div>
@@ -462,7 +462,7 @@ const SEO = () => {
                       onChange={(e) =>
                         setSeoData({ ...seoData, schema_markup: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm"
                       rows="6"
                     />
                   </div>

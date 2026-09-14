@@ -16,7 +16,7 @@ const Field = ({ label, children }) => (
 );
 
 const inputCls =
-  'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+  'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black';
 
 /**
  * Right-hand control panel. Three tabs:
@@ -37,7 +37,7 @@ export default function Inspector({
       onClick={() => setTab(id)}
       className={`flex-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors ${
         tab === id
-          ? 'border-blue-600 text-blue-600'
+          ? 'border-black text-black'
           : 'border-transparent text-gray-500 hover:text-gray-700'
       }`}
     >
@@ -145,7 +145,7 @@ function PageTab({
           <div className="relative">
             <button
               onClick={() => setAddOpen((o) => !o)}
-              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium"
             >
               <Plus className="h-4 w-4" /> Add
             </button>
@@ -181,7 +181,7 @@ function PageTab({
                 key={s._uid}
                 onClick={() => selectSection(s._uid)}
                 className={`group flex items-center gap-2 rounded-lg border px-2.5 py-2 cursor-pointer ${
-                  isSel ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                  isSel ? 'border-black bg-neutral-100' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <span className="w-5 shrink-0 text-center text-xs font-medium text-gray-300">{i + 1}</span>
@@ -202,7 +202,7 @@ function PageTab({
                     <ChevronDown className="h-4 w-4" />
                   </IconBtn>
                   <IconBtn title="Delete" onClick={(e) => { e.stopPropagation(); removeSection(s._uid); }}>
-                    <Trash2 className="h-4 w-4 text-red-500" />
+                    <Trash2 className="h-4 w-4 text-black" />
                   </IconBtn>
                 </div>
               </li>
@@ -219,7 +219,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
     return (
       <div className="text-center py-10">
         <p className="text-sm text-gray-500">No section selected.</p>
-        <button onClick={goToPage} className="mt-2 text-sm text-blue-600 hover:text-blue-700">
+        <button onClick={goToPage} className="mt-2 text-sm text-black hover:text-black">
           Choose one from the Page tab
         </button>
       </div>
@@ -363,7 +363,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
             <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
               {listCfg.label} items ({listItems.length})
             </h3>
-            <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium">
               <Plus className="h-4 w-4" /> Add
             </button>
           </div>
@@ -375,7 +375,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
                   <span className="flex-1 text-sm text-gray-700 truncate">
                     {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
                   </span>
-                  <button onClick={() => removeItem(idx)} title="Remove" className="text-gray-400 hover:text-red-500">
+                  <button onClick={() => removeItem(idx)} title="Remove" className="text-gray-400 hover:text-black">
                     <X className="h-4 w-4" />
                   </button>
                 </div>

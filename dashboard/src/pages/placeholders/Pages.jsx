@@ -185,7 +185,7 @@ const Pages = () => {
                   <TableCell className="font-medium">
                     <Link
                       to={`/dashboard/pages/${page.id}/edit`}
-                      className="text-gray-900 hover:text-blue-600 hover:underline"
+                      className="text-gray-900 hover:text-black hover:underline"
                     >
                       {page.title}
                     </Link>

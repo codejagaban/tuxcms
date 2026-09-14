@@ -86,11 +86,11 @@ export default function PublishButton() {
       <div className="hidden text-right sm:block">
         <div className="flex items-center justify-end gap-1.5 text-xs text-gray-500">
           {failed ? (
-            <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+            <AlertCircle className="h-3.5 w-3.5 text-black" />
           ) : pending > 0 ? (
-            <span className="h-2 w-2 rounded-full bg-amber-400" />
+            <span className="h-2 w-2 rounded-full bg-black" />
           ) : lastPublished ? (
-            <Check className="h-3.5 w-3.5 text-green-600" />
+            <Check className="h-3.5 w-3.5 text-black" />
           ) : null}
           {detail}
         </div>
@@ -99,7 +99,7 @@ export default function PublishButton() {
       <button
         onClick={publish}
         disabled={publishing}
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
       >
         {publishing ? (
           <Loader2 className="h-4 w-4 animate-spin" />

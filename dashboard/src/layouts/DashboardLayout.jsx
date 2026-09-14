@@ -12,143 +12,145 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import Button from '../components/ui/Button';
 import PublishButton from '../components/PublishButton';
+
+const navItems = [
+  { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { path: '/dashboard/pages', label: 'Pages', icon: FileText },
+  { path: '/dashboard/media', label: 'Media', icon: Image },
+  { path: '/dashboard/seo', label: 'Search', icon: Search },
+  { path: '/dashboard/settings', label: 'Settings', icon: Settings },
+];
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const allNavItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/dashboard/pages', label: 'Pages', icon: FileText },
-    { path: '/dashboard/media', label: 'Media', icon: Image },
-    { path: '/dashboard/seo', label: 'SEO', icon: Search },
-    { path: '/dashboard/settings', label: 'Settings', icon: Settings },
-  ];
-
   const isActive = (path) => location.pathname === path;
-
-  const getPageTitle = () => {
-    const active = allNavItems.find((item) => isActive(item.path));
-    return active ? active.label : 'Dashboard';
-  };
+  const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div
-        className={`${
-          sidebarOpen ? 'w-64' : 'w-0'
-        } transition-all duration-300 overflow-hidden bg-gray-900 text-white flex flex-col`}
+    <div className="min-h-screen bg-[#f4f4f2] text-black lg:flex">
+      {sidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-[17rem] flex-col bg-black text-white transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        {/* Logo */}
-        <div className="px-6 py-8 border-b border-gray-800">
-          <h1 className="text-2xl font-bold text-white">TuxCMS</h1>
+        <div className="flex h-24 items-center justify-between px-7">
+          <Link to="/dashboard" className="flex items-baseline gap-2" aria-label="TuxCMS overview">
+            <span className="text-[1.7rem] font-black tracking-[-0.08em]">TUX</span>
+            <span className="text-[0.68rem] font-medium tracking-[0.24em] text-neutral-400">CMS</span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 text-neutral-400 hover:text-white lg:hidden"
+            aria-label="Close navigation"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {allNavItems.map((item) => {
+        <div className="px-7 pb-5 text-xs leading-5 text-neutral-500">
+          Website operations<br />and publishing
+        </div>
+
+        <nav className="flex-1 px-3 py-3" aria-label="Dashboard navigation">
+          {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  active
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-800'
+                onClick={() => setSidebarOpen(false)}
+                className={`mb-1 flex items-center gap-3 rounded-sm px-4 py-3 text-sm font-medium transition-colors ${
+                  active ? 'bg-white text-black' : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
                 }`}
               >
-                <Icon className="h-5 w-5" />
-                <span className="text-sm font-medium">{item.label}</span>
+                <Icon className="h-[18px] w-[18px]" strokeWidth={1.7} />
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-      </div>
+        <div className="mx-7 border-t border-neutral-800 py-6">
+          <div className="text-xs text-neutral-500">Signed in as</div>
+          <div className="mt-1 truncate text-sm font-medium text-neutral-200">{user?.email}</div>
+        </div>
+      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="px-8 py-4 flex items-center justify-between">
+      <div className="min-w-0 flex-1">
+        <header className="sticky top-0 z-20 border-b border-neutral-200 bg-[#f4f4f2]/95 backdrop-blur-sm">
+          <div className="mx-auto flex h-20 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="-ml-2 p-2 text-black hover:bg-neutral-200 lg:hidden"
+                aria-label="Open navigation"
               >
-                {sidebarOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <MenuIcon className="h-6 w-6" />
-                )}
+                <MenuIcon className="h-5 w-5" />
               </button>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {getPageTitle()}
-              </h2>
+              <div>
+                <div className="text-[11px] font-medium text-neutral-500">Workspace</div>
+                <h1 className="text-lg font-semibold tracking-[-0.025em]">{pageTitle}</h1>
+              </div>
             </div>
 
-            {/* User Menu */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <PublishButton />
               <div className="relative">
                 <button
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  type="button"
+                  onClick={() => setUserDropdownOpen((open) => !open)}
+                  className="flex items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-neutral-200 sm:px-3"
+                  aria-expanded={userDropdownOpen}
+                  aria-label="Open account menu"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <div className="text-left hidden sm:block">
-                    <div className="text-sm font-medium text-gray-900">
-                      {user?.name || 'User'}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {user?.email || 'email@example.com'}
-                    </div>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-gray-600" />
+                  <span className="grid h-8 w-8 place-items-center rounded-sm bg-black text-xs font-bold text-white">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                  <span className="hidden max-w-32 truncate text-sm font-medium sm:block">{user?.name || 'User'}</span>
+                  <ChevronDown className="hidden h-4 w-4 text-neutral-500 sm:block" />
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-gray-200 shadow-lg z-50">
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user?.name || 'User'}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {user?.email || 'email@example.com'}
-                      </div>
+                  <div className="absolute right-0 mt-2 w-64 rounded-md border border-neutral-200 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.10)]">
+                    <div className="px-3 py-3">
+                      <div className="text-sm font-semibold">{user?.name || 'User'}</div>
+                      <div className="mt-1 truncate text-xs text-neutral-500">{user?.email}</div>
                     </div>
                     <button
-                      onClick={() => {
-                        logout();
-                        setUserDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      type="button"
+                      onClick={logout}
+                      className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-neutral-100"
                     >
                       <LogOut className="h-4 w-4" />
-                      Logout
+                      Sign out
                     </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto">
-          <div className="p-8">
-            <Outlet />
-          </div>
-        </div>
+        <main className="dashboard-grain mx-auto max-w-[96rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

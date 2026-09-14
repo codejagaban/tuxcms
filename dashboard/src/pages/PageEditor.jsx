@@ -243,7 +243,7 @@ export default function PageEditor() {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-gray-900 truncate">{page.title || 'Untitled'}</span>
             <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
-            {dirty && <span className="h-2 w-2 rounded-full bg-amber-400" title="Unsaved changes" />}
+            {dirty && <span className="h-2 w-2 rounded-full bg-black" title="Unsaved changes" />}
           </div>
           <div className="text-xs text-gray-400 truncate">
             {publishing ? 'Publishing to the live site…' : `/${page.slug || '…'}`}
@@ -316,8 +316,8 @@ export default function PageEditor() {
                       aria-hidden="true"
                       className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
                         isSel
-                          ? 'ring-2 ring-inset ring-blue-500'
-                          : 'ring-0 ring-inset ring-blue-300 group-hover:ring-1'
+                          ? 'ring-2 ring-inset ring-black'
+                          : 'ring-0 ring-inset ring-black group-hover:ring-1'
                       }`}
                     />
 

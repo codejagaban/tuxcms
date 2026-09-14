@@ -59,7 +59,7 @@ export default function SectionRenderer({ section, template, update, updateData 
                 value={d.subheading}
                 onChange={(v) => setData('subheading', v)}
                 placeholder="Eyebrow"
-                className={`text-sm font-semibold uppercase tracking-wide ${hasBg ? 'text-blue-200' : 'text-blue-600'}`}
+                className={`text-sm font-semibold uppercase tracking-wide ${hasBg ? 'text-neutral-400' : 'text-black'}`}
               />
               <Editable
                 as="h1"
@@ -83,7 +83,7 @@ export default function SectionRenderer({ section, template, update, updateData 
                     value={d.primary_cta.label}
                     onChange={(v) => setData('primary_cta.label', v)}
                     placeholder="Button"
-                    className="inline-block px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium"
+                    className="inline-block px-5 py-2.5 rounded-lg bg-black text-white font-medium"
                   />
                 )}
                 {d.secondary_cta && (
@@ -174,7 +174,7 @@ export default function SectionRenderer({ section, template, update, updateData 
               const Icon = iconFor(item.icon);
               return (
                 <div key={i} className="rounded-xl border border-gray-200 bg-white p-6">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 mb-4">
+                  <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-neutral-100 text-black mb-4">
                     <Icon className="h-5 w-5" />
                   </div>
                   <Editable
@@ -221,7 +221,7 @@ export default function SectionRenderer({ section, template, update, updateData 
                   value={item.value}
                   onChange={(v) => setItem('items', i, 'value', v)}
                   placeholder="0"
-                  className="text-3xl font-bold text-blue-600"
+                  className="text-3xl font-bold text-black"
                 />
                 <Editable
                   as="div"
@@ -297,11 +297,11 @@ export default function SectionRenderer({ section, template, update, updateData 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {members.map((m, i) => (
               <div key={i} className="rounded-xl border border-gray-200 bg-white p-6 text-center">
-                <div className="h-14 w-14 mx-auto rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-semibold mb-3">
+                <div className="h-14 w-14 mx-auto rounded-full bg-neutral-100 text-black flex items-center justify-center font-semibold mb-3">
                   {initials(m.name)}
                 </div>
                 <Editable as="div" value={m.name} onChange={(v) => setItem('members', i, 'name', v)} placeholder="Name" className="font-semibold text-gray-900" />
-                <Editable as="div" value={m.role} onChange={(v) => setItem('members', i, 'role', v)} placeholder="Role" className="text-sm text-blue-600 mb-2" />
+                <Editable as="div" value={m.role} onChange={(v) => setItem('members', i, 'role', v)} placeholder="Role" className="text-sm text-black mb-2" />
                 <Editable as="p" multiline value={m.bio} onChange={(v) => setItem('members', i, 'bio', v)} placeholder="Short bio" className="text-sm text-gray-600" />
               </div>
             ))}
@@ -324,7 +324,7 @@ export default function SectionRenderer({ section, template, update, updateData 
           <div className="divide-y divide-gray-200 border-t border-gray-200">
             {items.map((item, i) => (
               <div key={i} className="py-4 flex gap-3">
-                <HelpCircle className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                <HelpCircle className="h-5 w-5 text-black shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <Editable as="div" value={item.question} onChange={(v) => setItem('items', i, 'question', v)} placeholder="Question" className="font-semibold text-gray-900" />
                   <Editable as="div" multiline value={item.answer} onChange={(v) => setItem('items', i, 'answer', v)} placeholder="Answer" className="text-sm text-gray-600 mt-1" />
@@ -357,7 +357,7 @@ export default function SectionRenderer({ section, template, update, updateData 
                 value={d.primary_cta.label}
                 onChange={(v) => setData('primary_cta.label', v)}
                 placeholder="Button"
-                className="inline-block px-6 py-3 rounded-lg bg-blue-600 text-white font-medium"
+                className="inline-block px-6 py-3 rounded-lg bg-black text-white font-medium"
               />
             )}
           </div>
@@ -391,7 +391,7 @@ export default function SectionRenderer({ section, template, update, updateData 
               ['hours', Clock, 'Hours'],
             ].map(([field, Icon, label]) => (
               <div key={field} className="flex gap-3">
-                <Icon className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                <Icon className="h-5 w-5 text-black shrink-0 mt-0.5" />
                 <div>
                   <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</dt>
                   <Editable as="dd" value={d[field]} onChange={(v) => setData(field, v)} placeholder={label} className="text-gray-800" />
@@ -429,7 +429,7 @@ export default function SectionRenderer({ section, template, update, updateData 
                 )}
               </div>
             ))}
-            <div className="inline-block px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm">
+            <div className="inline-block px-5 py-2.5 rounded-lg bg-black text-white font-medium text-sm">
               {d.button_label || 'Send message'}
             </div>
           </div>

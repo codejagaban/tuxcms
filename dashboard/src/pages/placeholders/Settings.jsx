@@ -270,7 +270,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
                   placeholder={field.placeholder}
                   value={value}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
               </div>

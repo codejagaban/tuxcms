@@ -1,18 +1,18 @@
 const Badge = ({ variant = 'default', className = '', children, ...props }) => {
   const variants = {
-    default: 'bg-gray-100 text-gray-800',
-    primary: 'bg-blue-100 text-blue-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
-    published: 'bg-green-100 text-green-800',
-    draft: 'bg-gray-100 text-gray-800',
-    pending: 'bg-yellow-100 text-yellow-800',
+    default: 'bg-neutral-100 text-neutral-700',
+    primary: 'bg-black text-white',
+    success: 'bg-black text-white',
+    warning: 'bg-neutral-200 text-black',
+    danger: 'bg-black text-white',
+    published: 'bg-black text-white',
+    draft: 'bg-neutral-200 text-neutral-700',
+    pending: 'bg-neutral-200 text-black',
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variants[variant]} ${className}`}
+      className={`inline-flex items-center px-2 py-1 rounded-sm text-[11px] font-semibold ${variants[variant]} ${className}`}
       {...props}
     >
       {children}

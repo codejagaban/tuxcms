@@ -75,16 +75,16 @@ const Media = () => {
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    e.currentTarget.classList.add('bg-blue-50', 'border-blue-400');
+    e.currentTarget.classList.add('bg-neutral-100', 'border-black');
   };
 
   const handleDragLeave = (e) => {
-    e.currentTarget.classList.remove('bg-blue-50', 'border-blue-400');
+    e.currentTarget.classList.remove('bg-neutral-100', 'border-black');
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('bg-blue-50', 'border-blue-400');
+    e.currentTarget.classList.remove('bg-neutral-100', 'border-black');
 
     uploadFiles(Array.from(e.dataTransfer.files || []));
   };
@@ -139,9 +139,9 @@ const Media = () => {
   };
 
   const getMediaIcon = (mimeType) => {
-    if (mimeType.startsWith('image/')) return <ImageIcon className="h-6 w-6 text-blue-500" />;
-    if (mimeType.startsWith('audio/')) return <Music className="h-6 w-6 text-purple-500" />;
-    if (mimeType.startsWith('video/')) return <Video className="h-6 w-6 text-green-500" />;
+    if (mimeType.startsWith('image/')) return <ImageIcon className="h-6 w-6 text-black" />;
+    if (mimeType.startsWith('audio/')) return <Music className="h-6 w-6 text-black" />;
+    if (mimeType.startsWith('video/')) return <Video className="h-6 w-6 text-black" />;
     return <File className="h-6 w-6 text-gray-500" />;
   };
 
@@ -165,7 +165,7 @@ const Media = () => {
             onDrop={handleDrop}
             className="cursor-pointer block"
           >
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-black transition-colors">
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900">Drag and drop files here</h3>
               <p className="text-gray-600 mt-2">or click to select files</p>
