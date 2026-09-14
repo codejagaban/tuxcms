@@ -36,7 +36,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
     try {
       const doc = frameRef.current?.contentDocument;
       if (doc?.body) {
-        const style = doc.createElement('style');
+        const style = doc.querySelector('style[data-tuxcms-preview]') || doc.createElement('style');
         style.dataset.tuxcmsPreview = 'true';
         style.textContent = `
           .wow { visibility: visible !important; animation: none !important; }
@@ -44,37 +44,58 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           [data-tuxcms-editable]:hover { outline-color: rgba(17, 17, 17, .38); }
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
         `;
-        doc.head.appendChild(style);
+        if (!style.isConnected) doc.head.appendChild(style);
 
-        const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
-        const claimed = new Set();
+        const selectField = (element) => {
+          const selection = doc.getSelection();
+          const range = doc.createRange();
+          range.selectNodeContents(element);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        };
 
-        fields.forEach((field) => {
-          const match = candidates
-            .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
-            .sort((a, b) => a.children.length - b.children.length)[0];
+        const installEditors = () => {
+          const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
+          const claimed = new Set();
 
-          if (!match) return;
-          claimed.add(match);
-          match.dataset.tuxcmsEditable = 'true';
-          match.contentEditable = 'true';
-          match.spellcheck = true;
-          match.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onSelect?.(field.sectionUid);
-          });
-          match.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
+          fields.forEach((field) => {
+            const match = candidates
+              .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
+              .sort((a, b) => a.children.length - b.children.length)[0];
+
+            if (!match) return;
+            claimed.add(match);
+            if (match.dataset.tuxcmsEditable === 'true') return;
+            match.dataset.tuxcmsEditable = 'true';
+            match.contentEditable = 'true';
+            match.spellcheck = true;
+            match.addEventListener('click', (event) => {
               event.preventDefault();
-              match.blur();
-            }
+              event.stopPropagation();
+              onSelect?.(field.sectionUid);
+
+              // Crystal's heading animation wraps every character in spans.
+              // Flatten those wrappers at the moment editing starts, then
+              // select the complete value so typing replaces rather than appends.
+              if (match.children.length) match.textContent = field.value;
+              selectField(match);
+            });
+            match.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                match.blur();
+              }
+            });
+            match.addEventListener('blur', () => {
+              const value = normalise(match.textContent);
+              if (value && value !== field.value) onEdit?.(field.sectionUid, field.field, value);
+            });
           });
-          match.addEventListener('blur', () => {
-            const value = normalise(match.textContent);
-            if (value && value !== field.value) onEdit?.(field.sectionUid, field.field, value);
-          });
-        });
+        };
+
+        installEditors();
+        const view = frameRef.current?.contentWindow;
+        view?.requestAnimationFrame(() => view.requestAnimationFrame(installEditors));
       }
     } catch {
       // A custom cross-origin preview still works, without the editor override.
