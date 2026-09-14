@@ -18,6 +18,7 @@ const Settings = () => {
     social_twitter: '',
     social_instagram: '',
     social_linkedin: '',
+    social_tiktok: '',
     contact_email: '',
     contact_phone: '',
     contact_address: '',
@@ -53,6 +54,7 @@ const Settings = () => {
         social_twitter: data.social_twitter || '',
         social_instagram: data.social_instagram || '',
         social_linkedin: data.social_linkedin || '',
+        social_tiktok: data.social_tiktok || '',
         contact_email: data.contact_email || '',
         contact_phone: data.contact_phone || '',
         contact_address: data.contact_address || '',
@@ -181,10 +183,11 @@ const Settings = () => {
           { key: 'social_twitter', label: 'Twitter URL', placeholder: 'https://twitter.com/yourhandle' },
           { key: 'social_instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/yourhandle' },
           { key: 'social_linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/yourprofile' },
+          { key: 'social_tiktok', label: 'TikTok URL', placeholder: 'https://tiktok.com/@yourhandle' },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Social', ['social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin'])}
+        onSave={() => saveGroup('Social', ['social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'social_tiktok'])}
         isSaving={savingGroups.Social}
       />
 

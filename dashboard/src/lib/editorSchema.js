@@ -22,6 +22,7 @@ export const SECTION_REGISTRY = {
         subheading: 'Eyebrow text',
         alignment: 'center',
         background_image: '',
+        image: '',
         primary_cta: { label: 'Get started', url: '/contact' },
         secondary_cta: { label: 'Learn more', url: '/about' },
       },
@@ -36,7 +37,7 @@ export const SECTION_REGISTRY = {
       type: 'text',
       title: 'Section heading',
       content: 'Write your content here. Click to edit this text directly.',
-      data: {},
+      data: { eyebrow: '', image: '', image_alt: '' },
     }),
   },
 
@@ -51,16 +52,16 @@ export const SECTION_REGISTRY = {
       data: {
         columns: 3,
         items: [
-          { icon: 'sparkles', title: 'Feature one', description: 'Describe the benefit here.' },
-          { icon: 'zap', title: 'Feature two', description: 'Describe the benefit here.' },
-          { icon: 'shield', title: 'Feature three', description: 'Describe the benefit here.' },
+          { icon: 'sparkles', title: 'Feature one', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
+          { icon: 'zap', title: 'Feature two', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
+          { icon: 'shield', title: 'Feature three', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
         ],
       },
     }),
     list: {
       path: 'items',
       label: 'Feature',
-      item: () => ({ icon: 'star', title: 'New feature', description: 'Describe the benefit here.' }),
+      item: () => ({ icon: 'star', title: 'New feature', description: 'Describe the benefit here.', image: '', url: '', link_label: '' }),
     },
   },
 
@@ -175,6 +176,9 @@ export const SECTION_REGISTRY = {
         phone: '+1 555 000 0000',
         address: '123 Example St, City',
         hours: 'Mon–Fri, 9:00–17:00',
+        eyebrow: '',
+        image: '',
+        image_alt: '',
       },
     }),
   },
@@ -215,7 +219,7 @@ export const SECTION_REGISTRY = {
       type: 'map',
       title: 'Find us',
       content: '',
-      data: { lat: 51.5074, lng: -0.1278, zoom: 14, label: 'Our office' },
+      data: { lat: 51.5074, lng: -0.1278, zoom: 14, label: 'Our office', query: '' },
     }),
   },
 };

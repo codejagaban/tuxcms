@@ -328,6 +328,7 @@ export default function PageEditor() {
                     )}
                     <SectionRenderer
                       section={section}
+                      template={page.template}
                       update={(patch) => updateSection(section._uid, patch)}
                       updateData={(data) => updateData(section._uid, data)}
                     />

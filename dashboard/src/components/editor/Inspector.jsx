@@ -271,6 +271,9 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
           <Field label="Background image URL">
             <input className={inputCls} value={d.background_image || ''} onChange={(e) => setData('background_image', e.target.value)} placeholder="https://…" />
           </Field>
+          <Field label="Feature image URL">
+            <input className={inputCls} value={d.image || ''} onChange={(e) => setData('image', e.target.value)} placeholder="/themes/… or https://…" />
+          </Field>
           <Field label="Primary button link">
             <input className={inputCls} value={d.primary_cta?.url || ''} onChange={(e) => setData('primary_cta.url', e.target.value)} placeholder="/contact" />
           </Field>
@@ -293,6 +296,20 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
             <option value="3">3 columns</option>
           </select>
         </Field>
+      )}
+
+      {['text', 'contact'].includes(selected.type) && (
+        <>
+          <Field label="Eyebrow text">
+            <input className={inputCls} value={d.eyebrow || ''} onChange={(e) => setData('eyebrow', e.target.value)} />
+          </Field>
+          <Field label="Image URL">
+            <input className={inputCls} value={d.image || ''} onChange={(e) => setData('image', e.target.value)} placeholder="/themes/… or https://…" />
+          </Field>
+          <Field label="Image alt text">
+            <input className={inputCls} value={d.image_alt || ''} onChange={(e) => setData('image_alt', e.target.value)} />
+          </Field>
+        </>
       )}
 
       {selected.type === 'contact_form' && (
@@ -319,6 +336,9 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
 
       {selected.type === 'map' && (
         <>
+          <Field label="Address query">
+            <input className={inputCls} value={d.query || ''} onChange={(e) => setData('query', e.target.value)} placeholder="Street, city, postcode" />
+          </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Latitude">
               <input className={inputCls} type="number" step="any" value={d.lat ?? ''} onChange={(e) => setData('lat', Number(e.target.value))} />
@@ -349,31 +369,27 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
           </div>
           <ul className="space-y-1.5">
             {listItems.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-2 rounded-lg border border-gray-200 px-2.5 py-2">
-                <span className="text-xs text-gray-400 w-5">{idx + 1}</span>
-                <span className="flex-1 text-sm text-gray-700 truncate">
-                  {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
-                </span>
+              <li key={idx} className="rounded-lg border border-gray-200 px-2.5 py-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-5">{idx + 1}</span>
+                  <span className="flex-1 text-sm text-gray-700 truncate">
+                    {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
+                  </span>
+                  <button onClick={() => removeItem(idx)} title="Remove" className="text-gray-400 hover:text-red-500">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
                 {selected.type === 'features' && (
-                  <input
-                    className="w-20 px-2 py-1 text-xs border border-gray-200 rounded"
-                    value={item.icon || ''}
-                    onChange={(e) => setItemProp(idx, 'icon', e.target.value)}
-                    placeholder="icon"
-                    title="lucide icon name"
-                  />
+                  <div className="mt-2 grid gap-2">
+                    <input className={inputCls} value={item.icon || ''} onChange={(e) => setItemProp(idx, 'icon', e.target.value)} placeholder="Icon name" aria-label={`${listCfg.label} ${idx + 1} icon name`} />
+                    <input className={inputCls} value={item.image || ''} onChange={(e) => setItemProp(idx, 'image', e.target.value)} placeholder="Image URL" aria-label={`${listCfg.label} ${idx + 1} image URL`} />
+                    <input className={inputCls} value={item.url || ''} onChange={(e) => setItemProp(idx, 'url', e.target.value)} placeholder="Booking or details URL" aria-label={`${listCfg.label} ${idx + 1} link URL`} />
+                    <input className={inputCls} value={item.link_label || ''} onChange={(e) => setItemProp(idx, 'link_label', e.target.value)} placeholder="Link label" aria-label={`${listCfg.label} ${idx + 1} link label`} />
+                  </div>
                 )}
-                <button onClick={() => removeItem(idx)} title="Remove" className="text-gray-400 hover:text-red-500">
-                  <X className="h-4 w-4" />
-                </button>
               </li>
             ))}
           </ul>
-          {selected.type === 'features' && (
-            <p className="mt-2 text-xs text-gray-400">
-              Icon names: sparkles, zap, shield, star, compass, code, layers, pen-tool, gauge, users.
-            </p>
-          )}
         </div>
       )}
 

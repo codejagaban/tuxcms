@@ -96,7 +96,7 @@ class Site
     {
         $links = [];
 
-        foreach (['facebook', 'twitter', 'instagram', 'linkedin'] as $network) {
+        foreach (['facebook', 'twitter', 'instagram', 'linkedin', 'tiktok'] as $network) {
             $url = Setting::getString('social_' . $network);
 
             if ($url) {
