@@ -40,6 +40,35 @@ class PageApiTest extends TestCase
         $this->assertContains('Hidden', $titles);
     }
 
+    public function test_public_tree_does_not_expose_draft_descendants(): void
+    {
+        $parent = Page::factory()->create(['title' => 'Public parent']);
+        Page::factory()->draft()->create([
+            'title' => 'Draft child',
+            'parent_id' => $parent->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/pages/tree');
+
+        $response->assertOk();
+        $this->assertSame([], $response->json('data.0.children'));
+    }
+
+    public function test_authenticated_tree_includes_draft_descendants(): void
+    {
+        $parent = Page::factory()->create(['title' => 'Public parent']);
+        Page::factory()->draft()->create([
+            'title' => 'Draft child',
+            'parent_id' => $parent->id,
+        ]);
+
+        Sanctum::actingAs($this->editor());
+
+        $this->getJson('/api/v1/pages/tree')
+            ->assertOk()
+            ->assertJsonPath('data.0.children.0.title', 'Draft child');
+    }
+
     public function test_public_request_for_a_draft_page_is_404(): void
     {
         $draft = Page::factory()->draft()->create(['slug' => 'secret']);

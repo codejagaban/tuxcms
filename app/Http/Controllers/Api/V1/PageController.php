@@ -51,12 +51,12 @@ class PageController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
         // Public requests only see published pages
-        if (!$this->isEditor($request)) {
+        if (! $this->isEditor($request)) {
             $query->published();
         }
 
@@ -81,7 +81,7 @@ class PageController extends Controller
         // Authenticated editors need every section (including hidden ones) so a
         // save doesn't silently drop them; public visitors only see visible.
         $query = Page::with(['sections' => function ($q) use ($request) {
-            if (!$this->isEditor($request)) {
+            if (! $this->isEditor($request)) {
                 $q->visible();
             }
             $q->orderBy('order');
@@ -94,7 +94,7 @@ class PageController extends Controller
         }
 
         // Non-authenticated users can only view published pages
-        if (!$this->isEditor($request) && !$page->isPublished()) {
+        if (! $this->isEditor($request) && ! $page->isPublished()) {
             abort(404);
         }
 
@@ -125,21 +125,21 @@ class PageController extends Controller
 
             $page = $query->first();
 
-            if (!$page) {
-                abort(404, 'Page not found for path: /' . $path);
+            if (! $page) {
+                abort(404, 'Page not found for path: /'.$path);
             }
 
             $parentId = $page->id;
         }
 
         $page->load(['sections' => function ($q) use ($request) {
-            if (!$this->isEditor($request)) {
+            if (! $this->isEditor($request)) {
                 $q->visible();
             }
             $q->orderBy('order');
         }, 'seo', 'author', 'children', 'media']);
 
-        if (!$this->isEditor($request) && !$page->isPublished()) {
+        if (! $this->isEditor($request) && ! $page->isPublished()) {
             abort(404);
         }
 
@@ -153,15 +153,23 @@ class PageController extends Controller
      */
     public function tree(Request $request): JsonResponse
     {
-        $query = Page::with('children.children')
-            ->topLevel()
-            ->orderBy('order');
+        $query = Page::query()
+            ->orderBy('order')
+            ->orderBy('title');
 
-        if (!$this->isEditor($request)) {
+        if (! $this->isEditor($request)) {
             $query->published();
         }
 
-        $pages = $query->get();
+        $byParent = $query->get()->groupBy('parent_id');
+
+        $buildLevel = function ($parentId) use (&$buildLevel, $byParent) {
+            return $byParent->get($parentId, collect())
+                ->each(fn (Page $page) => $page->setRelation('children', $buildLevel($page->id)))
+                ->values();
+        };
+
+        $pages = $buildLevel(null);
 
         return response()->json([
             'data' => PageResource::collection($pages),
@@ -251,7 +259,7 @@ class PageController extends Controller
      * mass delete fires no model events — left every attached media file
      * orphaned in storage, pointing at a section that no longer existed.
      *
-     * @param array<int, array<string, mixed>> $incoming
+     * @param  array<int, array<string, mixed>>  $incoming
      */
     private function syncSections(Page $page, array $incoming): void
     {
