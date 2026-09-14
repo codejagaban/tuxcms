@@ -18,6 +18,24 @@ const withUids = (sections = []) =>
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((s) => ({ ...s, _uid: makeUid(), data: s.data || {} }));
 
+const setNestedValue = (source, path, value) => {
+  const keys = path.split('.');
+  const root = Array.isArray(source) ? [...source] : { ...(source || {}) };
+  let cursor = root;
+
+  keys.forEach((key, index) => {
+    if (index === keys.length - 1) {
+      cursor[key] = value;
+      return;
+    }
+    const next = cursor[key];
+    cursor[key] = Array.isArray(next) ? [...next] : { ...(next || {}) };
+    cursor = cursor[key];
+  });
+
+  return root;
+};
+
 export default function PageEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -78,6 +96,20 @@ export default function PageEditor() {
 
   const updateData = (uid, data) =>
     mutate((p) => ({ ...p, sections: p.sections.map((s) => (s._uid === uid ? { ...s, data } : s)) }));
+
+  const updateCrystalField = (uid, field, value) => {
+    if (field === 'title' || field === 'content') {
+      updateSection(uid, { [field]: value });
+      return;
+    }
+    if (!field.startsWith('data.')) return;
+    mutate((p) => ({
+      ...p,
+      sections: p.sections.map((section) => section._uid === uid
+        ? { ...section, data: setNestedValue(section.data, field.slice(5), value) }
+        : section),
+    }));
+  };
 
   const addSection = (type) => {
     const s = createSection(type);
@@ -329,9 +361,9 @@ export default function PageEditor() {
 
       {/* Body: preview + inspector */}
       <div className="flex min-h-0 flex-1">
-        <main className="flex-1 overflow-y-auto p-3 pb-[48dvh] sm:p-6 sm:pb-[48dvh] md:pb-6">
-          <div className={`mx-auto ${canvasWidth} transition-[max-width] duration-200`}>
-            <div className="overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)]">
+        <main className={`flex-1 p-3 sm:p-4 ${page.template === 'crystal' ? 'overflow-hidden' : 'overflow-y-auto pb-[48dvh] sm:pb-[48dvh] md:pb-6'}`}>
+          <div className={`mx-auto ${canvasWidth} ${page.template === 'crystal' ? 'h-full' : ''} transition-[max-width] duration-200`}>
+            <div className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${page.template === 'crystal' ? 'h-full' : ''}`}>
               {page.sections.length === 0 && (
                 <div className="py-24 text-center text-gray-400">
                   <p className="mb-3">This page has no sections yet.</p>
@@ -339,14 +371,21 @@ export default function PageEditor() {
                 </div>
               )}
               {page.template === 'crystal'
-                ? <CrystalCanvas path={crystalPath} revision={previewRevision} mobile={device === 'mobile'} />
+                ? <CrystalCanvas
+                    path={crystalPath}
+                    revision={previewRevision}
+                    mobile={device === 'mobile'}
+                    sections={page.sections}
+                    onEdit={updateCrystalField}
+                    onSelect={setSelectedUid}
+                  />
                 : sectionPreview}
             </div>
-            <p className="text-center text-xs text-gray-400 mt-4">
-              {page.template === 'crystal'
-                ? 'This is the exact generated page. Edit with the panel, then publish to refresh it.'
-                : 'Click any text above to edit it inline. Use the panel to manage structure.'}
-            </p>
+            {page.template !== 'crystal' && (
+              <p className="text-center text-xs text-gray-400 mt-4">
+                Click any text above to edit it inline. Use the panel to manage structure.
+              </p>
+            )}
           </div>
         </main>
 
