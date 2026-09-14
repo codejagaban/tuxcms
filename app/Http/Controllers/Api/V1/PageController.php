@@ -110,7 +110,24 @@ class PageController extends Controller
      */
     public function resolveByPath(Request $request): JsonResponse
     {
-        $path = ltrim($request->input('path', ''), '/');
+        $path = trim($request->input('path', ''), '/');
+
+        if ($path === '') {
+            $query = Page::where('is_homepage', true);
+
+            if (! $this->isEditor($request)) {
+                $query->published();
+            }
+
+            $page = $query->firstOrFail();
+            $page->load(['sections' => fn ($q) => $q->when(
+                ! $this->isEditor($request),
+                fn ($visible) => $visible->visible()
+            )->orderBy('order'), 'seo', 'author', 'children', 'media']);
+
+            return response()->json(['data' => new PageResource($page)]);
+        }
+
         $segments = explode('/', $path);
 
         $page = null;

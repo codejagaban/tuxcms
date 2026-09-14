@@ -99,6 +99,15 @@ class PageApiTest extends TestCase
         $this->assertSame('/services/web-design', $response->json('data.path'));
     }
 
+    public function test_root_path_resolves_to_the_homepage(): void
+    {
+        Page::factory()->homepage()->create(['title' => 'Home']);
+
+        $this->getJson('/api/v1/pages/resolve?path=/')
+            ->assertOk()
+            ->assertJsonPath('data.title', 'Home');
+    }
+
     public function test_creating_a_page_requires_authentication(): void
     {
         $this->postJson('/api/v1/pages', ['title' => 'Nope'])->assertUnauthorized();
