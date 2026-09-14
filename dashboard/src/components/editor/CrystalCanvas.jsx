@@ -46,14 +46,6 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         `;
         if (!style.isConnected) doc.head.appendChild(style);
 
-        const selectField = (element) => {
-          const selection = doc.getSelection();
-          const range = doc.createRange();
-          range.selectNodeContents(element);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        };
-
         const installEditors = () => {
           const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
           const claimed = new Set();
@@ -69,16 +61,15 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             match.dataset.tuxcmsEditable = 'true';
             match.contentEditable = 'true';
             match.spellcheck = true;
+            match.addEventListener('pointerdown', () => {
+              // Crystal's heading animation wraps characters in spans. Remove
+              // those wrappers before the browser places the caret so editing
+              // behaves like a normal text field without duplicating content.
+              if (match.children.length) match.textContent = field.value;
+            });
             match.addEventListener('click', (event) => {
-              event.preventDefault();
               event.stopPropagation();
               onSelect?.(field.sectionUid);
-
-              // Crystal's heading animation wraps every character in spans.
-              // Flatten those wrappers at the moment editing starts, then
-              // select the complete value so typing replaces rather than appends.
-              if (match.children.length) match.textContent = field.value;
-              selectField(match);
             });
             match.addEventListener('keydown', (event) => {
               if (event.key === 'Enter') {
