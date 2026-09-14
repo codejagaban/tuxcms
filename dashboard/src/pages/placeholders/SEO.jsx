@@ -18,7 +18,7 @@ const SEO = () => {
     meta_keywords: '',
     og_title: '',
     og_description: '',
-    og_image_url: '',
+    og_image: '',
     twitter_card: 'summary',
     twitter_title: '',
     twitter_description: '',
@@ -39,8 +39,10 @@ const SEO = () => {
       setPages(pagesData);
 
       if (pagesData.length > 0) {
-        setSelectedPageId(pagesData[0].id);
-        fetchPageSEO(pagesData[0].id);
+        const firstPage = pagesData[0];
+        setSelectedPageId(firstPage.id);
+        setSelectedPage(firstPage);
+        fetchPageSEO(firstPage.id, firstPage);
       }
     } catch (error) {
       console.error('Error fetching pages:', error);
@@ -52,15 +54,21 @@ const SEO = () => {
     }
   };
 
-  const fetchPageSEO = async (pageId) => {
+  const fetchPageSEO = async (pageId, knownPage = null) => {
     try {
-      const page = pages.find((p) => p.id === pageId) || selectedPage;
+      const page = knownPage || pages.find((p) => p.id === pageId) || selectedPage;
       setSelectedPage(page);
 
       try {
         const response = await seoAPI.get(pageId);
-        setSeoData(response.data.data || seoData);
-      } catch (error) {
+        const data = response.data.data || {};
+
+        setSeoData({
+          ...data,
+          og_image: data.og_image || '',
+          schema_markup: JSON.stringify(data.schema_markup || {}, null, 2),
+        });
+      } catch {
         // If SEO data doesn't exist, use defaults
         setSeoData({
           meta_title: page?.title || '',
@@ -68,7 +76,7 @@ const SEO = () => {
           meta_keywords: '',
           og_title: page?.title || '',
           og_description: page?.excerpt || '',
-          og_image_url: '',
+          og_image: '',
           twitter_card: 'summary',
           twitter_title: page?.title || '',
           twitter_description: page?.excerpt || '',
@@ -98,7 +106,21 @@ const SEO = () => {
 
     try {
       setIsSaving(true);
-      await seoAPI.update(selectedPageId, seoData);
+      let schemaMarkup = null;
+
+      try {
+        schemaMarkup = seoData.schema_markup.trim()
+          ? JSON.parse(seoData.schema_markup)
+          : null;
+      } catch {
+        toast.error('Schema markup must be valid JSON');
+        return;
+      }
+
+      await seoAPI.update(selectedPageId, {
+        ...seoData,
+        schema_markup: schemaMarkup,
+      });
       toast.success('SEO data updated successfully');
     } catch (error) {
       console.error('Error saving SEO data:', error);
@@ -295,17 +317,17 @@ const SEO = () => {
                   <Input
                     label="OG Image URL"
                     placeholder="https://example.com/image.jpg"
-                    value={seoData.og_image_url}
+                    value={seoData.og_image}
                     onChange={(e) =>
-                      setSeoData({ ...seoData, og_image_url: e.target.value })
+                      setSeoData({ ...seoData, og_image: e.target.value })
                     }
                     containerClassName="w-full"
                   />
 
-                  {seoData.og_image_url && (
+                  {seoData.og_image && (
                     <div className="mt-4">
                       <img
-                        src={seoData.og_image_url}
+                        src={seoData.og_image}
                         alt="OG Preview"
                         className="w-full max-w-sm rounded-lg border border-gray-300"
                         onError={(e) => {
@@ -324,9 +346,9 @@ const SEO = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="border border-gray-300 rounded-lg overflow-hidden">
-                    {seoData.og_image_url && (
+                    {seoData.og_image && (
                       <img
-                        src={seoData.og_image_url}
+                        src={seoData.og_image}
                         alt="Preview"
                         className="w-full h-48 object-cover"
                         onError={(e) => {
