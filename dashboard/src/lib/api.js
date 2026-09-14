@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+const DASHBOARD_BASE_URL = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -30,7 +31,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      window.location.href = `${DASHBOARD_BASE_URL}/login`;
     }
     return Promise.reject(error);
   }
