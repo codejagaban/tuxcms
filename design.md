@@ -57,7 +57,7 @@ The canonical export is [`tokens.css`](tokens.css).
   --color-ink: var(--color-ink);
   --color-muted: var(--color-muted);
   --color-rule: var(--color-rule);
-  --font-sans: var(--font-body);
+  --font-sans: var(--font-body); /* Native system UI for compact, highly legible controls and body copy. */
 }
 ```
 
