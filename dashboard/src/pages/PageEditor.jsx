@@ -9,6 +9,7 @@ import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
 import SectionRenderer from '../components/editor/SectionRenderer';
 import Inspector from '../components/editor/Inspector';
+import CrystalCanvas from '../components/editor/CrystalCanvas';
 
 // Give every section a stable client-side id for React keys + selection,
 // independent of the database id (new sections don't have one yet).
@@ -224,6 +225,40 @@ export default function PageEditor() {
   const selected = page.sections.find((s) => s._uid === selectedUid) || null;
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
 
+  const sectionPreview = page.sections.map((section) => {
+    const isSel = section._uid === selectedUid;
+    const crystal = page.template === 'crystal';
+    return (
+      <div
+        key={section._uid}
+        onMouseDown={() => setSelectedUid(section._uid)}
+        className={crystal
+          ? `tux-section ${isSel ? 'is-selected' : ''} ${section.is_visible === false ? 'is-hidden' : ''}`
+          : `group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
+      >
+        {!crystal && (
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
+              isSel ? 'ring-2 ring-inset ring-black' : 'ring-0 ring-inset ring-black group-hover:ring-1'
+            }`}
+          />
+        )}
+        {section.is_visible === false && (
+          crystal
+            ? <span className="editor-hidden-label">Hidden</span>
+            : <div className="absolute top-2 right-2 z-30"><Badge variant="warning">Hidden</Badge></div>
+        )}
+        <SectionRenderer
+          section={section}
+          template={page.template}
+          update={(patch) => updateSection(section._uid, patch)}
+          updateData={(data) => updateData(section._uid, data)}
+        />
+      </div>
+    );
+  });
+
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Top bar */}
@@ -299,42 +334,9 @@ export default function PageEditor() {
                   <p className="text-sm">Use <span className="font-medium text-gray-500">Add</span> in the Page panel to start building.</p>
                 </div>
               )}
-              {page.sections.map((section) => {
-                const isSel = section._uid === selectedUid;
-                return (
-                  <div
-                    key={section._uid}
-                    onMouseDown={() => setSelectedUid(section._uid)}
-                    className={`group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
-                  >
-                    {/* The outline lives in its own overlay rather than as a
-                        ring on this wrapper: an inset ring is painted beneath
-                        descendants, so any section with its own background
-                        (hero, stats, cta) would cover it and appear to have no
-                        highlight at all. */}
-                    <div
-                      aria-hidden="true"
-                      className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
-                        isSel
-                          ? 'ring-2 ring-inset ring-black'
-                          : 'ring-0 ring-inset ring-black group-hover:ring-1'
-                      }`}
-                    />
-
-                    {section.is_visible === false && (
-                      <div className="absolute top-2 right-2 z-30">
-                        <Badge variant="warning">Hidden</Badge>
-                      </div>
-                    )}
-                    <SectionRenderer
-                      section={section}
-                      template={page.template}
-                      update={(patch) => updateSection(section._uid, patch)}
-                      updateData={(data) => updateData(section._uid, data)}
-                    />
-                  </div>
-                );
-              })}
+              {page.template === 'crystal'
+                ? <CrystalCanvas mobile={device === 'mobile'}>{sectionPreview}</CrystalCanvas>
+                : sectionPreview}
             </div>
             <p className="text-center text-xs text-gray-400 mt-4">
               Click any text above to edit it inline. Use the panel to manage structure.

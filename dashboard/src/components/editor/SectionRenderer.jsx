@@ -34,17 +34,25 @@ export default function SectionRenderer({ section, template, update, updateData 
       const hasBg = !!d.background_image;
       if (crystal) {
         return (
-          <div className="overflow-hidden bg-[#f1f2f4] px-8 py-12 lg:px-14">
-            <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
-              <div>
-                <Editable as="p" value={d.subheading} onChange={(v) => setData('subheading', v)} placeholder="Eyebrow" className="mb-4 text-sm font-semibold text-[#d5545e]" />
-                <Editable as="h1" value={section.title} onChange={(v) => update({ title: v })} placeholder="Headline" className="max-w-xl text-4xl font-bold leading-tight text-[#202534] lg:text-5xl" />
-                <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="mt-5 max-w-xl text-base leading-7 text-[#626777]" />
-                {d.primary_cta && <Editable as="span" value={d.primary_cta.label} onChange={(v) => setData('primary_cta.label', v)} placeholder="Button" className="mt-7 inline-block rounded-md bg-[#d5545e] px-6 py-3 font-semibold text-white" />}
-              </div>
-              {d.image && <img src={d.image} alt={d.image_alt || ''} className="mx-auto max-h-[360px] w-full object-contain" />}
+          <section className="home-section bg-gradient-gray-light-2">
+            <div className="bg-shape-1"><img src="/themes/crystal/images/demo-fancy/bg-shape-1.svg" alt="" /></div>
+            <div className="container position-relative min-height-100vh d-flex align-items-center pt-100 pb-100 pt-sm-120 pb-sm-120">
+              <div className="home-content text-start w-100"><div className="row">
+                <div className="col-md-10 offset-md-1 col-lg-6 offset-lg-0 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-30">
+                  <div className="w-100 text-center text-lg-start">
+                    <Editable as="p" value={d.subheading} onChange={(v) => setData('subheading', v)} placeholder="Eyebrow" className="section-caption-fancy mb-30 mb-xs-20" />
+                    <Editable as="h1" value={section.title} onChange={(v) => update({ title: v })} placeholder="Headline" className="hs-title-10 mb-30" />
+                    <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="section-descr mb-40" />
+                    <div className="local-scroll wch-unset">
+                      {d.primary_cta && <Editable as="span" value={d.primary_cta.label} onChange={(v) => setData('primary_cta.label', v)} placeholder="Button" className="btn btn-mod btn-color btn-large btn-round me-1 mb-xs-10" />}
+                      {d.secondary_cta && <Editable as="span" value={d.secondary_cta.label} onChange={(v) => setData('secondary_cta.label', v)} placeholder="Button" className="btn btn-mod btn-border-c btn-large btn-round mb-xs-10" />}
+                    </div>
+                  </div>
+                </div>
+                {d.image && <div className="col-lg-6 col-xl-7 d-flex align-items-center"><div className="w-100"><div className="position-relative mt-40 mb-20"><img src={d.image} alt={d.image_alt || ''} className="w-100" /><div className="decoration-5 d-none d-sm-block"><img src="/themes/crystal/images/demo-fancy/decoration-1.svg" alt="" /></div></div></div></div>}
+              </div></div>
             </div>
-          </div>
+          </section>
         );
       }
       return (
@@ -105,14 +113,14 @@ export default function SectionRenderer({ section, template, update, updateData 
     case 'text':
       if (crystal) {
         return (
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-8 py-14 lg:grid-cols-2">
-            {d.image && <img src={d.image} alt={d.image_alt || ''} className="h-80 w-full rounded-md object-cover" />}
-            <div>
-              <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="mb-3 text-sm font-semibold text-[#d5545e]" />
-              <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="text-3xl font-bold leading-tight text-[#202534]" />
-              <Editable as="div" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Write your content…" className="mt-5 whitespace-pre-wrap leading-7 text-[#626777]" />
+          <section className="page-section"><div className="container position-relative"><div className="row align-items-center">
+            <div className={d.image ? 'col-lg-7' : 'col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center'}>
+              <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="section-caption-fancy mb-20 mb-xs-10" />
+              <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="section-title-strong mb-30 mb-xs-20" />
+              <Editable as="div" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Write your content…" className="section-descr" />
             </div>
-          </div>
+            {d.image && <div className="col-lg-5 mt-md-50"><div className="position-relative"><img src={d.image} alt={d.image_alt || ''} className="w-100 round" /><div className="decoration-6"><img src="/themes/crystal/images/demo-fancy/decoration-2.svg" alt="" /></div></div></div>}
+          </div></div></section>
         );
       }
       return (
@@ -140,24 +148,25 @@ export default function SectionRenderer({ section, template, update, updateData 
       const items = d.items || [];
       if (crystal) {
         return (
-          <div className="bg-white px-8 py-14">
-            <div className="mx-auto max-w-6xl">
-              <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="mb-3 text-center text-sm font-semibold text-[#d5545e]" />
-              <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Section heading" className="mx-auto mb-9 max-w-3xl text-center text-3xl font-bold leading-tight text-[#202534]" />
-              <div className={`grid grid-cols-1 ${cols} gap-5`}>
+          <section className="page-section bg-gradient-gray-light-1 bg-scroll light-content">
+            <div className="container position-relative">
+              <div className="row mb-60 mb-sm-40"><div className="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
+                <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="section-caption-fancy mb-20 mb-xs-10" />
+                <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Section heading" className="section-title mb-0 mb-sm-20" />
+                {section.content && <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="section-descr mt-20" />}
+              </div></div>
+              <div className="row">
                 {items.map((item, i) => (
-                  <article key={i} className="overflow-hidden rounded-md bg-[#f4f4f5]">
-                    {item.image && <img src={item.image} alt="" className="h-48 w-full object-cover" />}
-                    <div className="p-5">
-                      <Editable as="h3" value={item.title} onChange={(v) => setItem('items', i, 'title', v)} placeholder="Feature title" className="text-lg font-bold text-[#202534]" />
-                      <Editable as="p" multiline value={item.description} onChange={(v) => setItem('items', i, 'description', v)} placeholder="Description" className="mt-2 text-sm leading-6 text-[#626777]" />
-                      {item.url && <Editable as="span" value={item.link_label} onChange={(v) => setItem('items', i, 'link_label', v)} placeholder="Link label" className="mt-4 inline-block text-sm font-semibold text-[#d5545e]" />}
-                    </div>
+                  <article key={i} className="col-md-4 mb-40 text-center">
+                    {item.image && <img src={item.image} alt="" className="w-100 mb-20 round" style={{ height: 240, objectFit: 'cover' }} />}
+                    <Editable as="h3" value={item.title} onChange={(v) => setItem('items', i, 'title', v)} placeholder="Feature title" className="services-5-title mb-10" />
+                    <Editable as="p" multiline value={item.description} onChange={(v) => setItem('items', i, 'description', v)} placeholder="Description" className="services-5-text mb-20" />
+                    {item.url && <Editable as="span" value={item.link_label} onChange={(v) => setItem('items', i, 'link_label', v)} placeholder="Link label" className="link-hover-anim" />}
                   </article>
                 ))}
               </div>
             </div>
-          </div>
+          </section>
         );
       }
       return (
@@ -202,6 +211,13 @@ export default function SectionRenderer({ section, template, update, updateData 
 
     case 'stats': {
       const items = d.items || [];
+      if (crystal) {
+        return (
+          <section className="page-section"><div className="container"><div className="row text-center">
+            {items.map((item, i) => <div key={i} className="col-6 col-md-3 mb-sm-30"><Editable as="div" value={item.value} onChange={(v) => setItem('items', i, 'value', v)} placeholder="0" className="number-1" /><Editable as="div" value={item.label} onChange={(v) => setItem('items', i, 'label', v)} placeholder="Label" className="number-title" /></div>)}
+          </div></div></section>
+        );
+      }
       return (
         <div className="px-8 py-14 bg-slate-50 rounded-xl">
           {section.title && (
@@ -239,6 +255,14 @@ export default function SectionRenderer({ section, template, update, updateData 
 
     case 'testimonials': {
       const items = d.items || [];
+      if (crystal) {
+        return (
+          <section className="page-section bg-gradient-gray-light-2 bg-scroll"><div className="container">
+            <div className="row mb-60 mb-sm-40"><div className="col-md-8 offset-md-2 text-center"><Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="section-title" /></div></div>
+            <div className="row">{items.map((item, i) => <div key={i} className="col-md-6 mb-30"><figure className="testimonials-4-item round"><Editable as="blockquote" multiline value={item.quote} onChange={(v) => setItem('items', i, 'quote', v)} placeholder="Quote" /><figcaption className="testimonials-4-author mt-30"><Editable as="strong" value={item.author} onChange={(v) => setItem('items', i, 'author', v)} placeholder="Author" /> <Editable as="div" value={item.role} onChange={(v) => setItem('items', i, 'role', v)} placeholder="Role" className="small" /></figcaption></figure></div>)}</div>
+          </div></section>
+        );
+      }
       return (
         <div className="px-8 py-14">
           <Editable
@@ -339,11 +363,12 @@ export default function SectionRenderer({ section, template, update, updateData 
     case 'cta':
       if (crystal) {
         return (
-          <div className="bg-[#202534] px-8 py-14 text-center">
-            <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="text-3xl font-bold text-white" />
-            <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="mx-auto mt-3 max-w-2xl text-[#d7d9df]" />
-            {d.primary_cta && <Editable as="span" value={d.primary_cta.label} onChange={(v) => setData('primary_cta.label', v)} placeholder="Button" className="mt-6 inline-block rounded-md bg-[#d5545e] px-6 py-3 font-semibold text-white" />}
-          </div>
+          <section className="page-section bg-gradient-gray-light-1 bg-scroll light-content"><div className="container"><div className="row"><div className="col-md-8 offset-md-2 text-center">
+            <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="section-caption-fancy mb-20 mb-xs-10" />
+            <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="section-title mb-0" />
+            <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="section-descr mt-20" />
+            {d.primary_cta && <div className="mt-40"><Editable as="span" value={d.primary_cta.label} onChange={(v) => setData('primary_cta.label', v)} placeholder="Button" className="btn btn-mod btn-color btn-large btn-round" /></div>}
+          </div></div></div></section>
         );
       }
       return (
@@ -367,17 +392,17 @@ export default function SectionRenderer({ section, template, update, updateData 
     case 'contact':
       if (crystal) {
         return (
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-8 py-14 lg:grid-cols-2">
-            <div>
-              <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="mb-3 text-sm font-semibold text-[#d5545e]" />
-              <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="text-3xl font-bold text-[#202534]" />
-              <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="mt-3 text-[#626777]" />
-              <div className="mt-6 space-y-3 text-sm text-[#202534]">
+          <section className="page-section"><div className="container position-relative"><div className="row">
+            <div className="col-lg-5 mb-md-50">
+              <Editable as="p" value={d.eyebrow} onChange={(v) => setData('eyebrow', v)} placeholder="Eyebrow" className="section-caption-fancy mb-20 mb-xs-10" />
+              <Editable as="h2" value={section.title} onChange={(v) => update({ title: v })} placeholder="Heading" className="section-title mb-40" />
+              <Editable as="p" multiline value={section.content} onChange={(v) => update({ content: v })} placeholder="Supporting text" className="section-descr mb-40" />
+              <div>
                 {['email', 'phone', 'address', 'hours'].map((field) => <Editable key={field} as="div" value={d[field]} onChange={(v) => setData(field, v)} placeholder={field} />)}
               </div>
             </div>
-            {d.image && <img src={d.image} alt={d.image_alt || ''} className="h-80 w-full rounded-md object-cover" />}
-          </div>
+            {d.image && <div className="col-lg-7"><img src={d.image} alt={d.image_alt || ''} className="w-100 round" /></div>}
+          </div></div></section>
         );
       }
       return (
