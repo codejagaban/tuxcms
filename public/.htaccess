@@ -49,6 +49,11 @@ ErrorDocument 404 /404.html
 </Files>
 
 <IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
     # Generated HTML must revalidate so a publish is visible immediately.
     <FilesMatch "\.html$">
         Header set Cache-Control "public, max-age=0, must-revalidate"
