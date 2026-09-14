@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
+use App\Models\Setting;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -15,7 +17,7 @@ class PublishTest extends TestCase
     {
         parent::setUp();
 
-        $this->output = storage_path('framework/testing/publish-' . uniqid());
+        $this->output = storage_path('framework/testing/publish-'.uniqid());
         File::ensureDirectoryExists($this->output);
         config(['site.output_path' => $this->output, 'site.url' => 'https://example.test']);
 
@@ -43,7 +45,7 @@ class PublishTest extends TestCase
         $response = $this->postJson('/api/v1/site/build');
 
         $response->assertOk()->assertJsonPath('data.pages', 1);
-        $this->assertFileExists($this->output . '/index.html');
+        $this->assertFileExists($this->output.'/index.html');
     }
 
     public function test_status_reports_pending_changes_before_the_first_publish(): void
@@ -82,6 +84,45 @@ class PublishTest extends TestCase
 
         $this->travel(2)->minutes();
         $page->update(['title' => 'Changed']);
+
+        $this->assertSame(1, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
+    }
+
+    public function test_settings_changes_are_reported_as_pending(): void
+    {
+        Sanctum::actingAs($this->editor());
+        Page::factory()->homepage()->create();
+        Setting::set('site_name', 'Before', 'site');
+        $this->postJson('/api/v1/site/build')->assertOk();
+
+        $this->travel(2)->seconds();
+        $this->putJson('/api/v1/settings', ['settings' => ['site_name' => 'After']])->assertOk();
+
+        $this->assertSame(1, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
+    }
+
+    public function test_media_changes_are_reported_as_pending(): void
+    {
+        Sanctum::actingAs($this->editor());
+        Page::factory()->homepage()->create();
+        $this->postJson('/api/v1/site/build')->assertOk();
+
+        $this->travel(2)->seconds();
+        $this->postJson('/api/v1/media', [
+            'file' => UploadedFile::fake()->image('new-image.png'),
+        ])->assertCreated();
+
+        $this->assertSame(1, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
+    }
+
+    public function test_page_deletion_is_reported_as_pending(): void
+    {
+        Sanctum::actingAs($this->editor());
+        $page = Page::factory()->homepage()->create();
+        $this->postJson('/api/v1/site/build')->assertOk();
+
+        $this->travel(2)->seconds();
+        $this->deleteJson("/api/v1/pages/{$page->id}")->assertOk();
 
         $this->assertSame(1, $this->getJson('/api/v1/site/status')->json('data.pending_changes'));
     }

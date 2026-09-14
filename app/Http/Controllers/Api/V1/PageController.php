@@ -7,6 +7,7 @@ use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Http\Resources\PageResource;
 use App\Models\Page;
+use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -219,6 +220,7 @@ class PageController extends Controller
         }
 
         $page->load(['sections', 'seo', 'author']);
+        PublishState::markChanged();
 
         return response()->json([
             'data' => new PageResource($page),
@@ -244,6 +246,7 @@ class PageController extends Controller
         });
 
         $page->load(['sections', 'seo', 'author']);
+        PublishState::markChanged();
 
         return response()->json([
             'data' => new PageResource($page),
@@ -301,6 +304,7 @@ class PageController extends Controller
     public function destroy(Page $page): JsonResponse
     {
         $page->delete();
+        PublishState::markChanged();
 
         return response()->json([
             'message' => 'Page deleted successfully.',

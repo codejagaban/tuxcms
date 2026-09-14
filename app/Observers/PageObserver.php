@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Page;
+use App\Support\PublishState;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -45,6 +46,13 @@ class PageObserver
         if ($page->wasChanged(['slug', 'parent_id', 'is_homepage']) || $page->wasRecentlyCreated) {
             $this->repathDescendants($page);
         }
+
+        PublishState::markChanged();
+    }
+
+    public function deleted(Page $page): void
+    {
+        PublishState::markChanged();
     }
 
     /** Recursively recompute paths for everything beneath this page. */
@@ -53,7 +61,7 @@ class PageObserver
         DB::transaction(function () use ($page) {
             foreach ($page->children()->get() as $child) {
                 $base = $page->path === '/' ? '' : rtrim($page->path ?? '', '/');
-                $newPath = $base . '/' . $child->slug;
+                $newPath = $base.'/'.$child->slug;
 
                 if ($child->path !== $newPath) {
                     $child->forceFill(['path' => $newPath])->saveQuietly();

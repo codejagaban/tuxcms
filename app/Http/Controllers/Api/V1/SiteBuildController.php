@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Page;
-use App\Models\Setting;
 use App\Services\Site\SiteBuilder;
+use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -19,17 +18,17 @@ use Illuminate\Support\Facades\File;
  */
 class SiteBuildController extends Controller
 {
-    private const LAST_PUBLISHED_KEY = 'last_published_at';
-
     public function store(SiteBuilder $builder): JsonResponse
     {
         $lock = Cache::lock('site:build', 600);
 
-        if (!$lock->get()) {
+        if (! $lock->get()) {
             return response()->json([
                 'message' => 'A build is already running.',
             ], 409);
         }
+
+        $buildStarted = now();
 
         try {
             $result = $builder->build();
@@ -37,20 +36,20 @@ class SiteBuildController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'Build failed: ' . $e->getMessage(),
+                'message' => 'Build failed: '.$e->getMessage(),
             ], 500);
         } finally {
             $lock->release();
         }
 
-        Setting::set(self::LAST_PUBLISHED_KEY, now()->toAtomString(), 'system');
+        PublishState::markPublished($buildStarted);
 
         return response()->json([
             'data' => [
                 'pages' => $result['pages'],
                 'files' => $result['files'],
                 'pruned' => $result['pruned'],
-                'last_published_at' => now()->toAtomString(),
+                'last_published_at' => $buildStarted->toAtomString(),
             ],
             'message' => 'Site published.',
         ]);
@@ -59,19 +58,14 @@ class SiteBuildController extends Controller
     /** Whether anything has changed since the last publish. */
     public function status(SiteBuilder $builder): JsonResponse
     {
-        $lastPublished = Setting::getString(self::LAST_PUBLISHED_KEY);
-        $lastPublishedAt = $lastPublished ? \Illuminate\Support\Carbon::parse($lastPublished) : null;
+        $lastPublishedAt = PublishState::lastPublishedAt();
 
-        $pendingPages = $lastPublishedAt
-            ? Page::where('updated_at', '>', $lastPublishedAt)->count()
-            : Page::count();
-
-        $hasOutput = File::exists($builder->outputPath() . '/index.html');
+        $hasOutput = File::exists($builder->outputPath().'/index.html');
 
         return response()->json([
             'data' => [
                 'last_published_at' => $lastPublishedAt?->toAtomString(),
-                'pending_changes' => $pendingPages,
+                'pending_changes' => PublishState::pendingCount(),
                 'has_output' => $hasOutput,
             ],
         ]);

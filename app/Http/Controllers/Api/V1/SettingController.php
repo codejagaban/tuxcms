@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Http\Resources\SettingResource;
 use App\Models\Setting;
+use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,8 @@ class SettingController extends Controller
             Setting::set($key, $value, $existing?->group ?? 'general');
         }
 
+        PublishState::markChanged();
+
         return response()->json([
             'data' => $this->flatten(),
             'message' => 'Settings updated successfully.',
@@ -52,7 +55,7 @@ class SettingController extends Controller
     private function flatten(): array
     {
         return Setting::all()
-            ->mapWithKeys(fn(Setting $s) => [
+            ->mapWithKeys(fn (Setting $s) => [
                 $s->key => is_array($s->value) ? (reset($s->value) ?: '') : $s->value,
             ])
             ->all();
@@ -70,6 +73,7 @@ class SettingController extends Controller
         $setting = Setting::where('key', $key)->firstOrFail();
 
         $setting->update($request->only('value', 'group'));
+        PublishState::markChanged();
 
         return new SettingResource($setting);
     }
@@ -83,6 +87,7 @@ class SettingController extends Controller
         ]);
 
         $setting = Setting::create($request->only('key', 'value', 'group'));
+        PublishState::markChanged();
 
         return new SettingResource($setting);
     }
@@ -90,6 +95,7 @@ class SettingController extends Controller
     public function destroy($key): JsonResponse
     {
         Setting::where('key', $key)->firstOrFail()->delete();
+        PublishState::markChanged();
 
         return response()->json([
             'message' => 'Setting deleted successfully',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SeoResource;
 use App\Models\Page;
+use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,7 @@ class SeoController extends Controller
         ]);
 
         $seo = $page->updateSeo($validated);
+        PublishState::markChanged();
 
         return response()->json([
             'data' => new SeoResource($seo),

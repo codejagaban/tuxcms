@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MediaResource;
-use Illuminate\Http\JsonResponse;
 use App\Models\MediaLibrary;
+use App\Models\Page;
+use App\Models\PageSection;
+use App\Support\PublishState;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -44,6 +47,7 @@ class MediaController extends Controller
     public function destroy(Media $media): JsonResponse
     {
         $media->delete();
+        PublishState::markChanged();
 
         return response()->json([
             'message' => 'Media deleted successfully',
@@ -62,19 +66,19 @@ class MediaController extends Controller
         // Only these models may receive uploads. Never build a class name from
         // raw input — that would make every App\Models\* class reachable.
         $allowed = [
-            'Page' => \App\Models\Page::class,
-            'PageSection' => \App\Models\PageSection::class,
+            'Page' => Page::class,
+            'PageSection' => PageSection::class,
         ];
 
         $request->validate([
             'file' => [
                 'required',
                 'file',
-                'max:' . config('tuxcms.media.max_file_size', 10240),
-                'mimes:' . implode(',', config('tuxcms.media.allowed_extensions', ['jpg', 'jpeg', 'png', 'gif'])),
+                'max:'.config('tuxcms.media.max_file_size', 10240),
+                'mimes:'.implode(',', config('tuxcms.media.allowed_extensions', ['jpg', 'jpeg', 'png', 'gif'])),
             ],
             'collection' => 'nullable|string',
-            'model_type' => 'nullable|string|in:' . implode(',', array_keys($allowed)),
+            'model_type' => 'nullable|string|in:'.implode(',', array_keys($allowed)),
             // Required only when attaching to a specific model.
             'model_id' => 'required_with:model_type|integer',
             'alt_text' => 'nullable|string',
@@ -95,6 +99,8 @@ class MediaController extends Controller
                 'caption' => $request->caption,
             ])
             ->toMediaCollection($collection);
+
+        PublishState::markChanged();
 
         return response()->json([
             'data' => new MediaResource($media),
