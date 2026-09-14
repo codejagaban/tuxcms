@@ -30,7 +30,7 @@ export default function PageEditor() {
   const [dirty, setDirty] = useState(false);
   const [device, setDevice] = useState('desktop');
   const [publishing, setPublishing] = useState(false);
-  const [previewRevision, setPreviewRevision] = useState(0);
+  const [previewRevision, setPreviewRevision] = useState(() => Date.now());
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function PageEditor() {
     setPublishing(true);
     try {
       await siteAPI.build();
-      setPreviewRevision((value) => value + 1);
+      setPreviewRevision(Date.now());
       // Let the Publish button refresh its "pending changes" state.
       window.dispatchEvent(new Event('tuxcms:published'));
       toast.success('Published to the live site');
