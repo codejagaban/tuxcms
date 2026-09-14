@@ -79,7 +79,10 @@ class SiteBuilder
         foreach ($pages as $page) {
             $relative = $this->relativePathFor($page);
 
-            $html = View::make('site.page', [
+            $themeView = 'site.themes.'.str_replace('_', '-', $page->template).'.page';
+            $view = View::exists($themeView) ? $themeView : 'site.page';
+
+            $html = View::make($view, [
                 'page' => $page,
                 'navigation' => $this->navigation->build($page),
                 'buildYear' => date('Y'),

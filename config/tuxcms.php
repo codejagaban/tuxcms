@@ -4,7 +4,7 @@ return [
 
     'pages' => [
         'per_page' => 15,
-        'templates' => ['default', 'landing', 'contact', 'about', 'services', 'blank'],
+        'templates' => ['default', 'landing', 'contact', 'about', 'services', 'blank', 'crystal'],
         'section_types' => [
             'hero', 'text', 'features', 'stats', 'testimonials', 'team',
             'faq', 'cta', 'contact', 'contact_form', 'map',
