@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\ChecksReservedSlugs;
+use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class UpdatePageRequest extends FormRequest
@@ -22,7 +24,7 @@ class UpdatePageRequest extends FormRequest
             'slug' => 'sometimes|string|max:255',
             'content' => 'nullable|string',
             'excerpt' => 'nullable|string|max:1000',
-            'template' => 'nullable|string|max:100',
+            'template' => ['nullable', 'string', Rule::in(config('tuxcms.pages.templates'))],
             'status' => 'nullable|string|in:draft,published,archived',
             'parent_id' => 'nullable|integer|exists:pages,id',
             'order' => 'nullable|integer|min:0',
@@ -35,7 +37,7 @@ class UpdatePageRequest extends FormRequest
             'sections' => 'nullable|array',
             'sections.*.id' => 'nullable|integer',
             'sections.*.key' => 'nullable|string|max:100',
-            'sections.*.type' => 'required_with:sections|string|max:50',
+            'sections.*.type' => ['required_with:sections', 'string', Rule::in(config('tuxcms.pages.section_types'))],
             'sections.*.title' => 'nullable|string|max:255',
             'sections.*.content' => 'nullable|string',
             'sections.*.data' => 'nullable|array',
@@ -75,6 +77,24 @@ class UpdatePageRequest extends FormRequest
                     ? (int) $this->input('parent_id')
                     : $this->route('page')?->parent_id,
             ),
+            function (Validator $validator) {
+                if (! $this->has('parent_id') || ! $this->input('parent_id')) {
+                    return;
+                }
+
+                $page = $this->route('page');
+                $parent = Page::find($this->integer('parent_id'));
+
+                while ($parent) {
+                    if ($parent->is($page)) {
+                        $validator->errors()->add('parent_id', 'A page cannot be placed beneath itself or one of its descendants.');
+
+                        return;
+                    }
+
+                    $parent = $parent->parent;
+                }
+            },
         ];
     }
 }

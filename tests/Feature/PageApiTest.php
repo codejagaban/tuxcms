@@ -168,4 +168,27 @@ class PageApiTest extends TestCase
         $this->assertFalse($page->show_in_nav);
         $this->assertSame('Shorter', $page->nav_label);
     }
+
+    public function test_page_cannot_be_moved_beneath_its_descendant(): void
+    {
+        Sanctum::actingAs($this->editor());
+        $parent = Page::factory()->create();
+        $child = Page::factory()->create(['parent_id' => $parent->id]);
+
+        $this->putJson("/api/v1/pages/{$parent->id}", ['parent_id' => $child->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('parent_id');
+    }
+
+    public function test_unknown_templates_and_section_types_are_rejected(): void
+    {
+        Sanctum::actingAs($this->editor());
+
+        $this->postJson('/api/v1/pages', [
+            'title' => 'Invalid page',
+            'template' => 'missing-template',
+            'sections' => [['type' => 'unknown-section']],
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['template', 'sections.0.type']);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\ChecksReservedSlugs;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StorePageRequest extends FormRequest
@@ -22,7 +23,7 @@ class StorePageRequest extends FormRequest
             'slug' => 'nullable|string|max:255',
             'content' => 'nullable|string',
             'excerpt' => 'nullable|string|max:1000',
-            'template' => 'nullable|string|max:100',
+            'template' => ['nullable', 'string', Rule::in(config('tuxcms.pages.templates'))],
             'status' => 'nullable|string|in:draft,published,archived',
             'parent_id' => 'nullable|integer|exists:pages,id',
             'order' => 'nullable|integer|min:0',
@@ -36,7 +37,7 @@ class StorePageRequest extends FormRequest
             'sections' => 'nullable|array',
             'sections.*.id' => 'nullable|integer',
             'sections.*.key' => 'nullable|string|max:100',
-            'sections.*.type' => 'required_with:sections|string|max:50',
+            'sections.*.type' => ['required_with:sections', 'string', Rule::in(config('tuxcms.pages.section_types'))],
             'sections.*.title' => 'nullable|string|max:255',
             'sections.*.content' => 'nullable|string',
             'sections.*.data' => 'nullable|array',
