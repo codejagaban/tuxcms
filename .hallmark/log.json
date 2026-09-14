@@ -1,0 +1,12 @@
+[
+  {
+    "date": "2026-09-14",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / neutral",
+    "vibe": "precise utilitarian monochrome publishing workbench",
+    "enrichment": "none",
+    "brief": "TuxCMS publishing dashboard redesign"
+  }
+]
