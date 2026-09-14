@@ -1,3 +1,5 @@
+@php($hero = $cmsSections->get('hero'))
+@php($services = $cmsSections->get('services'))
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -320,22 +322,12 @@
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
                   <span class="wow charsAnimIn" data-splitting="chars">
-                    Our
-                    <span class="mark-decoration-3-wrap"
-                      >Services<b
-                        class="mark-decoration-3 wow scalexIn"
-                        data-wow-delay="0.5s"
-                      ></b
-                    ></span>
+                    {{ $hero?->title ?? 'Our Services' }}
                   </span>
                 </h1>
 
                 <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
-                  We provide a wide range of professional cleaning services
-                  tailored to meet the needs of both residential and commercial
-                  clients. No matter the size or scope of the job, our expert
-                  cleaners ensure every space is left spotless, fresh, and
-                  inviting. Here’s a closer look at the services we offer:
+                  {{ $hero?->content ?? 'We provide a wide range of professional cleaning services tailored to your needs.' }}
                 </p>
               </div>
             </div>

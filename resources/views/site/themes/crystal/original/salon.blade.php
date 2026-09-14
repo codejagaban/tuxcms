@@ -1,3 +1,5 @@
+@php($hero = $cmsSections->get('hero'))
+@php($salonServices = $cmsSections->get('salon-services'))
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -308,26 +310,17 @@
             <div class="row">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Crystal Salon &amp; Hairdressing
+                  {{ $hero?->data['subheading'] ?? 'Crystal Salon & Hairdressing' }}
                 </h2>
 
                 <h1 class="hs-title-10 mb-10">
                   <span class="wow charsAnimIn" data-splitting="chars">
-                    Beautiful
-                    <span class="mark-decoration-3-wrap"
-                      >hair<b
-                        class="mark-decoration-3 wow scalexIn"
-                        data-wow-delay="0.5s"
-                      ></b
-                    ></span>
-                    <span> made with care</span>
+                    {{ $hero?->title ?? 'Beautiful hair made with care' }}
                   </span>
                 </h1>
 
                 <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
-                  From protective styles to fresh treatments, our salon offers
-                  expert hairdressing for every look — plus quality hair products
-                  and attachments.
+                  {{ $hero?->content ?? 'From protective styles to fresh treatments, our salon offers expert hairdressing for every look.' }}
                 </p>
               </div>
             </div>
@@ -346,15 +339,13 @@
                   Salon &amp; Hairdressing
                 </h2>
                 <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp">
-                  Our hairdressing services
+                  {{ $salonServices?->title ?? 'Our hairdressing services' }}
                 </h3>
                 <p
                   class="section-descr mb-0 wow fadeInUp"
                   data-wow-delay="0.06s"
                 >
-                  Alongside our cleaning services, we now offer professional
-                  hairdressing. Book a style or shop hair products and
-                  attachments.
+                  {{ $salonServices?->content ?? 'Alongside our cleaning services, we now offer professional hairdressing.' }}
                 </p>
               </div>
             </div>

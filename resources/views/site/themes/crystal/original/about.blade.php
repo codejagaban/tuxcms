@@ -1,3 +1,5 @@
+@php($hero = $cmsSections->get('hero'))
+@php($story = $cmsSections->get('story'))
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -169,19 +171,12 @@
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
                   <span class="wow charsAnimIn" data-splitting="chars">
-                    About
-                    <span class="mark-decoration-3-wrap"
-                      >us<b
-                        class="mark-decoration-3 wow scalexIn"
-                        data-wow-delay="0.5s"
-                      ></b
-                    ></span>
+                    {{ $hero?->title ?? 'About us' }}
                   </span>
                 </h1>
 
                 <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
-                  Learn about us, our commitment to quality, and why we're the
-                  best choice for your cleaning and hairdressing needs
+                  {{ $hero?->content ?? "Learn about us, our commitment to quality, and why we're the best choice for your cleaning and hairdressing needs" }}
                 </p>
               </div>
             </div>
@@ -200,16 +195,7 @@
                   class="section-descr mb-40 mb-sm-20 wow fadeInUp"
                   data-wow-offset="0"
                 >
-                  At Crystal Service Limited, we believe that a clean
-                  environment leads to a better quality of life. Established
-                  with a commitment to delivering high-quality cleaning services
-                  across the UK, we specialize in a range of services including
-                  commercial cleaning, domestic cleaning, and more. Whether it’s
-                  a sparkling workspace or a spotless home, our dedicated team
-                  is trained to meet the highest standards of cleanliness. And
-                  we're no longer just about cleaning — through Crystal Salon,
-                  our family-run hairdressing business, we bring that same care
-                  to your hair too.
+                  {!! nl2br(e($story?->content ?? 'At Crystal Service Limited, we believe that a clean environment leads to a better quality of life.')) !!}
                 </p>
 
                 <div class="local-scroll wow fadeInUp" data-wow-delay="0.12s">

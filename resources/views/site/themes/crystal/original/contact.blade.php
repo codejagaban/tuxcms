@@ -1,3 +1,5 @@
+@php($hero = $cmsSections->get('hero'))
+@php($details = $cmsSections->get('details'))
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -200,21 +202,12 @@
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
                   <span class="wow charsAnimIn" data-splitting="chars">
-                    Contact
-                    <span class="mark-decoration-3-wrap"
-                      >Us<b
-                        class="mark-decoration-3 wow scalexIn"
-                        data-wow-delay="0.5s"
-                      ></b
-                    ></span>
+                    {{ $hero?->title ?? 'Contact Us' }}
                   </span>
                 </h1>
 
                 <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
-                  We’re here to help with all your cleaning needs. Whether you
-                  have questions, need a quote, or want to book a service, our
-                  friendly team is ready to assist you. Reach out to us and
-                  let’s get started on making your space sparkle!
+                  {{ $hero?->content ?? 'We’re here to help with all your cleaning needs.' }}
                 </p>
               </div>
             </div>
@@ -233,10 +226,10 @@
               <div
                 class="col-lg-4 mb-md-50 mb-sm-30 position-relative z-index-1"
               >
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">Let's Talk</h2>
+                <h2 class="section-caption-fancy mb-20 mb-xs-10">{{ $details?->data['eyebrow'] ?? "Let's Talk" }}</h2>
 
                 <h3 class="section-title mb-50 mb-sm-30">
-                  We’re open to talk to good people.
+                  {{ $details?->title ?? 'We’re open to talk to good people.' }}
                 </h3>
 
                 <!-- Contact Information -->

@@ -63,4 +63,20 @@ class CrystalThemeTest extends TestCase
         $this->assertStringContainsString('id="contact_form"', $contact);
         $this->assertStringContainsString('56 Northfield Street', $contact);
     }
+
+    public function test_crystal_theme_uses_edited_cms_content_in_the_generated_site(): void
+    {
+        $home = Page::where('is_homepage', true)->sole();
+        $hero = $home->sections()->where('key', 'hero')->sole();
+        $hero->update([
+            'title' => 'A locally edited Crystal headline',
+            'content' => 'This sentence came from the dashboard.',
+        ]);
+
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/index.html');
+        $this->assertStringContainsString('A locally edited Crystal headline', preg_replace('/\s+/', ' ', strip_tags($html)));
+        $this->assertStringContainsString('This sentence came from the dashboard.', $html);
+    }
 }

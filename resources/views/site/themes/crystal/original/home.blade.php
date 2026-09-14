@@ -1,3 +1,13 @@
+@php
+  $hero = $cmsSections->get('hero');
+  $about = $cmsSections->get('about');
+  $services = $cmsSections->get('services');
+  $salon = $cmsSections->get('salon');
+  $decorateHero = static function (string $title): string {
+      $escaped = e($title);
+      return preg_replace_callback('/crystal/i', static fn ($match) => '<span class="mark-decoration-3-wrap">'.$match[0].'<b class="mark-decoration-3 wow scalexIn" data-wow-delay="1.1s"></b></span>', $escaped);
+  };
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 
@@ -192,35 +202,28 @@
                   class="col-md-10 offset-md-1 col-lg-6 offset-lg-0 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-30">
                   <div class="w-100 text-center text-lg-start">
                     <h2 class="section-caption-fancy mb-30 mb-xs-20 wow fadeInUp" data-wow-duration="1.2s">
-                      Your Trusted Cleaning Partner
+                      {{ $hero?->data['subheading'] ?? 'Your Trusted Cleaning Partner' }}
                     </h2>
 
                     <h1 class="hs-title-10 mb-30">
                       <span class="wow charsAnimIn" data-splitting="chars">
-                        A
-                        <span class="mark-decoration-3-wrap">crystal
-                          <b class="mark-decoration-3 wow scalexIn" data-wow-delay="1.1s"></b>
-                        </span>
-                        <span> cleaning you can trust</span>
+                        {!! $decorateHero($hero?->title ?? 'A crystal cleaning you can trust') !!}
                       </span>
                     </h1>
 
                     <p class="section-descr mb-40 wow fadeInUp" data-wow-delay="0.6s" data-wow-duration="1.2s"
                       data-wow-offset="0">
-                      We proudly provide unparalleled cleaning services across
-                      the UK. Our mission is to consistently exceed our clients'
-                      expectations with reliable, high-quality cleaning
-                      solutions.
+                      {{ $hero?->content ?? "We proudly provide unparalleled cleaning services across the UK. Our mission is to consistently exceed our clients' expectations with reliable, high-quality cleaning solutions." }}
                     </p>
 
                     <div class="local-scroll wow fadeInUp wch-unset" data-wow-delay="0.7s" data-wow-duration="1.2s">
-                      <a href="/services/"
+                      <a href="{{ $hero?->data['primary_cta']['url'] ?? '/services/' }}"
                         class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mb-xs-10">
-                        <span>View Services</span>
+                        <span>{{ $hero?->data['primary_cta']['label'] ?? 'View Services' }}</span>
                       </a>
 
-                      <a href="/contact/" class="btn btn-mod btn-border-c btn-large btn-round mb-xs-10">
-                        Book a cleaning
+                      <a href="{{ $hero?->data['secondary_cta']['url'] ?? '/contact/' }}" class="btn btn-mod btn-border-c btn-large btn-round mb-xs-10">
+                        {{ $hero?->data['secondary_cta']['label'] ?? 'Book a cleaning' }}
                       </a>
                     </div>
                   </div>
@@ -231,7 +234,7 @@
                 <div class="col-lg-6 col-xl-7 d-flex align-items-center">
                   <div class="w-100 wow fadeInLeft" data-wow-delay="0.7s">
                     <div class="position-relative mt-40 mb-20">
-                      <img src="/themes/crystal/images/intro/hero.png" alt="Professional cleaner from Crystal Services Limited" class="w-100" />
+                      <img src="{{ $hero?->data['image'] ?? '/themes/crystal/images/intro/hero.png' }}" alt="{{ $hero?->data['image_alt'] ?? 'Professional cleaner from Crystal Services Limited' }}" class="w-100" />
 
                       <!-- Decorative Waves -->
                       <div class="decoration-5 d-none d-sm-block" data-rellax-y data-rellax-speed="-0.7"
@@ -268,20 +271,14 @@
           <div class="container position-relative">
             <div class="row mb-xs-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">About Us</h2>
+                <h2 class="section-caption-fancy mb-20 mb-xs-10">{{ $about?->data['eyebrow'] ?? 'About Us' }}</h2>
 
                 <h3 class="section-title-strong mb-30 mb-xs-20 wow fadeInUp">
-                  Your trusted partner for sparkling clean homes and offices.
+                  {{ $about?->title ?? 'Your trusted partner for sparkling clean homes and offices.' }}
                 </h3>
 
                 <p class="section-descr mb-40 mb-sm-20 wow fadeInUp" data-wow-delay="0.06s">
-                  At Crystal Service Limited, we believe that a clean
-                  environment leads to a better quality of life. Established
-                  with a commitment to delivering high-quality cleaning services
-                  across the UK, we specialize in a range of services including
-                  commercial cleaning, domestic cleaning, and more. Whether it’s
-                  a sparkling workspace or a spotless home, our dedicated team
-                  is trained to meet the highest standards of cleanliness.
+                  {{ $about?->content ?? 'At Crystal Service Limited, we believe that a clean environment leads to a better quality of life.' }}
                 </p>
 
                 <div class="local-scroll wow fadeInUp" data-wow-delay="0.12s">
@@ -367,41 +364,23 @@
             <div class="row mb-60 mb-sm-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
                 <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Our Services
+                  {{ $services?->data['eyebrow'] ?? 'Our Services' }}
                 </h2>
                 <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp">
-                  We provide a wide range of professional cleaning services
-                  tailored to meet your needs
+                  {{ $services?->title ?? 'We provide a wide range of professional cleaning services tailored to meet your needs' }}
                 </h3>
               </div>
             </div>
 
             <div class="row mb-60 mb-sm-40">
+              @foreach (array_slice($services?->data['items'] ?? [], 0, 3) as $index => $item)
               <div class="col-md-4 mb-sm-30 text-center wow fadeInUp">
-                <img src="/themes/crystal/images/about/services-6.png" alt="Commercial Cleaning" class="w-100 mb-20"
+                <img src="{{ $item['image'] ?? '' }}" alt="{{ $item['title'] ?? '' }}" class="w-100 mb-20"
                   style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">Commercial Cleaning</h4>
-                <p class="services-5-text mb-0">
-                  Offices, retail and commercial spaces, cleaned around your
-                  schedule.
-                </p>
+                <h4 class="services-5-title mb-10">{{ $item['title'] ?? '' }}</h4>
+                <p class="services-5-text mb-0">{{ $item['description'] ?? '' }}</p>
               </div>
-              <div class="col-md-4 mb-sm-30 text-center wow fadeInUp" data-wow-delay="0.1s">
-                <img src="/themes/crystal/images/about/services-5.png" alt="Deep Cleaning" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">Deep Cleaning</h4>
-                <p class="services-5-text mb-0">
-                  A thorough top-to-bottom clean for homes and offices.
-                </p>
-              </div>
-              <div class="col-md-4 mb-sm-30 text-center wow fadeInUp" data-wow-delay="0.2s">
-                <img src="/themes/crystal/images/about/services-0.png" alt="End-of-Tenancy Cleaning" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">End-of-Tenancy Cleaning</h4>
-                <p class="services-5-text mb-0">
-                  Move out with your deposit — every corner left pristine.
-                </p>
-              </div>
+              @endforeach
             </div>
 
             <div class="row">
@@ -420,39 +399,23 @@
             <div class="row mb-60 mb-sm-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
                 <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Salon &amp; Hairdressing
+                  {{ $salon?->data['eyebrow'] ?? 'Salon & Hairdressing' }}
                 </h2>
                 <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp">
-                  Now offering professional hairdressing
+                  {{ $salon?->title ?? 'Now offering professional hairdressing' }}
                 </h3>
               </div>
             </div>
 
             <div class="row mb-60 mb-sm-40">
+              @foreach (array_slice($salon?->data['items'] ?? [], 0, 3) as $index => $item)
               <div class="col-md-4 mb-sm-30 text-center wow fadeInUp">
-                <img src="/themes/crystal/images/salon/braiding.jpg" alt="Braiding" class="w-100 mb-20"
+                <img src="{{ $item['image'] ?? '' }}" alt="{{ $item['title'] ?? '' }}" class="w-100 mb-20"
                   style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">Braiding</h4>
-                <p class="services-5-text mb-0">
-                  Box braids, cornrows and protective styles that last.
-                </p>
+                <h4 class="services-5-title mb-10">{{ $item['title'] ?? '' }}</h4>
+                <p class="services-5-text mb-0">{{ $item['description'] ?? '' }}</p>
               </div>
-              <div class="col-md-4 mb-sm-30 text-center wow fadeInUp" data-wow-delay="0.1s">
-                <img src="/themes/crystal/images/salon/sew-in.jpg" alt="Sew-in" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">Sew-in</h4>
-                <p class="services-5-text mb-0">
-                  Natural-looking weaves, professionally installed.
-                </p>
-              </div>
-              <div class="col-md-4 mb-sm-30 text-center wow fadeInUp" data-wow-delay="0.2s">
-                <img src="/themes/crystal/images/salon/dreadlocks.jpg" alt="Dreadlocks" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">Dreadlocks</h4>
-                <p class="services-5-text mb-0">
-                  Starter locs, maintenance and styling.
-                </p>
-              </div>
+              @endforeach
             </div>
 
             <div class="row">

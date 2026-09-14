@@ -30,6 +30,7 @@ export default function PageEditor() {
   const [dirty, setDirty] = useState(false);
   const [device, setDevice] = useState('desktop');
   const [publishing, setPublishing] = useState(false);
+  const [previewRevision, setPreviewRevision] = useState(0);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -106,6 +107,7 @@ export default function PageEditor() {
     setPublishing(true);
     try {
       await siteAPI.build();
+      setPreviewRevision((value) => value + 1);
       // Let the Publish button refresh its "pending changes" state.
       window.dispatchEvent(new Event('tuxcms:published'));
       toast.success('Published to the live site');
@@ -224,6 +226,7 @@ export default function PageEditor() {
 
   const selected = page.sections.find((s) => s._uid === selectedUid) || null;
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
+  const crystalPath = page.is_homepage ? '/' : `/${page.slug}/`;
 
   const sectionPreview = page.sections.map((section) => {
     const isSel = section._uid === selectedUid;
@@ -336,11 +339,13 @@ export default function PageEditor() {
                 </div>
               )}
               {page.template === 'crystal'
-                ? <CrystalCanvas mobile={device === 'mobile'}>{sectionPreview}</CrystalCanvas>
+                ? <CrystalCanvas path={crystalPath} revision={previewRevision} mobile={device === 'mobile'} />
                 : sectionPreview}
             </div>
             <p className="text-center text-xs text-gray-400 mt-4">
-              Click any text above to edit it inline. Use the panel to manage structure.
+              {page.template === 'crystal'
+                ? 'This is the exact generated page. Edit with the panel, then publish to refresh it.'
+                : 'Click any text above to edit it inline. Use the panel to manage structure.'}
             </p>
           </div>
         </main>
