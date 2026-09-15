@@ -97,7 +97,8 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             element.textContent = normalise(element.textContent);
           });
 
-          const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
+          const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')]
+            .filter((element) => !element.closest('form'));
           const claimed = new Set();
 
           const makeTextEditable = (match, field, initialValue) => {
@@ -141,7 +142,8 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             makeTextEditable(match, field, field.value);
           });
 
-          const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span')];
+          const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
+            .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
           templateText.forEach((element, index) => {
             if (claimed.has(element) || normalise(element.textContent).length <= 1) return;
             const value = normalise(overrides.text?.[index] || element.textContent);

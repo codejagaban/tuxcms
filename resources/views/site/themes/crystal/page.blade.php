@@ -13,7 +13,8 @@
           (() => {
             const overrides = @json($crystalOverrides, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
             const normalise = (value = '') => value.replace(/\s+/g, ' ').trim();
-            const text = [...document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span')];
+            const text = [...document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
+              .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
             Object.entries(overrides.text || {}).forEach(([index, value]) => {
               if (text[index] && normalise(value).length > 1) text[index].textContent = value;
             });
