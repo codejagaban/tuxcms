@@ -788,3 +788,65 @@ a.link-hover-anim i{
         margin-right: 0 !important;
     }   
 }
+
+/* Crystal site directory footer */
+.crystal-footer-main{
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+.crystal-footer-intro{
+    max-width: 285px;
+    line-height: 1.7;
+}
+.crystal-footer-enquiry{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-weight: 600;
+    color: #fff !important;
+}
+.crystal-footer-enquiry span{
+    transition: transform .2s ease;
+}
+.crystal-footer-enquiry:hover span,
+.crystal-footer-enquiry:focus-visible span{
+    transform: translate(2px, -2px);
+}
+.crystal-footer-directory .fw-title{
+    margin-bottom: 22px;
+}
+.crystal-footer-directory .fw-menu li:not(:last-child){
+    margin-bottom: 8px;
+}
+.crystal-footer-contact{
+    display: grid;
+    gap: 8px;
+    margin: 0;
+}
+.crystal-footer-contact a{
+    color: rgba(255, 255, 255, .7);
+    overflow-wrap: anywhere;
+}
+.crystal-footer-contact a:hover,
+.crystal-footer-contact a:focus-visible{
+    color: #fff;
+}
+.crystal-footer-social-title{
+    margin-top: 32px;
+}
+.crystal-footer-social i{
+    display: inline-block;
+    width: 20px;
+}
+.crystal-footer-base{
+    padding-top: 28px;
+}
+.crystal-footer a:focus-visible{
+    outline: 2px solid #fff;
+    outline-offset: 4px;
+}
+@media only screen and (max-width: 767px) {
+    .crystal-footer-base > div + div{
+        margin-top: 18px;
+    }
+}

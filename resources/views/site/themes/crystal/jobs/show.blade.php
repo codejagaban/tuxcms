@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/themes/crystal/css/style.css?v=3">
     <link rel="stylesheet" href="/themes/crystal/css/style-responsive.css">
     <link rel="stylesheet" href="/themes/crystal/css/vertical-rhythm.min.css">
-    <link rel="stylesheet" href="/themes/crystal/css/demo-fancy/demo-fancy.css?v=2">
+    <link rel="stylesheet" href="/themes/crystal/css/demo-fancy/demo-fancy.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">

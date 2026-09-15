@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/themes/crystal/css/owl.carousel.css">
     <link rel="stylesheet" href="/themes/crystal/css/splitting.css">
     <link rel="stylesheet" href="/themes/crystal/css/YTPlayer.css">
-    <link rel="stylesheet" href="/themes/crystal/css/demo-fancy/demo-fancy.css?v=2">
+    <link rel="stylesheet" href="/themes/crystal/css/demo-fancy/demo-fancy.css?v=3">
 </head>
 <body class="appear-animate">
     <div class="page-loader color"><div class="loader">Loading...</div></div>
