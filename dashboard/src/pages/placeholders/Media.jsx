@@ -17,7 +17,7 @@ const Media = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, mediaId: null, mediaName: '' });
   const [isDeleting, setIsDeleting] = useState(false);
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, media: null });
-  const itemsPerPage = 8;
+  const itemsPerPage = 16;
 
   useEffect(() => {
       fetchMedia();
