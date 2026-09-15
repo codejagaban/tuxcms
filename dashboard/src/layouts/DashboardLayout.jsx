@@ -10,6 +10,7 @@ import {
   CaretDown,
   List,
   X,
+  Briefcase,
 } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import PublishButton from '../components/PublishButton';
@@ -17,6 +18,7 @@ import PublishButton from '../components/PublishButton';
 const navItems = [
   { path: '/dashboard', label: 'Overview', icon: SquaresFour },
   { path: '/dashboard/pages', label: 'Pages', icon: FileText },
+  { path: '/dashboard/jobs', label: 'Jobs', icon: Briefcase },
   { path: '/dashboard/media', label: 'Media', icon: ImageSquare },
   { path: '/dashboard/seo', label: 'Search', icon: MagnifyingGlass },
   { path: '/dashboard/settings', label: 'Settings', icon: Gear },

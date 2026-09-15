@@ -8,6 +8,7 @@ import PageEditor from './pages/PageEditor';
 import Media from './pages/placeholders/Media';
 import Settings from './pages/placeholders/Settings';
 import SEO from './pages/placeholders/SEO';
+import Jobs from './pages/Jobs';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="pages" element={<Pages />} />
+          <Route path="jobs" element={<Jobs />} />
           <Route path="media" element={<Media />} />
           <Route path="settings" element={<Settings />} />
           <Route path="seo" element={<SEO />} />

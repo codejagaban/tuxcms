@@ -67,6 +67,14 @@ export const pageAPI = {
   delete: (pageId) => api.delete(`/pages/${pageId}`),
 };
 
+export const jobAPI = {
+  list: (params = {}) => api.get('/jobs', { params }),
+  get: (id) => api.get(`/jobs/${id}`),
+  create: (data) => api.post('/jobs', data),
+  update: (id, data) => api.put(`/jobs/${id}`, data),
+  delete: (id) => api.delete(`/jobs/${id}`),
+};
+
 // Media endpoints
 export const mediaAPI = {
   list: (params = {}) => api.get('/media', { params }),
