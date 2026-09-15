@@ -43,7 +43,7 @@ const imagePath = (url = '', base = 'http://localhost') => {
 };
 
 /** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], onEdit, onSelect, onImageEdit }) {
+export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], onEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
@@ -122,6 +122,24 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           });
         });
 
+        const editableRoutes = new Map(pages.map((page) => {
+          const route = page.is_homepage ? '/' : `/${String(page.path || page.slug || '').replace(/^\/+|\/+$/g, '')}/`;
+          return [route, page];
+        }));
+        doc.querySelectorAll('a[href]').forEach((link) => {
+          const url = new URL(link.href, doc.baseURI);
+          if (url.origin !== doc.location.origin) return;
+          const route = url.pathname === '/' ? '/' : `${url.pathname.replace(/\/+$/g, '')}/`;
+          const destination = editableRoutes.get(route);
+          if (!destination) return;
+          link.title = `Edit ${destination.title}`;
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onPageNavigate?.(destination.id);
+          });
+        });
+
         installEditors();
         const view = frameRef.current?.contentWindow;
         view?.requestAnimationFrame(() => view.requestAnimationFrame(installEditors));
@@ -134,7 +152,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
   return (
     <iframe
       ref={frameRef}
-      key={src}
+      key={`${src}:${pages.length}`}
       title="Exact Crystal website preview"
       src={src}
       onLoad={preparePreview}

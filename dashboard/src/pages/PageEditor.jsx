@@ -51,6 +51,7 @@ export default function PageEditor() {
   const [publishing, setPublishing] = useState(false);
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
   const [imageEdit, setImageEdit] = useState(null);
+  const [editablePages, setEditablePages] = useState([]);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -83,6 +84,16 @@ export default function PageEditor() {
     })();
     return () => { active = false; };
   }, [id, isNew]);
+
+  useEffect(() => {
+    let active = true;
+    pageAPI.list({ per_page: 100 })
+      .then((response) => {
+        if (active) setEditablePages(response.data.data || []);
+      })
+      .catch((error) => console.error('Could not load editable navigation targets:', error));
+    return () => { active = false; };
+  }, []);
 
   // ── Mutators (all mark the page dirty) ──────────────────
   const mutate = useCallback((fn) => {
@@ -378,9 +389,15 @@ export default function PageEditor() {
                     revision={previewRevision}
                     mobile={device === 'mobile'}
                     sections={page.sections}
+                    pages={editablePages}
                     onEdit={updateCrystalField}
                     onSelect={setSelectedUid}
                     onImageEdit={(target, element) => setImageEdit({ target, element })}
+                    onPageNavigate={(pageId) => {
+                      if (String(pageId) === String(id)) return;
+                      if (dirty && !window.confirm('Discard unsaved changes?')) return;
+                      navigate(`/dashboard/pages/${pageId}/edit`);
+                    }}
                   />
                 : sectionPreview}
             </div>
