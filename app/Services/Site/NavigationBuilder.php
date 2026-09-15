@@ -2,6 +2,7 @@
 
 namespace App\Services\Site;
 
+use App\Models\JobPost;
 use App\Models\Page;
 use App\Support\Site;
 
@@ -27,10 +28,16 @@ class NavigationBuilder
         $byParent = $pages->groupBy('parent_id');
         $currentPath = $current ? Site::pathFor($current) : null;
 
-        return $byParent->get(null, collect())
-            ->map(fn(Page $page) => $this->item($page, $byParent, $currentPath))
+        $items = $byParent->get(null, collect())
+            ->map(fn (Page $page) => $this->item($page, $byParent, $currentPath))
             ->values()
             ->all();
+
+        if (JobPost::published()->exists()) {
+            $items[] = ['label' => 'Careers', 'url' => '/careers/', 'active' => false, 'children' => []];
+        }
+
+        return $items;
     }
 
     private function item(Page $page, $byParent, ?string $currentPath): array
@@ -38,12 +45,12 @@ class NavigationBuilder
         $url = Site::pathFor($page);
 
         $children = $byParent->get($page->id, collect())
-            ->map(fn(Page $child) => $this->item($child, $byParent, $currentPath))
+            ->map(fn (Page $child) => $this->item($child, $byParent, $currentPath))
             ->values()
             ->all();
 
         $active = $currentPath === $url
-            || collect($children)->contains(fn($child) => $child['active']);
+            || collect($children)->contains(fn ($child) => $child['active']);
 
         return [
             'label' => $page->navLabel(),

@@ -2,6 +2,7 @@
 
 namespace App\Services\Site;
 
+use App\Models\JobPost;
 use App\Models\Page;
 use App\Services\Seo\RobotsGenerator;
 use App\Services\Seo\SitemapGenerator;
@@ -38,7 +39,7 @@ class SiteBuilder
     public function build(?callable $progress = null): array
     {
         $output = $this->outputPath();
-        $temp = storage_path('app/site-build-' . uniqid());
+        $temp = storage_path('app/site-build-'.uniqid());
 
         // CLI has no request context, so absolute URLs must come from config.
         URL::forceRootUrl(Site::url());
@@ -58,7 +59,7 @@ class SiteBuilder
         }
 
         return [
-            'pages' => $this->publishedPages()->count(),
+            'pages' => $this->publishedPages()->count() + JobPost::published()->count(),
             'files' => count($written),
             'pruned' => $pruned,
             'output' => $output,
@@ -93,6 +94,24 @@ class SiteBuilder
             $progress && $progress($page->title, $relative);
         }
 
+        $jobs = JobPost::published()->orderByDesc('published_at')->get();
+        if ($jobs->isNotEmpty()) {
+            $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make('site.themes.crystal.jobs.index', [
+                'jobs' => $jobs,
+                'navigation' => $navigation,
+                'buildYear' => date('Y'),
+            ])->render());
+        }
+
+        foreach ($jobs as $job) {
+            $relative = 'careers/'.$job->slug.'/index.html';
+            $written[$relative] = $this->write($temp, $relative, View::make('site.themes.crystal.jobs.show', [
+                'job' => $job,
+                'navigation' => $navigation,
+                'buildYear' => date('Y'),
+            ])->render());
+        }
+
         $notFound = View::make('site.404', [
             'page' => $this->placeholderPage('Page not found'),
             'navigation' => $navigation,
@@ -116,11 +135,11 @@ class SiteBuilder
         File::ensureDirectoryExists($output);
 
         foreach (array_keys($written) as $relative) {
-            $destination = $output . '/' . $relative;
+            $destination = $output.'/'.$relative;
             File::ensureDirectoryExists(dirname($destination));
 
-            $staged = $destination . '.tmp';
-            File::copy($temp . '/' . $relative, $staged);
+            $staged = $destination.'.tmp';
+            File::copy($temp.'/'.$relative, $staged);
             // rename() is atomic on the same filesystem — no visitor ever sees
             // a partially written page.
             rename($staged, $destination);
@@ -134,7 +153,7 @@ class SiteBuilder
                 continue;
             }
 
-            $stale = $output . '/' . $relative;
+            $stale = $output.'/'.$relative;
 
             if (File::exists($stale)) {
                 File::delete($stale);
@@ -145,7 +164,7 @@ class SiteBuilder
         }
 
         File::put(
-            $output . '/' . self::MANIFEST,
+            $output.'/'.self::MANIFEST,
             json_encode(['generated_at' => now()->toAtomString(), 'files' => $written], JSON_PRETTY_PRINT)
         );
 
@@ -154,7 +173,7 @@ class SiteBuilder
 
     private function write(string $root, string $relative, string $contents): string
     {
-        $path = $root . '/' . $relative;
+        $path = $root.'/'.$relative;
         File::ensureDirectoryExists(dirname($path));
         File::put($path, $contents);
 
@@ -166,13 +185,13 @@ class SiteBuilder
     {
         $path = trim($page->getFullPath(), '/');
 
-        return $path === '' ? 'index.html' : $path . '/index.html';
+        return $path === '' ? 'index.html' : $path.'/index.html';
     }
 
     private function publishedPages()
     {
         return Page::published()
-            ->with(['sections' => fn($q) => $q->visible()->orderBy('order'), 'seo', 'media', 'parent'])
+            ->with(['sections' => fn ($q) => $q->visible()->orderBy('order'), 'seo', 'media', 'parent'])
             ->orderBy('path')
             ->get();
     }
@@ -189,9 +208,9 @@ class SiteBuilder
 
     private function readManifest(string $output): array
     {
-        $path = $output . '/' . self::MANIFEST;
+        $path = $output.'/'.self::MANIFEST;
 
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             return [];
         }
 
