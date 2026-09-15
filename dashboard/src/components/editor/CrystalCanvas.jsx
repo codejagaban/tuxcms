@@ -3,37 +3,52 @@ import { useMemo, useRef } from 'react';
 const normalise = (value = '') => value.replace(/\s+/g, ' ').trim();
 
 function editableFields(sections) {
+  const ignoredKeys = new Set(['url', 'href', 'image', 'image_alt', 'background_image', 'src']);
+
+  const visit = (value, path, fields) => {
+    if (typeof value === 'string') {
+      const key = path.split('.').at(-1);
+      if (!ignoredKeys.has(key) && normalise(value).length > 1) fields.push([path, value]);
+      return;
+    }
+    if (!value || typeof value !== 'object') return;
+    Object.entries(value).forEach(([key, child]) => visit(child, path ? `${path}.${key}` : key, fields));
+  };
+
   return sections.flatMap((section) => {
-    const fields = [
-      ['title', section.title],
-      ['content', section.content],
-      ['data.subheading', section.data?.subheading],
-      ['data.eyebrow', section.data?.eyebrow],
-      ['data.primary_cta.label', section.data?.primary_cta?.label],
-      ['data.secondary_cta.label', section.data?.secondary_cta?.label],
-    ];
-
-    (section.data?.items || []).forEach((item, index) => {
-      ['title', 'description', 'quote', 'author', 'role'].forEach((field) => {
-        fields.push([`data.items.${index}.${field}`, item?.[field]]);
-      });
-    });
-
-    return fields
-      .filter(([, value]) => typeof value === 'string' && normalise(value).length > 1)
-      .map(([field, value]) => ({ sectionUid: section._uid, field, value: normalise(value) }));
+    const fields = [];
+    visit(section.title, 'title', fields);
+    visit(section.content, 'content', fields);
+    visit(section.data, 'data', fields);
+    return fields.map(([field, value]) => ({ sectionUid: section._uid, field, value: normalise(value) }));
   });
 }
 
 function editableImages(sections) {
+  const imageKeys = new Set(['image', 'image_url', 'background_image', 'src']);
+
+  const visit = (value, path, sectionUid, images, parent = null) => {
+    if (!value || typeof value !== 'object') return;
+    Object.entries(value).forEach(([key, child]) => {
+      const field = path ? `${path}.${key}` : key;
+      if (typeof child === 'string' && imageKeys.has(key) && child.trim()) {
+        const altKey = key === 'image' ? 'image_alt' : `${key}_alt`;
+        images.push({
+          sectionUid,
+          field: `data.${field}`,
+          altField: parent && Object.hasOwn(parent, altKey) ? `data.${path ? `${path}.` : ''}${altKey}` : null,
+          url: child,
+          alt: parent?.[altKey] || parent?.title || '',
+        });
+      } else if (child && typeof child === 'object') {
+        visit(child, field, sectionUid, images, child);
+      }
+    });
+  };
+
   return sections.flatMap((section) => {
     const images = [];
-    if (section.data?.image) {
-      images.push({ sectionUid: section._uid, field: 'data.image', altField: 'data.image_alt', url: section.data.image, alt: section.data.image_alt || '' });
-    }
-    (section.data?.items || []).forEach((item, index) => {
-      if (item?.image) images.push({ sectionUid: section._uid, field: `data.items.${index}.image`, url: item.image, alt: item.image_alt || item.title || '' });
-    });
+    visit(section.data, '', section._uid, images, section.data);
     return images;
   });
 }
@@ -43,7 +58,7 @@ const imagePath = (url = '', base = 'http://localhost') => {
 };
 
 /** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], onEdit, onSelect, onImageEdit, onPageNavigate }) {
+export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], overrides = {}, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
@@ -70,13 +85,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
           const claimed = new Set();
 
-          fields.forEach((field) => {
-            const match = candidates
-              .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
-              .sort((a, b) => a.children.length - b.children.length)[0];
-
-            if (!match) return;
-            claimed.add(match);
+          const makeTextEditable = (match, field, initialValue) => {
             if (match.dataset.tuxcmsEditable === 'true') return;
             match.dataset.tuxcmsEditable = 'true';
             match.contentEditable = 'true';
@@ -85,11 +94,13 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
               // Crystal's heading animation wraps characters in spans. Remove
               // those wrappers before the browser places the caret so editing
               // behaves like a normal text field without duplicating content.
-              if (match.children.length) match.textContent = field.value;
+              if (match.children.length) match.textContent = initialValue;
             });
             match.addEventListener('click', (event) => {
+              event.preventDefault();
               event.stopPropagation();
-              onSelect?.(field.sectionUid);
+              event.stopImmediatePropagation();
+              if (field.sectionUid) onSelect?.(field.sectionUid);
             });
             match.addEventListener('keydown', (event) => {
               if (event.key === 'Enter') {
@@ -99,8 +110,28 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             });
             match.addEventListener('blur', () => {
               const value = normalise(match.textContent);
-              if (value && value !== field.value) onEdit?.(field.sectionUid, field.field, value);
+              if (!value || value === initialValue) return;
+              if (field.overrideKey != null) onOverrideEdit?.('text', field.overrideKey, value);
+              else onEdit?.(field.sectionUid, field.field, value);
             });
+          };
+
+          fields.forEach((field) => {
+            const match = candidates
+              .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
+              .sort((a, b) => a.children.length - b.children.length)[0];
+
+            if (!match) return;
+            claimed.add(match);
+            makeTextEditable(match, field, field.value);
+          });
+
+          const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span')];
+          templateText.forEach((element, index) => {
+            if (claimed.has(element) || normalise(element.textContent).length <= 1) return;
+            const value = normalise(overrides.text?.[index] || element.textContent);
+            if (overrides.text?.[index]) element.textContent = value;
+            makeTextEditable(element, { overrideKey: index }, value);
           });
         };
 
@@ -117,8 +148,29 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           match.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
+            event.stopImmediatePropagation();
             onSelect?.(image.sectionUid);
             onImageEdit?.(image, match);
+          });
+        });
+
+        const templateImages = [...doc.querySelectorAll('main img')].filter((element) => {
+          const alt = normalise(element.alt || '');
+          const source = imagePath(element.src, doc.baseURI);
+          return alt && !/(decoration|bg-shape|logo|favicon)/i.test(source);
+        });
+        templateImages.forEach((element, index) => {
+          if (claimedImages.has(element)) return;
+          const replacement = overrides.images?.[index];
+          if (replacement?.url) element.src = replacement.url;
+          if (replacement?.alt) element.alt = replacement.alt;
+          element.dataset.tuxcmsImageEditable = 'true';
+          element.title = 'Click to replace image';
+          element.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            onImageEdit?.({ overrideKey: index, url: element.src, alt: element.alt }, element);
           });
         });
 
@@ -152,7 +204,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
   return (
     <iframe
       ref={frameRef}
-      key={`${src}:${pages.length}`}
+      key={`${src}:${pages.length}:${sections.length}`}
       title="Exact Crystal website preview"
       src={src}
       onLoad={preparePreview}

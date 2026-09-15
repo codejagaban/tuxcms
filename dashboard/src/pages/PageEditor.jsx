@@ -37,6 +37,28 @@ const setNestedValue = (source, path, value) => {
   return root;
 };
 
+const crystalOverrides = (content) => {
+  try {
+    const parsed = JSON.parse(content || '{}');
+    return parsed.crystal_overrides || {};
+  } catch {
+    return {};
+  }
+};
+
+const withCrystalOverride = (content, kind, key, value) => {
+  let parsed = {};
+  try { parsed = JSON.parse(content || '{}'); } catch { parsed = {}; }
+  const overrides = parsed.crystal_overrides || {};
+  return JSON.stringify({
+    ...parsed,
+    crystal_overrides: {
+      ...overrides,
+      [kind]: { ...(overrides[kind] || {}), [key]: value },
+    },
+  });
+};
+
 export default function PageEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -390,7 +412,11 @@ export default function PageEditor() {
                     mobile={device === 'mobile'}
                     sections={page.sections}
                     pages={editablePages}
+                    overrides={crystalOverrides(page.content)}
                     onEdit={updateCrystalField}
+                    onOverrideEdit={(kind, key, value) => {
+                      mutate((current) => ({ ...current, content: withCrystalOverride(current.content, kind, key, value) }));
+                    }}
                     onSelect={setSelectedUid}
                     onImageEdit={(target, element) => setImageEdit({ target, element })}
                     onPageNavigate={(pageId) => {
@@ -431,8 +457,15 @@ export default function PageEditor() {
         onSelect={(url, alt) => {
           const target = imageEdit?.target;
           if (!target) return;
-          updateCrystalField(target.sectionUid, target.field, url);
-          if (target.altField) updateCrystalField(target.sectionUid, target.altField, alt);
+          if (target.overrideKey != null) {
+            mutate((current) => ({
+              ...current,
+              content: withCrystalOverride(current.content, 'images', target.overrideKey, { url, alt }),
+            }));
+          } else {
+            updateCrystalField(target.sectionUid, target.field, url);
+            if (target.altField) updateCrystalField(target.sectionUid, target.altField, alt);
+          }
           if (imageEdit.element) {
             imageEdit.element.src = url;
             imageEdit.element.alt = alt;

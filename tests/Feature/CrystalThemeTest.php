@@ -79,4 +79,24 @@ class CrystalThemeTest extends TestCase
         $this->assertStringContainsString('A locally edited Crystal headline', preg_replace('/\s+/', ' ', strip_tags($html)));
         $this->assertStringContainsString('This sentence came from the dashboard.', $html);
     }
+
+    public function test_crystal_theme_build_includes_template_content_overrides(): void
+    {
+        $services = Page::where('slug', 'services')->sole();
+        $services->update([
+            'content' => json_encode([
+                'crystal_overrides' => [
+                    'text' => [2 => 'A template section edited in the dashboard'],
+                    'images' => [0 => ['url' => '/storage/edited-service.jpg', 'alt' => 'Edited service image']],
+                ],
+            ]),
+        ]);
+
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/services/index.html');
+        $this->assertStringContainsString('A template section edited in the dashboard', $html);
+        $this->assertStringContainsString('edited-service.jpg', $html);
+        $this->assertStringContainsString('Edited service image', $html);
+    }
 }
