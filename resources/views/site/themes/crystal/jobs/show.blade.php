@@ -21,7 +21,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <style>
-        .main-nav{opacity:1!important;background:#fff}
         body{background:#fff;color:#17213b}.job-shell{max-width:1120px;margin:auto;padding:145px 28px 100px}.job-back{display:inline-block;margin-bottom:42px;color:#536079}.job-hero{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:72px;padding-bottom:56px;border-bottom:1px solid #d9deea}.job-hero h1{font-size:clamp(44px,6vw,76px);line-height:1;letter-spacing:-.055em;margin:0 0 24px}.job-summary{font-size:20px;line-height:1.65;color:#536079;max-width:700px}.facts{margin:0}.facts div{padding:13px 0;border-bottom:1px solid #e4e7ef}.facts dt{font-size:12px;color:#707a90}.facts dd{margin:4px 0 0;font-weight:700}.job-body{max-width:760px;padding-top:58px}.job-body h2{font-size:29px;margin:48px 0 18px;letter-spacing:-.025em}.job-body p,.job-body li{font-size:17px;line-height:1.75;color:#3f4b63}.job-body ul{padding-left:22px}.apply{margin-top:58px;padding-top:38px;border-top:1px solid #d9deea}.apply a{display:inline-flex;padding:15px 22px;background:#17213b;color:#fff;font-weight:700;border-radius:4px}.apply small{display:block;margin-top:14px;color:#707a90}@media(max-width:760px){.job-hero{grid-template-columns:1fr;gap:34px}.job-shell{padding-top:120px}}
     </style>
 </head>
@@ -42,4 +41,8 @@
 </main>
 @include('site.themes.crystal.partials.footer')
 </div>
+<script src="/themes/crystal/js/jquery.min.js"></script>
+<script src="/themes/crystal/js/bootstrap.bundle.min.js"></script>
+<script src="/themes/crystal/js/plugins.js"></script>
+<script src="/themes/crystal/js/all.js"></script>
 </body></html>
