@@ -261,6 +261,7 @@
               <li><a href="/services/">Services</a></li>
               <li><a href="/salon/" class="active">Salon</a></li>
               <li><a href="/contact/">Contact</a></li>
+              <li><a href="/careers/">Careers</a></li>
 
               <li class="desktop-nav-display">
                 <div class="vr mt-2"></div>
@@ -675,6 +676,7 @@
                       >
                     </li>
                     <li><a href="/contact/">Book an Appointment</a></li>
+                    <li><a href="/careers/">Careers</a></li>
                   </ul>
                 </div>
                 <!-- End Footer Widget -->

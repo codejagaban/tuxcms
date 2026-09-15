@@ -132,6 +132,7 @@
                             <li><a href="/services/">Services</a></li>
                             <li><a href="/salon/">Salon</a></li>
                             <li><a href="/contact/">Contact</a></li>
+                            <li><a href="/careers/">Careers</a></li>
 
                             <li class="desktop-nav-display">
                                 <div class="vr mt-2"></div>
@@ -943,6 +944,7 @@
                     <li><a href="/services/">Airbnb Cleaning</a></li>
                     <li><a href="/services/">Deep Cleaning</a></li>
                     <li><a href="/contact/">Book a Cleaning</a></li>
+                    <li><a href="/careers/">Careers</a></li>
                   </ul>
                 </div>
                 <!-- End Footer Widget -->
