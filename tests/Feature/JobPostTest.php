@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\JobPost;
+use App\Models\Page;
 use App\Models\User;
 use App\Services\Site\SiteBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,6 +43,20 @@ class JobPostTest extends TestCase
         $this->assertStringContainsString('mailto:jobs@example.com', $detail);
         $sitemap = file_get_contents(storage_path('framework/testing/jobs-site/sitemap.xml'));
         $this->assertStringContainsString('/careers/business-development-manager/', $sitemap);
+    }
+
+    public function test_careers_navigation_and_empty_listing_are_always_built(): void
+    {
+        config(['site.output_path' => storage_path('framework/testing/jobs-site-empty')]);
+        Page::factory()->homepage()->create();
+
+        app(SiteBuilder::class)->build();
+
+        $home = file_get_contents(storage_path('framework/testing/jobs-site-empty/index.html'));
+        $careers = file_get_contents(storage_path('framework/testing/jobs-site-empty/careers/index.html'));
+
+        $this->assertSame(3, substr_count($home, 'href="/careers/"'));
+        $this->assertStringContainsString('There are no open roles at the moment.', $careers);
     }
 
     private function payload(): array

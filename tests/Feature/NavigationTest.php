@@ -25,7 +25,7 @@ class NavigationTest extends TestCase
 
         $labels = array_column($this->nav(), 'label');
 
-        $this->assertSame(['First', 'Second'], $labels);
+        $this->assertSame(['First', 'Second', 'Careers'], $labels);
     }
 
     public function test_homepage_is_excluded_because_the_logo_links_there(): void
@@ -33,7 +33,7 @@ class NavigationTest extends TestCase
         Page::factory()->homepage()->create(['title' => 'Home']);
         Page::factory()->create(['title' => 'About', 'slug' => 'about']);
 
-        $this->assertSame(['About'], array_column($this->nav(), 'label'));
+        $this->assertSame(['About', 'Careers'], array_column($this->nav(), 'label'));
     }
 
     public function test_pages_hidden_from_nav_are_excluded(): void
@@ -41,7 +41,7 @@ class NavigationTest extends TestCase
         Page::factory()->create(['title' => 'Shown', 'slug' => 'shown']);
         Page::factory()->hiddenFromNav()->create(['title' => 'Hidden', 'slug' => 'hidden']);
 
-        $this->assertSame(['Shown'], array_column($this->nav(), 'label'));
+        $this->assertSame(['Shown', 'Careers'], array_column($this->nav(), 'label'));
     }
 
     public function test_drafts_are_excluded(): void
@@ -49,14 +49,14 @@ class NavigationTest extends TestCase
         Page::factory()->create(['title' => 'Live', 'slug' => 'live']);
         Page::factory()->draft()->create(['title' => 'Draft', 'slug' => 'draft']);
 
-        $this->assertSame(['Live'], array_column($this->nav(), 'label'));
+        $this->assertSame(['Live', 'Careers'], array_column($this->nav(), 'label'));
     }
 
     public function test_nav_label_overrides_the_page_title(): void
     {
         Page::factory()->create(['title' => 'Professional Services', 'slug' => 'services', 'nav_label' => 'Services']);
 
-        $this->assertSame(['Services'], array_column($this->nav(), 'label'));
+        $this->assertSame(['Services', 'Careers'], array_column($this->nav(), 'label'));
     }
 
     public function test_children_are_nested_under_their_parent(): void
@@ -66,7 +66,7 @@ class NavigationTest extends TestCase
 
         $nav = $this->nav();
 
-        $this->assertCount(1, $nav);
+        $this->assertCount(2, $nav);
         $this->assertSame('Web Design', $nav[0]['children'][0]['label']);
         $this->assertSame('/services/web-design/', $nav[0]['children'][0]['url']);
     }

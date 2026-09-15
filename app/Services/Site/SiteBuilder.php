@@ -95,13 +95,11 @@ class SiteBuilder
         }
 
         $jobs = JobPost::published()->orderByDesc('published_at')->get();
-        if ($jobs->isNotEmpty()) {
-            $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make('site.themes.crystal.jobs.index', [
-                'jobs' => $jobs,
-                'navigation' => $navigation,
-                'buildYear' => date('Y'),
-            ])->render());
-        }
+        $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make('site.themes.crystal.jobs.index', [
+            'jobs' => $jobs,
+            'navigation' => $navigation,
+            'buildYear' => date('Y'),
+        ])->render());
 
         foreach ($jobs as $job) {
             $relative = 'careers/'.$job->slug.'/index.html';

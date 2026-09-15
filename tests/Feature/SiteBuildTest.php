@@ -69,12 +69,12 @@ class SiteBuildTest extends TestCase
     public function test_drafts_and_scheduled_pages_are_not_written(): void
     {
         Page::factory()->homepage()->create();
-        Page::factory()->draft()->create(['slug' => 'careers']);
+        Page::factory()->draft()->create(['slug' => 'draft-page']);
         Page::factory()->scheduled()->create(['slug' => 'launch']);
 
         $this->build();
 
-        $this->assertFileDoesNotExist($this->output . '/careers/index.html');
+        $this->assertFileDoesNotExist($this->output . '/draft-page/index.html');
         $this->assertFileDoesNotExist($this->output . '/launch/index.html');
     }
 
@@ -172,7 +172,7 @@ class SiteBuildTest extends TestCase
         $result = $this->build();
 
         $this->assertSame(2, $result['pages']);
-        // Two pages plus 404, sitemap and robots.
-        $this->assertSame(5, $result['files']);
+        // Two pages plus Careers, 404, sitemap and robots.
+        $this->assertSame(6, $result['files']);
     }
 }

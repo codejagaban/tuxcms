@@ -2,7 +2,6 @@
 
 namespace App\Services\Site;
 
-use App\Models\JobPost;
 use App\Models\Page;
 use App\Support\Site;
 
@@ -33,9 +32,7 @@ class NavigationBuilder
             ->values()
             ->all();
 
-        if (JobPost::published()->exists()) {
-            $items[] = ['label' => 'Careers', 'url' => '/careers/', 'active' => false, 'children' => []];
-        }
+        $items[] = ['label' => 'Careers', 'url' => '/careers/', 'active' => false, 'children' => []];
 
         return $items;
     }
