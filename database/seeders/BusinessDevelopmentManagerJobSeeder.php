@@ -17,7 +17,8 @@ class BusinessDevelopmentManagerJobSeeder extends Seeder
             'salary' => '£56,000 per annum',
             'employment_type' => 'Permanent',
             'application_email' => 'crystalservicesltd@outlook.com',
-            'status' => 'draft',
+            'status' => 'published',
+            'published_at' => now(),
             'summary' => 'Lead the development of new business opportunities across our professional cleaning and salon operations.',
             'description' => "Crystal Services Limited is a growing multi-service business operating across professional cleaning and hairdressing services.\n\nThe Business Development Manager will develop and implement growth strategies, identify new markets and generate new client relationships. Working closely with the Director, the successful candidate will grow the client portfolio, increase recurring contracts and strengthen existing customer relationships.",
             'responsibilities' => [
