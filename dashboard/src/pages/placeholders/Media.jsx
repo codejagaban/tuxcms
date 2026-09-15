@@ -17,7 +17,7 @@ const Media = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, mediaId: null, mediaName: '' });
   const [isDeleting, setIsDeleting] = useState(false);
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, media: null });
-  const itemsPerPage = 12;
+  const itemsPerPage = 8;
 
   useEffect(() => {
       fetchMedia();
@@ -206,7 +206,7 @@ const Media = () => {
 
       {!isLoading && media.length > 0 && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
             {media.map((item) => (
               <MediaCard
                 key={item.id}
@@ -270,29 +270,29 @@ const Media = () => {
 
 const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, getMediaIcon }) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="overflow-hidden rounded-md bg-white ring-1 ring-inset ring-[var(--color-rule-2)]">
       {isImageMedia ? (
-        <div className="aspect-square bg-gray-100 overflow-hidden">
+        <div className="aspect-[4/3] overflow-hidden bg-[var(--color-paper-2)]">
           <img
             src={media.url}
             alt={media.file_name}
-            className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-90"
+            className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-80"
             onClick={onViewDetails}
           />
         </div>
       ) : (
         <div
-          className="aspect-square bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+          className="flex aspect-[4/3] cursor-pointer items-center justify-center bg-[var(--color-paper-2)] transition-colors hover:bg-[var(--color-rule-2)]"
           onClick={onViewDetails}
         >
           {getMediaIcon(media.mime_type)}
         </div>
       )}
 
-      <div className="p-4 space-y-3">
+      <div className="space-y-2.5 p-3">
         <div>
-          <p className="font-medium text-gray-900 truncate">{media.file_name}</p>
-          <p className="text-xs text-gray-500 mt-1">{media.mime_type}</p>
+          <p className="truncate text-sm font-medium text-gray-900">{media.file_name}</p>
+          <p className="mt-0.5 text-[11px] text-gray-500">{media.mime_type}</p>
         </div>
 
         <div className="flex items-center gap-2">
