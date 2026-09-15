@@ -18,6 +18,7 @@
 
         <div class="inner-nav desktop-nav">
             <ul class="clearlist local-scroll justify-content-end">
+                <li><a href="/">Home</a></li>
                 @foreach ($navigation as $item)
                     <li>
                         <a href="{{ $item['url'] }}" @class(['active' => $item['active']])>
