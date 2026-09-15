@@ -26,6 +26,8 @@
     </style>
 </head>
 <body>
+<a href="#main" class="btn skip-to-content">Skip to Content</a>
+<div class="page" id="top">
 @include('site.themes.crystal.partials.nav')
 <main class="job-shell" id="main">
     <a class="job-back" href="/careers/">← All opportunities</a>
@@ -39,4 +41,5 @@
     </article>
 </main>
 @include('site.themes.crystal.partials.footer')
+</div>
 </body></html>

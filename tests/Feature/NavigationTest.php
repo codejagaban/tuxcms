@@ -98,4 +98,13 @@ class NavigationTest extends TestCase
 
         $this->assertTrue($nav[0]['active'], 'A parent should highlight while a child page is open.');
     }
+
+    public function test_careers_is_active_for_listing_and_job_paths(): void
+    {
+        $listing = collect(app(NavigationBuilder::class)->build(currentPath: '/careers/'))->keyBy('label');
+        $detail = collect(app(NavigationBuilder::class)->build(currentPath: '/careers/business-development-manager/'))->keyBy('label');
+
+        $this->assertTrue($listing['Careers']['active']);
+        $this->assertTrue($detail['Careers']['active']);
+    }
 }

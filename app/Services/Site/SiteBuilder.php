@@ -95,9 +95,10 @@ class SiteBuilder
         }
 
         $jobs = JobPost::published()->orderByDesc('published_at')->get();
+        $careersNavigation = $this->navigation->build(currentPath: '/careers/');
         $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make('site.themes.crystal.jobs.index', [
             'jobs' => $jobs,
-            'navigation' => $navigation,
+            'navigation' => $careersNavigation,
             'buildYear' => date('Y'),
         ])->render());
 
@@ -105,7 +106,7 @@ class SiteBuilder
             $relative = 'careers/'.$job->slug.'/index.html';
             $written[$relative] = $this->write($temp, $relative, View::make('site.themes.crystal.jobs.show', [
                 'job' => $job,
-                'navigation' => $navigation,
+                'navigation' => $careersNavigation,
                 'buildYear' => date('Y'),
             ])->render());
         }

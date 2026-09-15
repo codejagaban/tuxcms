@@ -15,7 +15,7 @@ use App\Support\Site;
 class NavigationBuilder
 {
     /** @return array<int, array{label: string, url: string, active: bool, children: array}> */
-    public function build(?Page $current = null): array
+    public function build(?Page $current = null, ?string $currentPath = null): array
     {
         $pages = Page::published()
             ->where('show_in_nav', true)
@@ -25,14 +25,19 @@ class NavigationBuilder
             ->get(['id', 'parent_id', 'title', 'nav_label', 'slug', 'path', 'is_homepage', 'order']);
 
         $byParent = $pages->groupBy('parent_id');
-        $currentPath = $current ? Site::pathFor($current) : null;
+        $currentPath ??= $current ? Site::pathFor($current) : null;
 
         $items = $byParent->get(null, collect())
             ->map(fn (Page $page) => $this->item($page, $byParent, $currentPath))
             ->values()
             ->all();
 
-        $items[] = ['label' => 'Careers', 'url' => '/careers/', 'active' => false, 'children' => []];
+        $items[] = [
+            'label' => 'Careers',
+            'url' => '/careers/',
+            'active' => $currentPath !== null && str_starts_with($currentPath, '/careers/'),
+            'children' => [],
+        ];
 
         return $items;
     }

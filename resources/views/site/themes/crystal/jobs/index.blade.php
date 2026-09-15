@@ -19,6 +19,8 @@
     </style>
 </head>
 <body>
+<a href="#main" class="btn skip-to-content">Skip to Content</a>
+<div class="page" id="top">
 @include('site.themes.crystal.partials.nav')
 <main class="career-shell" id="main">
     <header class="career-head"><h1>Work with Crystal</h1><p>Join a growing Worcester business delivering professional cleaning and hairdressing services.</p></header>
@@ -27,4 +29,5 @@
     @empty <p class="empty">There are no open roles at the moment.</p> @endforelse
 </main>
 @include('site.themes.crystal.partials.footer')
+</div>
 </body></html>
