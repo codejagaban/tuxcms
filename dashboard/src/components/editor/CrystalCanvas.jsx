@@ -82,6 +82,21 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         if (!style.isConnected) doc.head.appendChild(style);
 
         const installEditors = () => {
+          // Crystal's character animation adds a visually-hidden text clone
+          // beside the animated span. A parent heading therefore contains the
+          // same words twice, which can be mistaken for the editable value.
+          // The CMS preview does not animate text, so collapse that structure
+          // to one accessible, plain-text node before matching fields.
+          doc.querySelectorAll('[data-splitting="chars"]').forEach((element) => {
+            const accessibilityClone = element.previousElementSibling;
+            if (accessibilityClone?.classList.contains('visually-hidden')) {
+              accessibilityClone.remove();
+            }
+            element.removeAttribute('aria-hidden');
+            element.removeAttribute('data-splitting');
+            element.textContent = normalise(element.textContent);
+          });
+
           const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')];
           const claimed = new Set();
 
