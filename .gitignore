@@ -23,6 +23,9 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
+# Local release archives are generated artifacts, not source.
+/*-deploy.zip
+
 # Dashboard SPA — built into public/admin, from where the web server serves
 # it directly. A build artifact like public/build, so it is not tracked.
 /dashboard/node_modules
