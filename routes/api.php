@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\JobPostController;
+use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\SearchController;
@@ -30,6 +31,8 @@ Route::prefix('v1')->group(function () {
     Route::get('pages/{slugOrId}', [PageController::class, 'show']);
 
     Route::get('search', [SearchController::class, 'search']);
+    Route::post('job-applications', [JobApplicationController::class, 'store'])
+        ->middleware('throttle:5,1');
 
     // ════════════════════════════════════════════════════════
     // Authenticated management
@@ -50,6 +53,8 @@ Route::prefix('v1')->group(function () {
         Route::post('jobs', [JobPostController::class, 'store']);
         Route::put('jobs/{job}', [JobPostController::class, 'update']);
         Route::delete('jobs/{job}', [JobPostController::class, 'destroy']);
+        Route::get('job-applications', [JobApplicationController::class, 'index']);
+        Route::get('job-applications/{application}/cv', [JobApplicationController::class, 'download']);
 
         // Per-page SEO
         Route::get('pages/{page}/seo', [SeoController::class, 'show']);

@@ -40,7 +40,9 @@ class JobPostTest extends TestCase
         $this->assertStringContainsString('Business Development Manager', file_get_contents(storage_path('framework/testing/jobs-site/careers/index.html')));
         $detail = file_get_contents(storage_path('framework/testing/jobs-site/careers/business-development-manager/index.html'));
         $this->assertStringContainsString('JobPosting', $detail);
-        $this->assertStringContainsString('mailto:jobs@example.com', $detail);
+        $this->assertStringContainsString('action="/api/v1/job-applications"', $detail);
+        $this->assertStringContainsString('name="cv"', $detail);
+        $this->assertStringNotContainsString('mailto:jobs@example.com', $detail);
         $sitemap = file_get_contents(storage_path('framework/testing/jobs-site/sitemap.xml'));
         $this->assertStringContainsString('/careers/business-development-manager/', $sitemap);
     }
