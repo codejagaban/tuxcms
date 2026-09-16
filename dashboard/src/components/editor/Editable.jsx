@@ -50,6 +50,9 @@ const Editable = ({
     <Tag
       ref={ref}
       contentEditable
+      role="textbox"
+      aria-multiline={multiline}
+      aria-label={`Edit ${placeholder.toLowerCase()}`}
       suppressContentEditableWarning
       spellCheck={false}
       onInput={handleInput}

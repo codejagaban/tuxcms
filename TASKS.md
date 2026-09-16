@@ -2,7 +2,6 @@
 
 ## Active
 
-- [ ] **Complete an accessibility and responsive-editor audit** - verify keyboard editing, focus, image alternatives, contrast, and narrow-screen behaviour
 - [ ] **Add privacy and legal content support** - provide policy pages and footer links for forms that collect personal information
 - [ ] **Upgrade job applications from email links to a proper form** - support validation, CV upload, spam protection, delivery feedback, and the configured recipient
 - [ ] **Reduce the dashboard JavaScript bundle** - split infrequently used editor and administration screens
@@ -14,6 +13,7 @@
 
 ## Done
 
+- [x] ~~**Complete an accessibility and responsive-editor audit** - verify keyboard editing, focus, image alternatives, contrast, and narrow-screen behaviour~~ (2026-09-16)
 - [x] ~~**Protect unfinished editor changes** - add autosave, unsaved-change warnings, and recoverable page revisions~~ (2026-09-16)
 - [x] ~~**Make global navigation and footer content manageable** - let editors maintain site-wide links and service directories without a code deployment~~ (2026-09-16)
 - [x] ~~**Add browser regression coverage for the visual editor** - protect inline editing, publishing, image replacement, and editable navigation from recurring regressions~~ (2026-09-16)

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 const pageRecord = (id, title, slug, isHomepage = false) => ({
   id,
@@ -150,12 +151,37 @@ test('revision history restores an earlier state into the editable preview', asy
 
   await page.getByRole('button', { name: 'Page history' }).click();
   const dialog = page.getByRole('dialog');
+  await expect(page.getByRole('button', { name: 'Close dialog' })).toBeFocused();
   await expect(dialog).toContainText('Earlier Home');
   await dialog.getByRole('button', { name: 'Restore' }).click();
 
   const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
   await expect(preview.locator('[data-tuxcms-editable]').filter({ hasText: 'Earlier heading' })).toHaveCount(1);
   await expect(page.locator('[title="Unsaved changes"]')).toBeVisible();
+});
+
+test('revision dialog closes with Escape and restores focus', async ({ page }) => {
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+
+  const historyButton = page.getByRole('button', { name: 'Page history' });
+  await historyButton.click();
+  await page.keyboard.press('Escape');
+
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(historyButton).toBeFocused();
+});
+
+test('editor starts with a mobile-sized preview on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+
+  const frame = page.locator('iframe[title="Exact Crystal website preview"]');
+  await expect(frame).toBeVisible();
+  const box = await frame.boundingBox();
+  expect(box.width).toBeLessThanOrEqual(390);
+  await expect(page.getByRole('tab', { name: 'Page' })).toBeVisible();
 });
 
 test('dirty edits autosave without publishing', async ({ page }) => {
@@ -170,4 +196,16 @@ test('dirty edits autosave without publishing', async ({ page }) => {
   await expect(page.locator('[title="Unsaved changes"]')).toBeVisible();
   await expect.poll(() => saves.at(-1)?.sections[0].title, { timeout: 10000 }).toBe('Autosaved heading');
   await expect(page.locator('[title="Unsaved changes"]')).toHaveCount(0);
+});
+
+test('editor shell has no serious automated accessibility violations', async ({ page }) => {
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+  await expect(page.frameLocator('iframe[title="Exact Crystal website preview"]').locator('main')).toBeVisible();
+
+  const results = await new AxeBuilder({ page })
+    .exclude('iframe')
+    .analyze();
+  const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
+  expect(serious).toEqual([]);
 });

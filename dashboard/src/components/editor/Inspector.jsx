@@ -34,6 +34,8 @@ export default function Inspector({
   const tabBtn = (id, text) => (
     <button
       onClick={() => setTab(id)}
+      role="tab"
+      aria-selected={tab === id}
       className={`flex-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors ${
         tab === id
           ? 'border-black text-black'
@@ -46,7 +48,7 @@ export default function Inspector({
 
   return (
     <aside className="flex h-full w-[340px] shrink-0 flex-col border-l border-[var(--color-rule-2)] bg-[var(--color-paper)] max-[767px]:fixed max-[767px]:inset-x-0 max-[767px]:bottom-0 max-[767px]:z-30 max-[767px]:h-[46dvh] max-[767px]:w-full max-[767px]:border-l-0 max-[767px]:border-t">
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200" role="tablist" aria-label="Editor controls">
         {tabBtn('page', 'Page')}
         {tabBtn('section', 'Section')}
         {tabBtn('seo', 'SEO')}
@@ -179,19 +181,25 @@ function PageTab({
             return (
               <li
                 key={s._uid}
-                onClick={() => selectSection(s._uid)}
                 className={`group flex items-center gap-2 rounded-lg border px-2.5 py-2 cursor-pointer ${
                   isSel ? 'border-black bg-neutral-100' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <span className="w-5 shrink-0 text-center text-xs font-medium text-gray-300">{i + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">
-                    {s.title || sectionLabel(s.type)}
+                <button
+                  type="button"
+                  onClick={() => selectSection(s._uid)}
+                  aria-pressed={!!isSel}
+                  className="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left"
+                >
+                  <span className="w-5 shrink-0 text-center text-xs font-medium text-gray-600">{i + 1}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium text-gray-900">
+                      {s.title || sectionLabel(s.type)}
+                    </div>
+                    <div className="text-xs text-gray-600">{sectionLabel(s.type)}</div>
                   </div>
-                  <div className="text-xs text-gray-400">{sectionLabel(s.type)}</div>
-                </div>
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                </button>
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                   <IconBtn title={s.is_visible ? 'Hide' : 'Show'} onClick={(e) => { e.stopPropagation(); updateSection(s._uid, { is_visible: !s.is_visible }); }}>
                     {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeSlash className="h-4 w-4 text-gray-400" />}
                   </IconBtn>
@@ -375,7 +383,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
                   <span className="flex-1 text-sm text-gray-700 truncate">
                     {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
                   </span>
-                  <button onClick={() => removeItem(idx)} title="Remove" className="text-gray-400 hover:text-black">
+                  <button onClick={() => removeItem(idx)} title="Remove" aria-label={`Remove ${listCfg.label} ${idx + 1}`} className="min-h-11 min-w-11 text-gray-400 hover:text-black">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -439,8 +447,9 @@ function IconBtn({ children, onClick, title, disabled }) {
     <button
       onClick={onClick}
       title={title}
+      aria-label={title}
       disabled={disabled}
-      className="p-1 rounded hover:bg-white text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent"
+      className="min-h-11 min-w-11 rounded hover:bg-white text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent"
     >
       {children}
     </button>

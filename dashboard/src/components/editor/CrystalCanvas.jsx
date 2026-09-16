@@ -130,6 +130,9 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
               ? `override:${field.overrideKey}`
               : `section:${field.sectionKey}:${field.field}`;
             match.contentEditable = 'true';
+            match.setAttribute('role', 'textbox');
+            match.setAttribute('aria-label', `Edit ${match.tagName.toLowerCase()} text`);
+            match.setAttribute('aria-multiline', 'false');
             match.spellcheck = true;
             match.addEventListener('pointerdown', () => {
               // Crystal's heading animation wraps characters in spans. Remove

@@ -70,7 +70,7 @@ export default function PageEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [device, setDevice] = useState('desktop');
+  const [device, setDevice] = useState(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
   const [publishing, setPublishing] = useState(false);
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
   const [imageEdit, setImageEdit] = useState(null);
@@ -364,7 +364,7 @@ export default function PageEditor() {
             <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
             {dirty && <span className="h-2 w-2 rounded-full bg-black" title="Unsaved changes" />}
           </div>
-          <div className="text-xs text-gray-400 truncate">
+          <div className="text-xs text-gray-600 truncate">
             {publishing
               ? 'Publishing to the live site…'
               : saving
@@ -386,6 +386,8 @@ export default function PageEditor() {
               onClick={() => setDevice('desktop')}
               className={`icon-button min-h-9 min-w-9 ${device === 'desktop' ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)]' : 'text-[var(--color-muted)]'}`}
               title="Desktop"
+              aria-label="Preview on desktop"
+              aria-pressed={device === 'desktop'}
             >
               <Monitor className="h-4 w-4" />
             </button>
@@ -393,6 +395,8 @@ export default function PageEditor() {
               onClick={() => setDevice('mobile')}
               className={`icon-button min-h-9 min-w-9 ${device === 'mobile' ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)]' : 'text-[var(--color-muted)]'}`}
               title="Mobile"
+              aria-label="Preview on mobile"
+              aria-pressed={device === 'mobile'}
             >
               <DeviceMobile className="h-4 w-4" />
             </button>
