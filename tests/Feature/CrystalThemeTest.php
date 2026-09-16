@@ -149,4 +149,18 @@ class CrystalThemeTest extends TestCase
         $this->assertStringNotContainsString('javascript:alert(1)', $html);
         $this->assertStringNotContainsString('Commercial cleaning', $html);
     }
+
+    public function test_crystal_footer_only_shows_valid_configured_legal_links(): void
+    {
+        Setting::set('privacy_url', '/privacy/', 'legal');
+        Setting::set('terms_url', 'javascript:alert(1)', 'legal');
+
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/index.html');
+        $this->assertStringContainsString('aria-label="Legal"', $html);
+        $this->assertStringContainsString('href="/privacy/"', $html);
+        $this->assertStringNotContainsString('javascript:alert(1)', $html);
+        $this->assertStringNotContainsString('>Terms</a>', $html);
+    }
 }

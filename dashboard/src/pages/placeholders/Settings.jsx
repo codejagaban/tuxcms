@@ -33,6 +33,9 @@ const Settings = () => {
     footer_support_email: '',
     footer_cleaning_links: '',
     footer_salon_links: '',
+    privacy_url: '',
+    terms_url: '',
+    cookie_url: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +76,9 @@ const Settings = () => {
         footer_support_email: data.footer_support_email || '',
         footer_cleaning_links: data.footer_cleaning_links || '',
         footer_salon_links: data.footer_salon_links || '',
+        privacy_url: data.privacy_url || '',
+        terms_url: data.terms_url || '',
+        cookie_url: data.cookie_url || '',
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -236,6 +242,20 @@ const Settings = () => {
           </div>
         </CardContent>
       </Card>
+
+      <SettingsGroup
+        title="Legal Pages"
+        description="Create each policy as a normal CMS page, then enter its path here to show it in the shared footer."
+        fields={[
+          { key: 'privacy_url', label: 'Privacy policy path', placeholder: '/privacy/' },
+          { key: 'terms_url', label: 'Terms path', placeholder: '/terms/' },
+          { key: 'cookie_url', label: 'Cookie policy path', placeholder: '/cookies/' },
+        ]}
+        settings={settings}
+        onChange={handleInputChange}
+        onSave={() => saveGroup('Legal', ['privacy_url', 'terms_url', 'cookie_url'])}
+        isSaving={savingGroups.Legal}
+      />
 
       {/* Forms — submissions are handled by Web3Forms, not this CMS */}
       <SettingsGroup

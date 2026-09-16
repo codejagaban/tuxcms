@@ -7,6 +7,7 @@
         'address' => '56 Northfield Street, Worcester, Worcestershire, WR1 1NT.',
     ], Site::contact());
     $footerSocial = Site::socialLinks();
+    $legalLinks = Site::legalLinks();
     $footerIntro = \App\Models\Setting::getString(
         'footer_intro',
         'Professional cleaning and salon services for homes, workplaces and people across Worcester.'
@@ -109,6 +110,13 @@
             <div class="col-md-4 col-lg-3"><b>© Crystal Services LTD <span class="date">{{ $buildYear ?? date('Y') }}</span></b></div>
             <div class="col-md-7 offset-md-1 offset-lg-2 clearfix">
                 <b>{{ $footerContact['address'] }}</b>
+                @if ($legalLinks)
+                    <nav class="crystal-footer-legal" aria-label="Legal">
+                        @foreach ($legalLinks as $link)
+                            <a href="{{ $link['url'] }}">{{ $link['label'] }}</a>
+                        @endforeach
+                    </nav>
+                @endif
                 <div class="local-scroll float-end mt-n20 mt-sm-10">
                     <a href="#top" class="link-to-top"><i class="mi-arrow-up size-24"></i><span class="visually-hidden">Scroll to top</span></a>
                 </div>

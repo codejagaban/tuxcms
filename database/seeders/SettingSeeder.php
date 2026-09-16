@@ -47,6 +47,12 @@ class SettingSeeder extends Seeder
             ['key' => 'footer_support_email', 'value' => '', 'group' => 'footer'],
             ['key' => 'footer_cleaning_links', 'value' => '', 'group' => 'footer'],
             ['key' => 'footer_salon_links', 'value' => '', 'group' => 'footer'],
+
+            // Legal pages are normal CMS pages; these settings expose them in
+            // the shared footer only after an editor provides their paths.
+            ['key' => 'privacy_url', 'value' => '', 'group' => 'legal'],
+            ['key' => 'terms_url', 'value' => '', 'group' => 'legal'],
+            ['key' => 'cookie_url', 'value' => '', 'group' => 'legal'],
         ];
 
         foreach ($settings as $setting) {

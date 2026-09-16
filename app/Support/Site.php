@@ -143,6 +143,24 @@ class Site
             ->all();
     }
 
+    /** Configured policy links; blank entries stay out of the public footer. */
+    public static function legalLinks(): array
+    {
+        $labels = [
+            'privacy_url' => 'Privacy',
+            'terms_url' => 'Terms',
+            'cookie_url' => 'Cookies',
+        ];
+
+        return collect($labels)->map(function ($label, $key) {
+            $url = Setting::getString($key);
+            if (!$url || (!str_starts_with($url, '/') && !filter_var($url, FILTER_VALIDATE_URL))) {
+                return null;
+            }
+            return compact('label', 'url');
+        })->filter()->values()->all();
+    }
+
     /** True when the whole site should be excluded from indexing. */
     public static function isNoindex(): bool
     {

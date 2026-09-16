@@ -841,6 +841,19 @@ a.link-hover-anim i{
 .crystal-footer-base{
     padding-top: 28px;
 }
+.crystal-footer-legal{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 10px;
+}
+.crystal-footer-legal a{
+    color: rgba(255, 255, 255, .72);
+}
+.crystal-footer-legal a:hover,
+.crystal-footer-legal a:focus-visible{
+    color: #fff;
+}
 .crystal-footer a:focus-visible{
     outline: 2px solid #fff;
     outline-offset: 4px;
