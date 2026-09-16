@@ -1,14 +1,23 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './lib/auth';
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Pages from './pages/placeholders/Pages';
-import PageEditor from './pages/PageEditor';
-import Media from './pages/placeholders/Media';
-import Settings from './pages/placeholders/Settings';
-import SEO from './pages/placeholders/SEO';
-import Jobs from './pages/Jobs';
+import Spinner from './components/ui/Spinner';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Pages = lazy(() => import('./pages/placeholders/Pages'));
+const PageEditor = lazy(() => import('./pages/PageEditor'));
+const Media = lazy(() => import('./pages/placeholders/Media'));
+const Settings = lazy(() => import('./pages/placeholders/Settings'));
+const SEO = lazy(() => import('./pages/placeholders/SEO'));
+const Jobs = lazy(() => import('./pages/Jobs'));
+
+const Deferred = ({ children }) => (
+  <Suspense fallback={<div className="grid min-h-72 place-items-center"><Spinner size="lg" /></div>}>
+    {children}
+  </Suspense>
+);
 
 function App() {
   return (
@@ -23,11 +32,11 @@ function App() {
         {/* Full-screen visual page editor (outside the dashboard chrome) */}
         <Route
           path="/dashboard/pages/create"
-          element={<ProtectedRoute><PageEditor /></ProtectedRoute>}
+          element={<ProtectedRoute><Deferred><PageEditor /></Deferred></ProtectedRoute>}
         />
         <Route
           path="/dashboard/pages/:id/edit"
-          element={<ProtectedRoute><PageEditor /></ProtectedRoute>}
+          element={<ProtectedRoute><Deferred><PageEditor /></Deferred></ProtectedRoute>}
         />
 
         {/* Protected Dashboard Routes */}
@@ -39,12 +48,12 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="pages" element={<Pages />} />
-          <Route path="jobs" element={<Jobs />} />
-          <Route path="media" element={<Media />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="seo" element={<SEO />} />
+          <Route index element={<Deferred><Dashboard /></Deferred>} />
+          <Route path="pages" element={<Deferred><Pages /></Deferred>} />
+          <Route path="jobs" element={<Deferred><Jobs /></Deferred>} />
+          <Route path="media" element={<Deferred><Media /></Deferred>} />
+          <Route path="settings" element={<Deferred><Settings /></Deferred>} />
+          <Route path="seo" element={<Deferred><SEO /></Deferred>} />
         </Route>
 
         {/* Catch all - redirect to dashboard */}
