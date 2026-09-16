@@ -80,6 +80,11 @@ class Page extends Model implements HasMedia
         return $this->hasMany(PageSection::class)->orderBy('order');
     }
 
+    public function revisions()
+    {
+        return $this->hasMany(PageRevision::class);
+    }
+
     // ── Scopes ─────────────────────────────────────────────
 
     public function scopePublished($query)

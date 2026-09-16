@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
 
         // Pages
         Route::post('pages', [PageController::class, 'store']);
+        Route::get('pages/{page}/revisions', [PageController::class, 'revisions']);
         Route::put('pages/{page}', [PageController::class, 'update']);
         Route::delete('pages/{page}', [PageController::class, 'destroy']);
 

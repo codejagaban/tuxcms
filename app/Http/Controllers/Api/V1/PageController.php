@@ -7,6 +7,7 @@ use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Http\Resources\PageResource;
 use App\Models\Page;
+use App\Services\Content\PageRevisionService;
 use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PageController extends Controller
 {
+    public function __construct(private readonly PageRevisionService $revisions)
+    {
+    }
+
     /**
      * Read routes are public so the site can be built and previewed without a
      * token, but an authenticated editor must still see drafts. These routes
@@ -252,6 +257,7 @@ class PageController extends Controller
     public function update(UpdatePageRequest $request, Page $page): JsonResponse
     {
         DB::transaction(function () use ($request, $page) {
+            $before = $this->revisions->snapshot($page);
             $page->update($request->validated());
 
             if ($request->has('sections')) {
@@ -260,6 +266,12 @@ class PageController extends Controller
 
             if ($request->has('seo')) {
                 $page->seo()->updateOrCreate([], $request->input('seo'));
+            }
+
+            $page->unsetRelation('sections')->unsetRelation('seo')->refresh();
+            $after = $this->revisions->snapshot($page);
+            if ($before !== $after) {
+                $this->revisions->captureSnapshot($page, $before, $request->user());
             }
         });
 
@@ -270,6 +282,24 @@ class PageController extends Controller
             'data' => new PageResource($page),
             'message' => 'Page updated successfully.',
         ]);
+    }
+
+    /** Recent recoverable states, newest first. */
+    public function revisions(Page $page): JsonResponse
+    {
+        $revisions = $page->revisions()
+            ->with('user:id,name')
+            ->latest('id')
+            ->limit(30)
+            ->get()
+            ->map(fn ($revision) => [
+                'id' => $revision->id,
+                'created_at' => $revision->created_at->toIso8601String(),
+                'author' => $revision->user?->name,
+                'snapshot' => $revision->snapshot,
+            ]);
+
+        return response()->json(['data' => $revisions]);
     }
 
     /**
