@@ -2,7 +2,6 @@
 
 ## Active
 
-- [ ] **Add browser regression coverage for the visual editor** - protect inline editing, publishing, image replacement, and editable navigation from recurring regressions
 - [ ] **Make global navigation and footer content manageable** - let editors maintain site-wide links and service directories without a code deployment
 - [ ] **Protect unfinished editor changes** - add autosave, unsaved-change warnings, and recoverable page revisions
 - [ ] **Complete an accessibility and responsive-editor audit** - verify keyboard editing, focus, image alternatives, contrast, and narrow-screen behaviour
@@ -17,4 +16,5 @@
 
 ## Done
 
+- [x] ~~**Add browser regression coverage for the visual editor** - protect inline editing, publishing, image replacement, and editable navigation from recurring regressions~~ (2026-09-16)
 - [x] ~~**Connect the Crystal footer to global CMS settings** - render configured contact and social details, and never show dead placeholder links~~ (2026-09-16)

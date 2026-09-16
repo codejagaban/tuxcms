@@ -145,7 +145,13 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
             .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
           templateText.forEach((element, index) => {
-            if (claimed.has(element) || normalise(element.textContent).length <= 1) return;
+            const overlapsClaimedField = [...claimed].some((claimedElement) =>
+              element.contains(claimedElement) || claimedElement.contains(element));
+            // Never install nested contentEditable nodes. Crystal's animated
+            // headings often leave a text span inside the heading wrapper;
+            // making both editable causes duplicated text and writes the edit
+            // to a template override instead of the matching CMS field.
+            if (claimed.has(element) || overlapsClaimedField || normalise(element.textContent).length <= 1) return;
             const value = normalise(overrides.text?.[index] || element.textContent);
             if (overrides.text?.[index]) element.textContent = value;
             makeTextEditable(element, { overrideKey: index }, value);
