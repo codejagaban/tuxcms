@@ -1,14 +1,13 @@
 # Tasks
 
 ## Active
-
-- [ ] **Upgrade job applications from email links to a proper form** - support validation, CV upload, spam protection, delivery feedback, and the configured recipient
 ## Waiting On
 
 ## Someday
 
 ## Done
 
+- [x] ~~**Upgrade job applications from email links to a proper form** - support validation, CV upload, spam protection, delivery feedback, and the configured recipient~~ (2026-09-16)
 - [x] ~~**Remove or ignore local deployment artifacts** - keep generated deployment archives out of source control~~ (2026-09-16)
 - [x] ~~**Reduce the dashboard JavaScript bundle** - split infrequently used editor and administration screens~~ (2026-09-16)
 - [x] ~~**Add privacy and legal content support** - provide policy pages and footer links for forms that collect personal information~~ (2026-09-16)

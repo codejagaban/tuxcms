@@ -76,6 +76,11 @@ export const jobAPI = {
   delete: (id) => api.delete(`/jobs/${id}`),
 };
 
+export const jobApplicationAPI = {
+  list: (params = {}) => api.get('/job-applications', { params }),
+  downloadCV: (id) => api.get(`/job-applications/${id}/cv`, { responseType: 'blob' }),
+};
+
 // Media endpoints
 export const mediaAPI = {
   list: (params = {}) => api.get('/media', { params }),
