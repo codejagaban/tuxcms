@@ -1,3 +1,20 @@
+@php
+    use App\Support\Site;
+
+    $footerContact = array_merge([
+        'email' => 'info@crystalservicesltd.co.uk',
+        'phone' => '+44 771 729 9921',
+        'address' => '56 Northfield Street, Worcester, Worcestershire, WR1 1NT.',
+    ], Site::contact());
+    $footerSocial = Site::socialLinks();
+    $socialIcons = [
+        'facebook' => 'fa-facebook',
+        'twitter' => 'fa-twitter',
+        'instagram' => 'fa-instagram',
+        'linkedin' => 'fa-linkedin',
+        'tiktok' => 'fa-tiktok',
+    ];
+@endphp
 <footer class="page-section footer crystal-footer bg-dark-1 light-content pb-30">
     <div class="container">
         <div class="row crystal-footer-main pb-100 pb-sm-70 pb-xs-50">
@@ -49,16 +66,25 @@
                     <div class="col-6 col-lg-3 mt-30">
                         <h3 class="fw-title">Contact</h3>
                         <address class="crystal-footer-contact">
-                            <a href="tel:+447717299921">+44 771 729 9921</a>
-                            <a href="mailto:info@crystalservicesltd.co.uk">info@crystalservicesltd.co.uk</a>
-                            <a href="mailto:support@crystalservicesltd.co.uk">support@crystalservicesltd.co.uk</a>
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $footerContact['phone']) }}">{{ $footerContact['phone'] }}</a>
+                            <a href="mailto:{{ $footerContact['email'] }}">{{ $footerContact['email'] }}</a>
+                            @if ($footerContact['email'] !== 'support@crystalservicesltd.co.uk')
+                                <a href="mailto:support@crystalservicesltd.co.uk">support@crystalservicesltd.co.uk</a>
+                            @endif
                         </address>
-                        <h3 class="fw-title crystal-footer-social-title">Follow</h3>
-                        <ul class="fw-menu clearlist crystal-footer-social">
-                            <li><a href="#" rel="noopener nofollow" target="_blank"><i class="fa-facebook"></i> Facebook</a></li>
-                            <li><a href="#" rel="noopener nofollow" target="_blank"><i class="fa-instagram"></i> Instagram</a></li>
-                            <li><a href="#" rel="noopener nofollow" target="_blank"><i class="fa-tiktok"></i> Tiktok</a></li>
-                        </ul>
+                        @if ($footerSocial)
+                            <h3 class="fw-title crystal-footer-social-title">Follow</h3>
+                            <ul class="fw-menu clearlist crystal-footer-social">
+                                @foreach ($footerSocial as $network => $url)
+                                    <li>
+                                        <a href="{{ $url }}" rel="noopener noreferrer" target="_blank">
+                                            <i class="{{ $socialIcons[$network] ?? '' }}" aria-hidden="true"></i>
+                                            {{ ucfirst($network) }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -67,7 +93,7 @@
         <div class="row text-gray crystal-footer-base">
             <div class="col-md-4 col-lg-3"><b>© Crystal Services LTD <span class="date">{{ $buildYear ?? date('Y') }}</span></b></div>
             <div class="col-md-7 offset-md-1 offset-lg-2 clearfix">
-                <b>56 Northfield Street, Worcester, Worcestershire, WR1 1NT.</b>
+                <b>{{ $footerContact['address'] }}</b>
                 <div class="local-scroll float-end mt-n20 mt-sm-10">
                     <a href="#top" class="link-to-top"><i class="mi-arrow-up size-24"></i><span class="visually-hidden">Scroll to top</span></a>
                 </div>

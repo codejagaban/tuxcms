@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\Site\SiteBuilder;
 use Database\Seeders\CrystalContentSeeder;
@@ -98,5 +99,31 @@ class CrystalThemeTest extends TestCase
         $this->assertStringContainsString('A template section edited in the dashboard', $html);
         $this->assertStringContainsString('edited-service.jpg', $html);
         $this->assertStringContainsString('Edited service image', $html);
+    }
+
+    public function test_crystal_footer_uses_configured_contact_and_social_settings(): void
+    {
+        Setting::set('contact_email', 'hello@crystal.test', 'contact');
+        Setting::set('contact_phone', '+44 1905 000 000', 'contact');
+        Setting::set('contact_address', '10 Test Street, Worcester', 'contact');
+        Setting::set('social_instagram', 'https://instagram.com/crystal-test', 'social');
+
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/index.html');
+        $this->assertStringContainsString('mailto:hello@crystal.test', $html);
+        $this->assertStringContainsString('tel:+441905000000', $html);
+        $this->assertStringContainsString('10 Test Street, Worcester', $html);
+        $this->assertStringContainsString('https://instagram.com/crystal-test', $html);
+        $this->assertStringNotContainsString('href="#" rel="noopener nofollow"', $html);
+    }
+
+    public function test_crystal_footer_hides_social_directory_when_no_profiles_are_configured(): void
+    {
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/index.html');
+        $this->assertStringNotContainsString('crystal-footer-social-title', $html);
+        $this->assertStringNotContainsString('href="#" rel="noopener nofollow"', $html);
     }
 }
