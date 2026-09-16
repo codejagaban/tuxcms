@@ -47,6 +47,14 @@ async function mockEditor(page) {
     if (path.endsWith('/pages') && request.method() === 'GET') {
       return route.fulfill({ json: { data: Object.values(records) } });
     }
+    if (path.endsWith('/pages/1/revisions') && request.method() === 'GET') {
+      return route.fulfill({ json: { data: [{
+        id: 1,
+        created_at: '2026-09-16T09:30:00Z',
+        author: 'Editor',
+        snapshot: { ...records[1], title: 'Earlier Home', sections: [{ ...records[1].sections[0], title: 'Earlier heading' }] },
+      }] } });
+    }
     const pageMatch = path.match(/\/pages\/(\d+)$/);
     if (pageMatch && request.method() === 'GET') {
       return route.fulfill({ json: { data: records[pageMatch[1]] } });
@@ -134,4 +142,32 @@ test('preview navigation opens the destination in the editor', async ({ page }) 
 
   await expect(page).toHaveURL(/\/dashboard\/pages\/2\/edit$/);
   await expect(page.getByText('About', { exact: true }).first()).toBeVisible();
+});
+
+test('revision history restores an earlier state into the editable preview', async ({ page }) => {
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+
+  await page.getByRole('button', { name: 'Page history' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText('Earlier Home');
+  await dialog.getByRole('button', { name: 'Restore' }).click();
+
+  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  await expect(preview.locator('[data-tuxcms-editable]').filter({ hasText: 'Earlier heading' })).toHaveCount(1);
+  await expect(page.locator('[title="Unsaved changes"]')).toBeVisible();
+});
+
+test('dirty edits autosave without publishing', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+
+  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
+  await heading.fill('Autosaved heading');
+  await heading.press('Tab');
+
+  await expect(page.locator('[title="Unsaved changes"]')).toBeVisible();
+  await expect.poll(() => saves.at(-1)?.sections[0].title, { timeout: 10000 }).toBe('Autosaved heading');
+  await expect(page.locator('[title="Unsaved changes"]')).toHaveCount(0);
 });

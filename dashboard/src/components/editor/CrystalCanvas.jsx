@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 const normalise = (value = '') => value.replace(/\s+/g, ' ').trim();
 
@@ -20,7 +20,12 @@ function editableFields(sections) {
     visit(section.title, 'title', fields);
     visit(section.content, 'content', fields);
     visit(section.data, 'data', fields);
-    return fields.map(([field, value]) => ({ sectionUid: section._uid, field, value: normalise(value) }));
+    return fields.map(([field, value]) => ({
+      sectionUid: section._uid,
+      sectionKey: String(section.id ?? section._uid),
+      field,
+      value: normalise(value),
+    }));
   });
 }
 
@@ -65,6 +70,23 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
   const separator = path.includes('?') ? '&' : '?';
   const src = `${path}${separator}tuxcms_preview=${revision}`;
 
+  // Keep the exact preview in sync when data changes outside the iframe, such
+  // as restoring a revision or editing through the inspector.
+  useEffect(() => {
+    const doc = frameRef.current?.contentDocument;
+    if (!doc) return;
+    const nodes = [...doc.querySelectorAll('[data-tuxcms-field-key]')];
+    fields.forEach((field) => {
+      const key = `section:${field.sectionKey}:${field.field}`;
+      const node = nodes.find((element) => element.dataset.tuxcmsFieldKey === key);
+      if (node && normalise(node.textContent) !== field.value) node.textContent = field.value;
+    });
+    Object.entries(overrides.text || {}).forEach(([index, value]) => {
+      const node = nodes.find((element) => element.dataset.tuxcmsFieldKey === `override:${index}`);
+      if (node && normalise(node.textContent) !== normalise(value)) node.textContent = value;
+    });
+  }, [fields, overrides]);
+
   const preparePreview = () => {
     try {
       const doc = frameRef.current?.contentDocument;
@@ -104,6 +126,9 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           const makeTextEditable = (match, field, initialValue) => {
             if (match.dataset.tuxcmsEditable === 'true') return;
             match.dataset.tuxcmsEditable = 'true';
+            match.dataset.tuxcmsFieldKey = field.overrideKey != null
+              ? `override:${field.overrideKey}`
+              : `section:${field.sectionKey}:${field.field}`;
             match.contentEditable = 'true';
             match.spellcheck = true;
             match.addEventListener('pointerdown', () => {

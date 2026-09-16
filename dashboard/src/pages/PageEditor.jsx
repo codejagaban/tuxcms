@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest } from '@phosphor-icons/react';
+import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest, ClockCounterClockwise } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';
@@ -11,6 +11,7 @@ import SectionRenderer from '../components/editor/SectionRenderer';
 import Inspector from '../components/editor/Inspector';
 import CrystalCanvas from '../components/editor/CrystalCanvas';
 import MediaPicker from '../components/editor/MediaPicker';
+import RevisionHistory from '../components/editor/RevisionHistory';
 
 // Give every section a stable client-side id for React keys + selection,
 // independent of the database id (new sections don't have one yet).
@@ -74,6 +75,8 @@ export default function PageEditor() {
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
   const [imageEdit, setImageEdit] = useState(null);
   const [editablePages, setEditablePages] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState(null);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -191,7 +194,7 @@ export default function PageEditor() {
    *   to published first — otherwise Publish would appear to do nothing,
    *   since the builder only writes published pages.
    */
-  const save = useCallback(async ({ publish = false } = {}) => {
+  const save = useCallback(async ({ publish = false, silent = false } = {}) => {
     if (!page || saving) return;
     setSaving(true);
 
@@ -225,8 +228,9 @@ export default function PageEditor() {
 
       if (isNew) {
         const res = await pageAPI.create(payload);
-        toast.success('Page created');
+        if (!silent) toast.success('Page created');
         setDirty(false);
+        setLastSavedAt(new Date());
         navigate(`/dashboard/pages/${res.data.data.id}/edit`, { replace: true });
       } else {
         const res = await pageAPI.update(id, payload);
@@ -237,7 +241,8 @@ export default function PageEditor() {
         setPage({ ...data, seo: data.seo || {}, sections });
         setSelectedUid(sections[prevIdx]?._uid || sections[0]?._uid || null);
         setDirty(false);
-        toast.success('Changes saved');
+        setLastSavedAt(new Date());
+        if (!silent) toast.success('Changes saved');
       }
 
       // Only publish once the save actually succeeded.
@@ -246,7 +251,7 @@ export default function PageEditor() {
       }
     } catch (e) {
       console.error(e);
-      toast.error(apiErrorMessage(e, 'Save failed'));
+      toast.error(apiErrorMessage(e, silent ? 'Autosave failed' : 'Save failed'));
     } finally {
       setSaving(false);
     }
@@ -265,6 +270,14 @@ export default function PageEditor() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // Debounced background save. Every successful update first captures the
+  // previous server state as a revision, so autosave never removes recovery.
+  useEffect(() => {
+    if (!dirty || isNew || saving || publishing) return undefined;
+    const timer = window.setTimeout(() => saveRef.current({ silent: true }), 3000);
+    return () => window.clearTimeout(timer);
+  }, [page, dirty, isNew, saving, publishing]);
 
   // Warn before leaving with unsaved changes.
   useEffect(() => {
@@ -352,11 +365,22 @@ export default function PageEditor() {
             {dirty && <span className="h-2 w-2 rounded-full bg-black" title="Unsaved changes" />}
           </div>
           <div className="text-xs text-gray-400 truncate">
-            {publishing ? 'Publishing to the live site…' : `/${page.slug || '…'}`}
+            {publishing
+              ? 'Publishing to the live site…'
+              : saving
+                ? 'Saving changes…'
+                : lastSavedAt
+                  ? `Saved ${lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                  : `/${page.slug || '…'}`}
           </div>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          {!isNew && (
+            <button className="icon-button" type="button" onClick={() => setHistoryOpen(true)} title="Page history" aria-label="Page history">
+              <ClockCounterClockwise className="h-5 w-5" />
+            </button>
+          )}
           <div className="hidden items-center rounded-md border border-[var(--color-rule-2)] p-0.5 sm:flex">
             <button
               onClick={() => setDevice('desktop')}
@@ -471,6 +495,19 @@ export default function PageEditor() {
             imageEdit.element.alt = alt;
           }
           setImageEdit(null);
+        }}
+      />
+      <RevisionHistory
+        isOpen={historyOpen}
+        pageId={id}
+        onClose={() => setHistoryOpen(false)}
+        onRestore={(snapshot) => {
+          const sections = withUids(snapshot.sections || []);
+          setPage((current) => ({ ...current, ...snapshot, sections, seo: snapshot.seo || {} }));
+          setSelectedUid(sections[0]?._uid || null);
+          setDirty(true);
+          setHistoryOpen(false);
+          toast.success('Earlier version restored. Review it, then publish.');
         }}
       />
     </div>
