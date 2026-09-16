@@ -40,6 +40,13 @@ class SettingSeeder extends Seeder
             ['key' => 'contact_email', 'value' => config('mail.from.address'), 'group' => 'contact'],
             ['key' => 'contact_phone', 'value' => '', 'group' => 'contact'],
             ['key' => 'contact_address', 'value' => '', 'group' => 'contact'],
+
+            // Footer directories. Stored as JSON so the dashboard can manage
+            // ordered label and URL rows without requiring a schema change.
+            ['key' => 'footer_intro', 'value' => '', 'group' => 'footer'],
+            ['key' => 'footer_support_email', 'value' => '', 'group' => 'footer'],
+            ['key' => 'footer_cleaning_links', 'value' => '', 'group' => 'footer'],
+            ['key' => 'footer_salon_links', 'value' => '', 'group' => 'footer'],
         ];
 
         foreach ($settings as $setting) {

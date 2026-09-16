@@ -126,4 +126,27 @@ class CrystalThemeTest extends TestCase
         $this->assertStringNotContainsString('crystal-footer-social-title', $html);
         $this->assertStringNotContainsString('href="#" rel="noopener nofollow"', $html);
     }
+
+    public function test_crystal_footer_uses_editable_service_directories(): void
+    {
+        Setting::set('footer_intro', 'An editable footer introduction.', 'footer');
+        Setting::set('footer_support_email', 'help@crystal.test', 'footer');
+        Setting::set('footer_cleaning_links', json_encode([
+            ['label' => 'Office care', 'url' => '/contact/?service=Office'],
+            ['label' => 'Unsafe', 'url' => 'javascript:alert(1)'],
+        ]), 'footer');
+        Setting::set('footer_salon_links', json_encode([
+            ['label' => 'Protective styling', 'url' => '/salon/'],
+        ]), 'footer');
+
+        app(SiteBuilder::class)->build();
+
+        $html = File::get($this->output.'/index.html');
+        $this->assertStringContainsString('An editable footer introduction.', $html);
+        $this->assertStringContainsString('help@crystal.test', $html);
+        $this->assertStringContainsString('Office care', $html);
+        $this->assertStringContainsString('Protective styling', $html);
+        $this->assertStringNotContainsString('javascript:alert(1)', $html);
+        $this->assertStringNotContainsString('Commercial cleaning', $html);
+    }
 }

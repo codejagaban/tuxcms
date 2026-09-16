@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Plus, Trash } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -28,6 +29,10 @@ const Settings = () => {
     default_og_image: '',
     robots_extra: '',
     site_noindex: '',
+    footer_intro: '',
+    footer_support_email: '',
+    footer_cleaning_links: '',
+    footer_salon_links: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +69,10 @@ const Settings = () => {
         default_og_image: data.default_og_image || '',
         robots_extra: data.robots_extra || '',
         site_noindex: data.site_noindex || '',
+        footer_intro: data.footer_intro || '',
+        footer_support_email: data.footer_support_email || '',
+        footer_cleaning_links: data.footer_cleaning_links || '',
+        footer_salon_links: data.footer_salon_links || '',
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -206,6 +215,28 @@ const Settings = () => {
         isSaving={savingGroups.Contact}
       />
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Footer Directory</CardTitle>
+          <p className="mt-1 text-sm text-gray-600">Maintain the footer introduction, support address, and service shortcuts.</p>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <Input label="Footer introduction" name="footer_intro" value={settings.footer_intro} onChange={handleInputChange} placeholder="A short description of the business" />
+          <Input label="Support email" name="footer_support_email" type="email" value={settings.footer_support_email} onChange={handleInputChange} placeholder="support@example.com" />
+          <DirectoryField label="Cleaning services" name="footer_cleaning_links" value={settings.footer_cleaning_links} onChange={handleInputChange} />
+          <DirectoryField label="Salon services" name="footer_salon_links" value={settings.footer_salon_links} onChange={handleInputChange} />
+          <div className="flex items-center justify-end border-t pt-4">
+            <Button
+              variant="primary"
+              onClick={() => saveGroup('Footer', ['footer_intro', 'footer_support_email', 'footer_cleaning_links', 'footer_salon_links'])}
+              isLoading={savingGroups.Footer}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Forms — submissions are handled by Web3Forms, not this CMS */}
       <SettingsGroup
         title="Forms"
@@ -219,6 +250,44 @@ const Settings = () => {
         isSaving={savingGroups.Forms}
       />
     </div>
+  );
+};
+
+const parseDirectory = (value) => {
+  try {
+    const rows = JSON.parse(value || '[]');
+    return Array.isArray(rows) ? rows : [];
+  } catch {
+    return [];
+  }
+};
+
+const DirectoryField = ({ label, name, value, onChange }) => {
+  const rows = parseDirectory(value);
+  const emit = (nextRows) => onChange({ target: { name, value: JSON.stringify(nextRows) } });
+  const update = (index, key, nextValue) => emit(rows.map((row, rowIndex) => rowIndex === index ? { ...row, [key]: nextValue } : row));
+
+  return (
+    <fieldset>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <legend className="text-sm font-medium text-gray-700">{label}</legend>
+        <Button type="button" variant="ghost" size="sm" onClick={() => emit([...rows, { label: '', url: '' }])}>
+          <Plus className="h-4 w-4" weight="bold" /> Add link
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {rows.length === 0 && <p className="text-sm text-gray-500">Using the Crystal website defaults. Add a link to replace them.</p>}
+        {rows.map((row, index) => (
+          <div key={`${name}-${index}`} className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] items-center gap-2">
+            <input className="field-control text-sm" aria-label={`${label} link ${index + 1} label`} value={row.label || ''} onChange={(event) => update(index, 'label', event.target.value)} placeholder="Label" />
+            <input className="field-control text-sm" aria-label={`${label} link ${index + 1} URL`} value={row.url || ''} onChange={(event) => update(index, 'url', event.target.value)} placeholder="/contact/ or https://…" />
+            <button type="button" className="icon-button" aria-label={`Remove ${row.label || 'link'}`} onClick={() => emit(rows.filter((_, rowIndex) => rowIndex !== index))}>
+              <Trash className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </fieldset>
   );
 };
 

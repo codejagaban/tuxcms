@@ -117,6 +117,32 @@ class Site
         ]);
     }
 
+    /**
+     * A small editable link directory stored as JSON in Settings.
+     * Invalid or unsafe rows are discarded before they reach a template.
+     */
+    public static function linkDirectory(string $key, array $fallback = []): array
+    {
+        $raw = Setting::getString($key);
+        $links = $raw ? json_decode($raw, true) : $fallback;
+
+        if (!is_array($links)) {
+            return $fallback;
+        }
+
+        return collect($links)
+            ->filter(fn ($link) => is_array($link)
+                && filled($link['label'] ?? null)
+                && filled($link['url'] ?? null)
+                && (str_starts_with($link['url'], '/') || filter_var($link['url'], FILTER_VALIDATE_URL)))
+            ->map(fn ($link) => [
+                'label' => trim((string) $link['label']),
+                'url' => trim((string) $link['url']),
+            ])
+            ->values()
+            ->all();
+    }
+
     /** True when the whole site should be excluded from indexing. */
     public static function isNoindex(): bool
     {

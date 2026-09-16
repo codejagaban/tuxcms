@@ -7,6 +7,28 @@
         'address' => '56 Northfield Street, Worcester, Worcestershire, WR1 1NT.',
     ], Site::contact());
     $footerSocial = Site::socialLinks();
+    $footerIntro = \App\Models\Setting::getString(
+        'footer_intro',
+        'Professional cleaning and salon services for homes, workplaces and people across Worcester.'
+    );
+    $footerSupportEmail = \App\Models\Setting::getString('footer_support_email', 'support@crystalservicesltd.co.uk');
+    $cleaningLinks = Site::linkDirectory('footer_cleaning_links', [
+        ['label' => 'Commercial cleaning', 'url' => '/contact/?service=Commercial%20Cleaning#contact_form'],
+        ['label' => 'Upholstery cleaning', 'url' => '/contact/?service=Carpet%20%26%20Upholstery%20Cleaning#contact_form'],
+        ['label' => 'End-of-tenancy cleaning', 'url' => '/contact/?service=End-of-Tenancy%20Cleaning#contact_form'],
+        ['label' => 'Airbnb cleaning', 'url' => '/contact/?service=Airbnb%20Cleaning#contact_form'],
+        ['label' => 'Deep cleaning', 'url' => '/contact/?service=Deep%20Cleaning#contact_form'],
+        ['label' => 'After-builders cleaning', 'url' => '/contact/?service=After%20Builders%20Cleaning#contact_form'],
+    ]);
+    $salonLinks = Site::linkDirectory('footer_salon_links', [
+        ['label' => 'Braiding', 'url' => '/contact/?service=Braiding#contact_form'],
+        ['label' => 'Sew-in', 'url' => '/contact/?service=Sew-in#contact_form'],
+        ['label' => 'Dreadlocks', 'url' => '/contact/?service=Dreadlocks#contact_form'],
+        ['label' => 'Re-locking', 'url' => '/contact/?service=Re-locking#contact_form'],
+        ['label' => 'Relaxing', 'url' => '/contact/?service=Relaxing#contact_form'],
+        ['label' => 'Washing & setting', 'url' => '/contact/?service=Washing%20%26%20setting#contact_form'],
+        ['label' => 'Natural weaving', 'url' => '/contact/?service=Natural%20weaving#contact_form'],
+    ]);
     $socialIcons = [
         'facebook' => 'fa-facebook',
         'twitter' => 'fa-twitter',
@@ -22,7 +44,7 @@
                 <div class="mb-30">
                     <img src="/themes/crystal/images/logo/logo-light.svg" alt="Crystal Services Limited" width="166" height="50" loading="lazy">
                 </div>
-                <p class="crystal-footer-intro">Professional cleaning and salon services for homes, workplaces and people across Worcester.</p>
+                <p class="crystal-footer-intro">{{ $footerIntro }}</p>
                 <a class="crystal-footer-enquiry" href="/contact/">Request a quote <span aria-hidden="true">↗</span></a>
             </div>
 
@@ -41,25 +63,18 @@
                     <div class="col-6 col-lg-3 mt-30">
                         <h3 class="fw-title">Cleaning services</h3>
                         <ul class="fw-menu clearlist">
-                            <li><a href="/contact/?service=Commercial%20Cleaning#contact_form">Commercial cleaning</a></li>
-                            <li><a href="/contact/?service=Carpet%20%26%20Upholstery%20Cleaning#contact_form">Upholstery cleaning</a></li>
-                            <li><a href="/contact/?service=End-of-Tenancy%20Cleaning#contact_form">End-of-tenancy cleaning</a></li>
-                            <li><a href="/contact/?service=Airbnb%20Cleaning#contact_form">Airbnb cleaning</a></li>
-                            <li><a href="/contact/?service=Deep%20Cleaning#contact_form">Deep cleaning</a></li>
-                            <li><a href="/contact/?service=After%20Builders%20Cleaning#contact_form">After-builders cleaning</a></li>
+                            @foreach ($cleaningLinks as $link)
+                                <li><a href="{{ $link['url'] }}">{{ $link['label'] }}</a></li>
+                            @endforeach
                         </ul>
                     </div>
 
                     <div class="col-6 col-lg-3 mt-30">
                         <h3 class="fw-title">Salon services</h3>
                         <ul class="fw-menu clearlist">
-                            <li><a href="/contact/?service=Braiding#contact_form">Braiding</a></li>
-                            <li><a href="/contact/?service=Sew-in#contact_form">Sew-in</a></li>
-                            <li><a href="/contact/?service=Dreadlocks#contact_form">Dreadlocks</a></li>
-                            <li><a href="/contact/?service=Re-locking#contact_form">Re-locking</a></li>
-                            <li><a href="/contact/?service=Relaxing#contact_form">Relaxing</a></li>
-                            <li><a href="/contact/?service=Washing%20%26%20setting#contact_form">Washing &amp; setting</a></li>
-                            <li><a href="/contact/?service=Natural%20weaving#contact_form">Natural weaving</a></li>
+                            @foreach ($salonLinks as $link)
+                                <li><a href="{{ $link['url'] }}">{{ $link['label'] }}</a></li>
+                            @endforeach
                         </ul>
                     </div>
 
@@ -68,8 +83,8 @@
                         <address class="crystal-footer-contact">
                             <a href="tel:{{ preg_replace('/[^0-9+]/', '', $footerContact['phone']) }}">{{ $footerContact['phone'] }}</a>
                             <a href="mailto:{{ $footerContact['email'] }}">{{ $footerContact['email'] }}</a>
-                            @if ($footerContact['email'] !== 'support@crystalservicesltd.co.uk')
-                                <a href="mailto:support@crystalservicesltd.co.uk">support@crystalservicesltd.co.uk</a>
+                            @if ($footerSupportEmail && $footerContact['email'] !== $footerSupportEmail)
+                                <a href="mailto:{{ $footerSupportEmail }}">{{ $footerSupportEmail }}</a>
                             @endif
                         </address>
                         @if ($footerSocial)
