@@ -39,3 +39,6 @@ Thumbs.db
 /public/robots.txt
 /public/.site-manifest.json
 /public/llms.txt
+
+# Minified theme stylesheets are written when the site is built.
+/public/themes/*/css/*.min.css
