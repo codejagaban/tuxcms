@@ -17,7 +17,7 @@
     $explicitTitle = filled($page->seo?->meta_title);
     $title = $explicitTitle
         ? $page->seo->meta_title
-        : trim($page->title) . ($page->is_homepage ? '' : ' — ' . Site::name());
+        : trim($page->title) . ($page->is_homepage ? '' : ' | ' . Site::name());
 @endphp
 <title>{{ $title }}</title>
 

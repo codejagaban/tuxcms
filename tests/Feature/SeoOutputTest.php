@@ -104,7 +104,7 @@ class SeoOutputTest extends TestCase
 
         $html = $this->render('about/index.html');
 
-        $this->assertStringContainsString('<title>About — Test Site</title>', $html);
+        $this->assertStringContainsString('<title>About | Test Site</title>', $html);
     }
 
     public function test_open_graph_and_twitter_tags_are_emitted(): void
