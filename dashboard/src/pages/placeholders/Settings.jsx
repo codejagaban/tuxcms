@@ -37,6 +37,9 @@ const Settings = () => {
     terms_url: '',
     cookie_url: '',
     enquiry_email: '',
+    enquiry_email_contact: '',
+    enquiry_email_staff_request: '',
+    enquiry_email_registration: '',
     contact_phone_2: '',
     company_number: '',
     google_reviews_url: '',
@@ -89,6 +92,9 @@ const Settings = () => {
         terms_url: data.terms_url || '',
         cookie_url: data.cookie_url || '',
         enquiry_email: data.enquiry_email || '',
+        enquiry_email_contact: data.enquiry_email_contact || '',
+        enquiry_email_staff_request: data.enquiry_email_staff_request || '',
+        enquiry_email_registration: data.enquiry_email_registration || '',
         contact_phone_2: data.contact_phone_2 || '',
         company_number: data.company_number || '',
         google_reviews_url: data.google_reviews_url || '',
@@ -231,6 +237,9 @@ const Settings = () => {
         fields={[
           { key: 'contact_email', label: 'Contact Email', placeholder: 'contact@example.com', type: 'email' },
           { key: 'enquiry_email', label: 'Send website enquiries to', placeholder: 'Defaults to the contact email', type: 'email' },
+          { key: 'enquiry_email_contact', label: 'Contact form goes to', placeholder: 'Defaults to the enquiries address', type: 'email' },
+          { key: 'enquiry_email_staff_request', label: 'Staff requests go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
+          { key: 'enquiry_email_registration', label: 'Job applications go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
           { key: 'contact_phone', label: 'Contact Phone', placeholder: '+44 20 7946 0000' },
           { key: 'contact_phone_2', label: 'Second Phone', placeholder: 'Optional' },
           { key: 'contact_address', label: 'Address', placeholder: '1 Example St, London' },
@@ -238,7 +247,7 @@ const Settings = () => {
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Contact', ['contact_email', 'enquiry_email', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
+        onSave={() => saveGroup('Contact', ['contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
         isSaving={savingGroups.Contact}
       />
 
