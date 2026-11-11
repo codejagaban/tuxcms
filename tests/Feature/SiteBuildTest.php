@@ -172,7 +172,7 @@ class SiteBuildTest extends TestCase
         $result = $this->build();
 
         $this->assertSame(2, $result['pages']);
-        // Two pages plus Careers, 404, sitemap and robots.
-        $this->assertSame(6, $result['files']);
+        // Two pages plus Careers, 404, sitemap, robots and llms.txt.
+        $this->assertSame(7, $result['files']);
     }
 }

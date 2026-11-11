@@ -4,6 +4,7 @@ namespace App\Services\Site;
 
 use App\Models\JobPost;
 use App\Models\Page;
+use App\Services\Seo\LlmsTxtGenerator;
 use App\Services\Seo\RobotsGenerator;
 use App\Services\Seo\SitemapGenerator;
 use App\Support\Site;
@@ -33,6 +34,7 @@ class SiteBuilder
         private NavigationBuilder $navigation,
         private SitemapGenerator $sitemap,
         private RobotsGenerator $robots,
+        private LlmsTxtGenerator $llms,
     ) {}
 
     /** @return array{pages: int, files: int, pruned: int, output: string} */
@@ -119,6 +121,7 @@ class SiteBuilder
         $written['404.html'] = $this->write($temp, '404.html', $notFound);
         $written['sitemap.xml'] = $this->write($temp, 'sitemap.xml', $this->sitemap->generate());
         $written['robots.txt'] = $this->write($temp, 'robots.txt', $this->robots->generate());
+        $written['llms.txt'] = $this->write($temp, 'llms.txt', $this->llms->generate($pages, $jobs));
 
         return $written;
     }
