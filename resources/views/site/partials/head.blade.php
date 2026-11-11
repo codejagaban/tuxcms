@@ -45,7 +45,8 @@
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 
-{!! Site::styleTags() !!}
+{{-- A theme that ships its own stylesheet passes an empty string. --}}
+{!! $styleTags ?? Site::styleTags() !!}
 
 @if (!empty($schema))
     {{-- JSON_HEX_TAG makes a </script> breakout impossible. --}}
