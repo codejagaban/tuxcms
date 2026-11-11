@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\Seo;
 use App\Services\Seo\SchemaGenerator;
+use App\Models\Setting;
 use App\Support\Site;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -78,10 +79,42 @@ trait HasSeo
             'og:site_name' => Site::name(),
             'og:title' => $seo?->og_title ?: $seo?->meta_title ?: $this->title,
             'og:description' => $seo?->og_description ?: $seo?->meta_description ?: $this->excerpt,
-            'og:image' => $this->getShareImage(),
+            'og:image' => $image = $this->getShareImage(),
+            ...$this->shareImageDetails($image),
             'og:type' => $seo?->og_type ?: 'website',
             'og:url' => $this->getCanonicalUrl(),
+            'og:locale' => Setting::getString('site_locale'),
         ]);
+    }
+
+    /**
+     * Width, height and alt text for the share image. Sizes are read from the
+     * file itself, so they are only given for images this site hosts.
+     */
+    private function shareImageDetails(?string $image): array
+    {
+        if (! $image) {
+            return [];
+        }
+
+        $details = [];
+        $base = rtrim(Site::url(), '/');
+
+        if (str_starts_with($image, $base.'/')) {
+            $file = public_path(ltrim(parse_url(substr($image, strlen($base)), PHP_URL_PATH) ?: '', '/'));
+
+            if (is_file($file) && ($size = @getimagesize($file))) {
+                $details['og:image:width'] = (string) $size[0];
+                $details['og:image:height'] = (string) $size[1];
+            }
+        }
+
+        // The alt text setting describes the site-wide default image only.
+        if ($image === Site::defaultOgImage()) {
+            $details['og:image:alt'] = Setting::getString('default_og_image_alt');
+        }
+
+        return $details;
     }
 
     public function getTwitterTags(): array
