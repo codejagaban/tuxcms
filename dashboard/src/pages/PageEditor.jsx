@@ -38,6 +38,8 @@ const setNestedValue = (source, path, value) => {
   return root;
 };
 
+const LIVE_CANVAS_TEMPLATES = ['crystal', 'fineflow'];
+
 const crystalOverrides = (content) => {
   try {
     const parsed = JSON.parse(content || '{}');
@@ -248,6 +250,8 @@ export default function PageEditor() {
       // Only publish once the save actually succeeded.
       if (publish) {
         await runPublish();
+        // The published page has just been rebuilt; show the fresh copy.
+        setPreviewRevision(Date.now());
       }
     } catch (e) {
       console.error(e);
@@ -306,11 +310,14 @@ export default function PageEditor() {
 
   const selected = page.sections.find((s) => s._uid === selectedUid) || null;
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
+  // Themes that build real pages are edited on the page itself, so what the
+  // editor shows is what the site shows. Only Crystal stores text overrides.
+  const liveCanvas = LIVE_CANVAS_TEMPLATES.includes(page.template);
   const crystalPath = page.is_homepage ? '/' : `/${page.slug}/`;
 
   const sectionPreview = page.sections.map((section) => {
     const isSel = section._uid === selectedUid;
-    const crystal = page.template === 'crystal';
+    const crystal = liveCanvas;
     return (
       <div
         key={section._uid}
@@ -424,16 +431,16 @@ export default function PageEditor() {
 
       {/* Body: preview + inspector */}
       <div className="flex min-h-0 flex-1">
-        <main className={`flex-1 p-3 sm:p-4 ${page.template === 'crystal' ? 'overflow-hidden' : 'overflow-y-auto pb-[48dvh] sm:pb-[48dvh] md:pb-6'}`}>
-          <div className={`mx-auto ${canvasWidth} ${page.template === 'crystal' ? 'h-full' : ''} transition-[max-width] duration-200`}>
-            <div className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${page.template === 'crystal' ? 'h-full' : ''}`}>
+        <main className={`flex-1 p-3 sm:p-4 ${liveCanvas ? 'overflow-hidden' : 'overflow-y-auto pb-[48dvh] sm:pb-[48dvh] md:pb-6'}`}>
+          <div className={`mx-auto ${canvasWidth} ${liveCanvas ? 'h-full' : ''} transition-[max-width] duration-200`}>
+            <div className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${liveCanvas ? 'h-full' : ''}`}>
               {page.sections.length === 0 && (
                 <div className="py-24 text-center text-gray-400">
                   <p className="mb-3">This page has no sections yet.</p>
                   <p className="text-sm">Use <span className="font-medium text-gray-500">Add</span> in the Page panel to start building.</p>
                 </div>
               )}
-              {page.template === 'crystal'
+              {liveCanvas
                 ? <CrystalCanvas
                     path={crystalPath}
                     revision={previewRevision}
@@ -441,6 +448,7 @@ export default function PageEditor() {
                     sections={page.sections}
                     pages={editablePages}
                     overrides={crystalOverrides(page.content)}
+                    allowOverrides={page.template === 'crystal'}
                     onEdit={updateCrystalField}
                     onOverrideEdit={(kind, key, value) => {
                       mutate((current) => ({ ...current, content: withCrystalOverride(current.content, kind, key, value) }));
@@ -455,7 +463,7 @@ export default function PageEditor() {
                   />
                 : sectionPreview}
             </div>
-            {page.template !== 'crystal' && (
+            {!liveCanvas && (
               <p className="text-center text-xs text-gray-400 mt-4">
                 Click any text above to edit it inline. Use the panel to manage structure.
               </p>

@@ -64,7 +64,7 @@ const imagePath = (url = '', base = 'http://localhost') => {
 };
 
 /** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], overrides = {}, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
+export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
@@ -96,6 +96,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         style.dataset.tuxcmsPreview = 'true';
         style.textContent = `
           .wow { visibility: visible !important; animation: none !important; }
+          .has-motion [data-reveal] { opacity: 1 !important; transform: none !important; }
           [data-tuxcms-editable] { cursor: text; outline: 1px solid transparent; outline-offset: 5px; }
           [data-tuxcms-editable]:hover { outline-color: rgba(17, 17, 17, .38); }
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
@@ -176,6 +177,8 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
             .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
           templateText.forEach((element, index) => {
+            // Only Crystal applies text overrides when it builds the page.
+            if (!allowOverrides) return;
             const overlapsClaimedField = [...claimed].some((claimedElement) =>
               element.contains(claimedElement) || claimedElement.contains(element));
             // Never install nested contentEditable nodes. Crystal's animated
@@ -254,6 +257,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           return alt && !/(decoration|bg-shape|logo|favicon)/i.test(source);
         });
         templateImages.forEach((element, index) => {
+          if (!allowOverrides) return;
           if (claimedImages.has(element)) return;
           const replacement = overrides.images?.[index];
           if (replacement?.url) element.src = replacement.url;
@@ -306,7 +310,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
     <iframe
       ref={frameRef}
       key={`${src}:${pages.length}:${sections.length}`}
-      title="Exact Crystal website preview"
+      title="Website preview"
       src={src}
       onLoad={preparePreview}
       className="block w-full border-0 bg-white"
