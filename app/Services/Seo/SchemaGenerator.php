@@ -64,7 +64,11 @@ class SchemaGenerator
         }
 
         if (!empty($contact['address'])) {
-            $org['address'] = $contact['address'];
+            $org['address'] = $this->postalAddress($contact['address']);
+        }
+
+        if ($image = Site::defaultOgImage()) {
+            $org['image'] = $image;
         }
 
         if ($areas = Setting::getString('area_served')) {
@@ -80,11 +84,51 @@ class SchemaGenerator
                 '@type' => 'ContactPoint',
                 'contactType' => 'customer service',
                 'email' => $contact['email'] ?? null,
-                'telephone' => $contact['phone'] ?? null,
+                'telephone' => $this->internationalPhone($contact['phone'] ?? null),
             ]);
         }
 
         return $org;
+    }
+
+    /**
+     * "Street, Town, Postcode" becomes a PostalAddress. Anything that does not
+     * fit that shape is left as the plain text the editor typed.
+     */
+    private function postalAddress(string $address): array|string
+    {
+        $parts = array_values(array_filter(array_map('trim', explode(',', $address))));
+
+        if (count($parts) < 3) {
+            return $address;
+        }
+
+        $postcode = array_pop($parts);
+        $town = array_pop($parts);
+
+        return array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => implode(', ', $parts),
+            'addressLocality' => $town,
+            'postalCode' => $postcode,
+            'addressCountry' => Setting::getString('address_country'),
+        ]);
+    }
+
+    /** A UK number typed with a leading 0 is given its +44 form. */
+    private function internationalPhone(?string $phone): ?string
+    {
+        if (! $phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/[^0-9+]/', '', $phone);
+
+        if (Setting::getString('address_country') === 'GB' && str_starts_with($digits, '0')) {
+            return '+44'.substr($digits, 1);
+        }
+
+        return $digits;
     }
 
     private function webSite(string $siteUrl): array
@@ -112,7 +156,7 @@ class SchemaGenerator
             'isPartOf' => ['@id' => $siteUrl . '/#website'],
             'datePublished' => $page->published_at?->toAtomString(),
             'dateModified' => $page->updated_at?->toAtomString(),
-            'inLanguage' => str_replace('_', '-', app()->getLocale()),
+            'inLanguage' => str_replace('_', '-', Setting::getString('site_locale') ?: app()->getLocale()),
         ]);
     }
 
