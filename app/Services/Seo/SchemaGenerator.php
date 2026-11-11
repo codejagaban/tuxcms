@@ -3,6 +3,7 @@
 namespace App\Services\Seo;
 
 use App\Models\Page;
+use App\Models\Setting;
 use App\Support\Site;
 
 /**
@@ -46,7 +47,9 @@ class SchemaGenerator
         $contact = Site::contact();
 
         $org = [
-            '@type' => 'Organization',
+            // Settings can name a more specific schema.org type, such as
+            // EmploymentAgency or LocalBusiness.
+            '@type' => Setting::getString('organization_type') ?: 'Organization',
             '@id' => $siteUrl . '/#organization',
             'name' => Site::name(),
             'url' => $siteUrl . '/',
@@ -54,6 +57,18 @@ class SchemaGenerator
 
         if ($logo = Site::logo()) {
             $org['logo'] = $logo;
+        }
+
+        if ($description = Site::description()) {
+            $org['description'] = $description;
+        }
+
+        if (!empty($contact['address'])) {
+            $org['address'] = $contact['address'];
+        }
+
+        if ($areas = Setting::getString('area_served')) {
+            $org['areaServed'] = array_values(array_filter(array_map('trim', explode(',', $areas))));
         }
 
         if ($social = array_values(Site::socialLinks())) {
