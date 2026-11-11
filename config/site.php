@@ -17,6 +17,15 @@ return [
     'output_path' => env('SITE_OUTPUT_PATH'),
 
     /*
+     * The theme that renders pages with no template-specific view, plus the
+     * careers listing, job pages and the 404. A theme is a directory of Blade
+     * views under resources/views/site/themes/<name> and static assets under
+     * public/themes/<name>. Unset keeps the stock behaviour: the page's own
+     * template decides, and careers pages use Crystal.
+     */
+    'theme' => env('SITE_THEME'),
+
+    /*
      * Top-level slugs the static build must never claim. Everything here is a
      * real directory in the docroot: a page at /admin would have `site:build`
      * write admin/index.html straight over the dashboard, and one at /storage

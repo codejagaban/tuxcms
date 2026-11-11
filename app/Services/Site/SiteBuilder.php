@@ -80,8 +80,7 @@ class SiteBuilder
         foreach ($pages as $page) {
             $relative = $this->relativePathFor($page);
 
-            $themeView = 'site.themes.'.str_replace('_', '-', $page->template).'.page';
-            $view = View::exists($themeView) ? $themeView : 'site.page';
+            $view = $this->themeView('page', $page->template);
 
             $html = View::make($view, [
                 'page' => $page,
@@ -96,7 +95,7 @@ class SiteBuilder
 
         $jobs = JobPost::published()->orderByDesc('published_at')->get();
         $careersNavigation = $this->navigation->build(currentPath: '/careers/');
-        $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make('site.themes.crystal.jobs.index', [
+        $written['careers/index.html'] = $this->write($temp, 'careers/index.html', View::make($this->themeView('jobs.index'), [
             'jobs' => $jobs,
             'navigation' => $careersNavigation,
             'buildYear' => date('Y'),
@@ -104,14 +103,14 @@ class SiteBuilder
 
         foreach ($jobs as $job) {
             $relative = 'careers/'.$job->slug.'/index.html';
-            $written[$relative] = $this->write($temp, $relative, View::make('site.themes.crystal.jobs.show', [
+            $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('jobs.show'), [
                 'job' => $job,
                 'navigation' => $careersNavigation,
                 'buildYear' => date('Y'),
             ])->render());
         }
 
-        $notFound = View::make('site.404', [
+        $notFound = View::make($this->themeView('404'), [
             'page' => $this->placeholderPage('Page not found'),
             'navigation' => $navigation,
             'buildYear' => date('Y'),
@@ -168,6 +167,28 @@ class SiteBuilder
         );
 
         return $pruned;
+    }
+
+    /**
+     * Resolve a view through the theme chain: the page's own template, then
+     * the site theme, then Crystal (the only theme that ships every view),
+     * then the unthemed default.
+     */
+    private function themeView(string $name, ?string $template = null): string
+    {
+        $themes = array_filter([
+            $template ? str_replace('_', '-', $template) : null,
+            config('site.theme'),
+            $name === 'page' || $name === '404' ? null : 'crystal',
+        ]);
+
+        foreach ($themes as $theme) {
+            if (View::exists($view = "site.themes.{$theme}.{$name}")) {
+                return $view;
+            }
+        }
+
+        return "site.{$name}";
     }
 
     private function write(string $root, string $relative, string $contents): string
