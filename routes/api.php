@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\EnquiryController;
 use App\Http\Controllers\Api\V1\JobPostController;
 use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\MediaController;
@@ -33,6 +34,8 @@ Route::prefix('v1')->group(function () {
     Route::get('search', [SearchController::class, 'search']);
     Route::post('job-applications', [JobApplicationController::class, 'store'])
         ->middleware('throttle:5,1');
+    Route::post('enquiries', [EnquiryController::class, 'store'])
+        ->middleware('throttle:5,1');
 
     // ════════════════════════════════════════════════════════
     // Authenticated management
@@ -55,6 +58,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('jobs/{job}', [JobPostController::class, 'destroy']);
         Route::get('job-applications', [JobApplicationController::class, 'index']);
         Route::get('job-applications/{application}/cv', [JobApplicationController::class, 'download']);
+        Route::get('enquiries', [EnquiryController::class, 'index']);
 
         // Per-page SEO
         Route::get('pages/{page}/seo', [SeoController::class, 'show']);
