@@ -12,6 +12,7 @@ import {
   X,
   Briefcase,
   Tray,
+  ChatText,
 } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import PublishButton from '../components/PublishButton';
@@ -20,6 +21,7 @@ const navItems = [
   { path: '/dashboard', label: 'Overview', icon: SquaresFour },
   { path: '/dashboard/pages', label: 'Pages', icon: FileText },
   { path: '/dashboard/jobs', label: 'Jobs', icon: Briefcase },
+  { path: '/dashboard/enquiries', label: 'Enquiries', icon: ChatText },
   { path: '/dashboard/applications', label: 'Applications', icon: Tray },
   { path: '/dashboard/media', label: 'Media', icon: ImageSquare },
   { path: '/dashboard/seo', label: 'Search', icon: MagnifyingGlass },

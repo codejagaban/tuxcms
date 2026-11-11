@@ -13,6 +13,7 @@ const Settings = lazy(() => import('./pages/placeholders/Settings'));
 const SEO = lazy(() => import('./pages/placeholders/SEO'));
 const Jobs = lazy(() => import('./pages/Jobs'));
 const Applications = lazy(() => import('./pages/Applications'));
+const Enquiries = lazy(() => import('./pages/Enquiries'));
 
 const Deferred = ({ children }) => (
   <Suspense fallback={<div className="grid min-h-72 place-items-center"><Spinner size="lg" /></div>}>
@@ -53,6 +54,7 @@ function App() {
           <Route path="pages" element={<Deferred><Pages /></Deferred>} />
           <Route path="jobs" element={<Deferred><Jobs /></Deferred>} />
           <Route path="applications" element={<Deferred><Applications /></Deferred>} />
+          <Route path="enquiries" element={<Deferred><Enquiries /></Deferred>} />
           <Route path="media" element={<Deferred><Media /></Deferred>} />
           <Route path="settings" element={<Deferred><Settings /></Deferred>} />
           <Route path="seo" element={<Deferred><SEO /></Deferred>} />

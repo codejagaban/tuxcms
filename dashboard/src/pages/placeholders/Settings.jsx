@@ -36,6 +36,15 @@ const Settings = () => {
     privacy_url: '',
     terms_url: '',
     cookie_url: '',
+    enquiry_email: '',
+    contact_phone_2: '',
+    company_number: '',
+    google_reviews_url: '',
+    chatwoot_website_token: '',
+    chatwoot_base_url: '',
+    tawk_property_id: '',
+    umami_website_id: '',
+    umami_script_url: '',
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +88,15 @@ const Settings = () => {
         privacy_url: data.privacy_url || '',
         terms_url: data.terms_url || '',
         cookie_url: data.cookie_url || '',
+        enquiry_email: data.enquiry_email || '',
+        contact_phone_2: data.contact_phone_2 || '',
+        company_number: data.company_number || '',
+        google_reviews_url: data.google_reviews_url || '',
+        chatwoot_website_token: data.chatwoot_website_token || '',
+        chatwoot_base_url: data.chatwoot_base_url || '',
+        tawk_property_id: data.tawk_property_id || '',
+        umami_website_id: data.umami_website_id || '',
+        umami_script_url: data.umami_script_url || '',
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -212,12 +230,15 @@ const Settings = () => {
         description="Shown in the site footer and in structured data"
         fields={[
           { key: 'contact_email', label: 'Contact Email', placeholder: 'contact@example.com', type: 'email' },
+          { key: 'enquiry_email', label: 'Send website enquiries to', placeholder: 'Defaults to the contact email', type: 'email' },
           { key: 'contact_phone', label: 'Contact Phone', placeholder: '+44 20 7946 0000' },
+          { key: 'contact_phone_2', label: 'Second Phone', placeholder: 'Optional' },
           { key: 'contact_address', label: 'Address', placeholder: '1 Example St, London' },
+          { key: 'company_number', label: 'Company Number', placeholder: 'Shown in the footer when set' },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Contact', ['contact_email', 'contact_phone', 'contact_address'])}
+        onSave={() => saveGroup('Contact', ['contact_email', 'enquiry_email', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
         isSaving={savingGroups.Contact}
       />
 
@@ -255,6 +276,24 @@ const Settings = () => {
         onChange={handleInputChange}
         onSave={() => saveGroup('Legal', ['privacy_url', 'terms_url', 'cookie_url'])}
         isSaving={savingGroups.Legal}
+      />
+
+      {/* Third-party services: each loads on the live site only once its id is set */}
+      <SettingsGroup
+        title="Integrations"
+        description="Live chat, privacy-friendly analytics and Google reviews. Leave a field blank to keep that service switched off."
+        fields={[
+          { key: 'google_reviews_url', label: 'Google review link', placeholder: 'https://g.page/r/.../review' },
+          { key: 'chatwoot_website_token', label: 'Chatwoot website token', placeholder: 'Live chat' },
+          { key: 'chatwoot_base_url', label: 'Chatwoot URL', placeholder: 'https://app.chatwoot.com' },
+          { key: 'tawk_property_id', label: 'Tawk.to property / widget id', placeholder: 'Used when Chatwoot is blank' },
+          { key: 'umami_website_id', label: 'Umami website id', placeholder: 'Analytics' },
+          { key: 'umami_script_url', label: 'Umami script URL', placeholder: 'https://cloud.umami.is/script.js' },
+        ]}
+        settings={settings}
+        onChange={handleInputChange}
+        onSave={() => saveGroup('Integrations', ['google_reviews_url', 'chatwoot_website_token', 'chatwoot_base_url', 'tawk_property_id', 'umami_website_id', 'umami_script_url'])}
+        isSaving={savingGroups.Integrations}
       />
 
       {/* Forms — submissions are handled by Web3Forms, not this CMS */}

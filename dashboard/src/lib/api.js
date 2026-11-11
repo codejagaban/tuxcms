@@ -81,6 +81,10 @@ export const jobApplicationAPI = {
   downloadCV: (id) => api.get(`/job-applications/${id}/cv`, { responseType: 'blob' }),
 };
 
+export const enquiryAPI = {
+  list: (params = {}) => api.get('/enquiries', { params }),
+};
+
 // Media endpoints
 export const mediaAPI = {
   list: (params = {}) => api.get('/media', { params }),
