@@ -43,7 +43,11 @@ class EnquiryController extends Controller
 
         // The enquiry is already stored, so a mail failure loses nothing: the
         // dashboard inbox shows it either way, flagged as undelivered.
-        $recipient = Setting::getString('enquiry_email') ?: Setting::getString('contact_email');
+        // Each form can have its own inbox; without one it falls back to the
+        // general enquiry address, then the public contact email.
+        $recipient = Setting::getString('enquiry_email_'.$enquiry->type)
+            ?: Setting::getString('enquiry_email')
+            ?: Setting::getString('contact_email');
 
         try {
             if (! $recipient) {

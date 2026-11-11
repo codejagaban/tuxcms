@@ -39,10 +39,23 @@ class EnquiryTest extends TestCase
         Mail::assertSent(EnquiryReceived::class, fn ($mail) => $mail->hasTo('office@example.com'));
     }
 
+    public function test_each_form_can_have_its_own_recipient(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+        Setting::updateOrCreate(['key' => 'enquiry_email_contact'], ['value' => 'support@example.com', 'group' => 'contact']);
+
+        $this->postJson('/api/v1/enquiries', $this->payload(['type' => 'contact']))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload())->assertCreated();
+
+        Mail::assertSent(EnquiryReceived::class, fn ($mail) => $mail->enquiry->type === 'contact' && $mail->hasTo('support@example.com'));
+        Mail::assertSent(EnquiryReceived::class, fn ($mail) => $mail->enquiry->type === 'staff_request' && $mail->hasTo('office@example.com'));
+    }
+
     public function test_enquiry_is_kept_when_no_recipient_is_configured(): void
     {
         Mail::fake();
-        Setting::whereIn('key', ['contact_email', 'enquiry_email'])->delete();
+        Setting::where('key', 'contact_email')->orWhere('key', 'like', 'enquiry_email%')->delete();
 
         $this->postJson('/api/v1/enquiries', $this->payload())->assertCreated();
 
