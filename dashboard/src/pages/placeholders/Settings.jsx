@@ -21,6 +21,7 @@ const Settings = () => {
     social_linkedin: '',
     social_tiktok: '',
     contact_email: '',
+    hide_contact_email: '',
     contact_phone: '',
     contact_address: '',
     site_tagline: '',
@@ -76,6 +77,7 @@ const Settings = () => {
         social_linkedin: data.social_linkedin || '',
         social_tiktok: data.social_tiktok || '',
         contact_email: data.contact_email || '',
+        hide_contact_email: data.hide_contact_email || '',
         contact_phone: data.contact_phone || '',
         contact_address: data.contact_address || '',
         site_tagline: data.site_tagline || '',
@@ -236,6 +238,7 @@ const Settings = () => {
         description="Shown in the site footer and in structured data"
         fields={[
           { key: 'contact_email', label: 'Contact Email', placeholder: 'contact@example.com', type: 'email' },
+          { key: 'hide_contact_email', label: 'Hide contact email on the website', placeholder: 'Type 1 to hide it, leave blank to show it' },
           { key: 'enquiry_email', label: 'Send website enquiries to', placeholder: 'Defaults to the contact email', type: 'email' },
           { key: 'enquiry_email_contact', label: 'Contact form goes to', placeholder: 'Defaults to the enquiries address', type: 'email' },
           { key: 'enquiry_email_staff_request', label: 'Staff requests go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
@@ -247,7 +250,7 @@ const Settings = () => {
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Contact', ['contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
+        onSave={() => saveGroup('Contact', ['contact_email', 'hide_contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
         isSaving={savingGroups.Contact}
       />
 
