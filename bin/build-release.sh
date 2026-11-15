@@ -28,7 +28,7 @@ rm -rf "$DEST" && mkdir -p "$DEST"
 # are deliberately unanchored at the end: 'tests/' must match every file under
 # it, not just the literal directory name.
 git ls-files -z \
-  | grep -zvE '^(tests/|dashboard/|bin/|\.github/|\.claude/)|^(phpunit\.xml|architecture\.html|[^/]*\.md)$' \
+  | grep -zvE '^(tests/|dashboard/|bin/|\.github/|\.claude/)|^(phpunit\.xml|architecture\.html|public/dev-router\.php|[^/]*\.md)$' \
   | rsync -a --files-from=- --from0 ./ "$DEST/"
 
 # Gitignored, but precisely what the server cannot build for itself.
