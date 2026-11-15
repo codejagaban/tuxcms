@@ -25,7 +25,7 @@ class LlmsTxtGenerator
         $facts = array_filter([
             'Areas served' => Setting::getString('area_served'),
             'Phone' => collect([Setting::getString('contact_phone'), Setting::getString('contact_phone_2')])->filter()->implode(', '),
-            'Email' => Setting::getString('contact_email'),
+            'Email' => Site::contact()['email'] ?? null,
             'Registered office' => Setting::getString('contact_address'),
         ]);
 

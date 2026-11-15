@@ -110,8 +110,13 @@ class Site
     /** Contact details used by the footer and Organization schema. */
     public static function contact(): array
     {
+        // The contact email can be kept off the public site (pages, structured
+        // data and llms.txt) so address harvesters find nothing, while forms
+        // still deliver to it.
+        $hideEmail = (bool) Setting::getString('hide_contact_email');
+
         return array_filter([
-            'email' => Setting::getString('contact_email'),
+            'email' => $hideEmail ? null : Setting::getString('contact_email'),
             'phone' => Setting::getString('contact_phone'),
             'address' => Setting::getString('contact_address'),
         ]);
