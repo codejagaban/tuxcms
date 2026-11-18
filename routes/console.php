@@ -23,3 +23,6 @@ Schedule::command('site:build --quiet-progress')
 Schedule::command('site:build --quiet-progress')
     ->dailyAt('03:30')
     ->withoutOverlapping();
+
+// Spam the filter has held is cleared after 30 days so it does not pile up.
+Schedule::command('spam:prune')->dailyAt('03:10');
