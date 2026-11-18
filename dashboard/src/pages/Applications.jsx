@@ -94,9 +94,13 @@ export default function Applications() {
                 <TableCell className="align-top font-medium">{application.job?.title || 'Deleted role'}</TableCell>
                 <TableCell className="min-w-44 align-top">{dateTime(application.created_at)}</TableCell>
                 <TableCell className="align-top">
-                  <Badge variant={application.delivery_status === 'sent' ? 'published' : 'danger'}>
-                    {application.delivery_status === 'sent' ? 'Sent' : 'Needs attention'}
-                  </Badge>
+                  {application.delivery_status === 'spam' ? (
+                    <Badge variant="draft">Held as spam</Badge>
+                  ) : (
+                    <Badge variant={application.delivery_status === 'sent' ? 'published' : 'danger'}>
+                      {application.delivery_status === 'sent' ? 'Sent' : 'Needs attention'}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="min-w-44 align-top text-right">
                   <Button variant="ghost" size="sm" isLoading={downloading === application.id} onClick={() => download(application)}>
