@@ -114,6 +114,11 @@ export default function Enquiries() {
                       {enquiry.delivery_status === 'sent' ? 'Sent' : 'Not emailed'}
                     </Badge>
                   )}
+                  {enquiry.spam_reason && (
+                    <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
+                      {enquiry.delivery_status === 'spam' ? '' : 'Check: '}{enquiry.spam_reason}
+                    </p>
+                  )}
                 </TableCell>
               </TableRow>
             ))}</TableBody>

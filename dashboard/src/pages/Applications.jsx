@@ -101,6 +101,11 @@ export default function Applications() {
                       {application.delivery_status === 'sent' ? 'Sent' : 'Needs attention'}
                     </Badge>
                   )}
+                  {application.spam_reason && (
+                    <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
+                      {application.delivery_status === 'spam' ? '' : 'Check: '}{application.spam_reason}
+                    </p>
+                  )}
                 </TableCell>
                 <TableCell className="min-w-44 align-top text-right">
                   <Button variant="ghost" size="sm" isLoading={downloading === application.id} onClick={() => download(application)}>
