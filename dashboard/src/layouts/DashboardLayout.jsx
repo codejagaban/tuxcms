@@ -36,7 +36,7 @@ const DashboardLayout = () => {
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
 
   return (
-    <div className="min-h-dvh bg-[var(--color-paper-2)] text-[var(--color-ink)] lg:flex">
+    <div className="min-h-dvh bg-[var(--color-paper)] text-[var(--color-ink)] lg:flex">
       {sidebarOpen && (
         <button
           type="button"
@@ -97,7 +97,7 @@ const DashboardLayout = () => {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)]">
+        <header className="sticky top-0 z-20 border-b border-[var(--color-rule-2)] bg-[var(--color-paper)]">
           <div className="mx-auto flex h-20 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button

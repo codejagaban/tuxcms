@@ -290,14 +290,14 @@ export default function PageEditor() {
 
   if (loading) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-[var(--color-paper-2)]">
+      <div className="flex h-dvh items-center justify-center bg-[var(--color-paper)]">
         <Spinner size="lg" />
       </div>
     );
   }
   if (!page) {
     return (
-      <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-[var(--color-paper-2)]">
+      <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-[var(--color-paper)]">
         <p className="text-gray-600">Page not found.</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard/pages')}>Back to pages</Button>
       </div>
@@ -343,7 +343,7 @@ export default function PageEditor() {
   });
 
   return (
-    <div className="flex h-dvh flex-col bg-[var(--color-paper-2)]">
+    <div className="flex h-dvh flex-col bg-[var(--color-paper)]">
       {/* Top bar */}
       <header className="flex min-h-16 shrink-0 items-center gap-3 border-b border-[var(--color-rule-2)] bg-[var(--color-paper)] px-3 sm:px-4">
         <button

@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <div className="dashboard-grain grid min-h-dvh bg-[var(--color-paper-2)] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
+    <div className="dashboard-grain grid min-h-dvh bg-[var(--color-paper)] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
       <section className="relative hidden overflow-hidden bg-black p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-black tracking-[-0.09em]">TUX</span>

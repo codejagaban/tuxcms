@@ -11,10 +11,10 @@
 @font-face { font-family: "HK Grotesk"; src: url("/themes/crystal/webfonts/hk-grotesk/hkgrotesk-semibold-webfont.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 @font-face { font-family: "HK Grotesk"; src: url("/themes/crystal/webfonts/hk-grotesk/hkgrotesk-regular-webfont.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @layer base {
-  :root { font-family: var(--font-body); color: var(--color-ink); background: var(--color-paper-2); font-synthesis: none; }
+  :root { font-family: var(--font-body); color: var(--color-ink); background: var(--color-paper); font-synthesis: none; }
   html, body { min-width: 320px; overflow-x: clip; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--color-paper-2); color: var(--color-ink); }
+  body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
   h1, h2, h3, h4 { font-family: var(--font-display); overflow-wrap: anywhere; min-width: 0; }
   button, input, textarea, select { font: inherit; }
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
