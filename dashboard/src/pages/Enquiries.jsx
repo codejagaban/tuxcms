@@ -3,6 +3,7 @@ import { ChatText } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, enquiryAPI } from '../lib/api';
 import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import Spinner from '../components/ui/Spinner';
 import { Pagination, Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from '../components/ui/Table';
@@ -24,6 +25,7 @@ export default function Enquiries() {
   const [enquiries, setEnquiries] = useState([]);
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [releasing, setReleasing] = useState(null);
   const [type, setType] = useState('');
 
   const load = useCallback(async (page = 1) => {
@@ -40,6 +42,24 @@ export default function Enquiries() {
   }, [type]);
 
   useEffect(() => { load(); }, [load]);
+
+  // The spam filter held this one by mistake: email it to the inbox after all.
+  const release = async (enquiry) => {
+    setReleasing(enquiry.id);
+    try {
+      const response = await enquiryAPI.release(enquiry.id);
+      const status = response.data.delivery_status;
+      setEnquiries((items) => items.map((item) => (
+        item.id === enquiry.id ? { ...item, delivery_status: status, spam_reason: null } : item
+      )));
+      if (status === 'sent') toast.success(response.data.message);
+      else toast.error(response.data.message);
+    } catch (error) {
+      toast.error(apiErrorMessage(error, 'Could not send this on'));
+    } finally {
+      setReleasing(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -118,6 +138,11 @@ export default function Enquiries() {
                     <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
                       {enquiry.delivery_status === 'spam' ? '' : 'Check: '}{enquiry.spam_reason}
                     </p>
+                  )}
+                  {enquiry.delivery_status === 'spam' && (
+                    <Button className="mt-2" variant="secondary" size="sm" isLoading={releasing === enquiry.id} onClick={() => release(enquiry)}>
+                      Not spam, send it
+                    </Button>
                   )}
                 </TableCell>
               </TableRow>

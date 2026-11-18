@@ -16,6 +16,7 @@ export default function Applications() {
   const [applications, setApplications] = useState([]);
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [releasing, setReleasing] = useState(null);
   const [downloading, setDownloading] = useState(null);
 
   const load = useCallback(async (page = 1) => {
@@ -32,6 +33,24 @@ export default function Applications() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // The spam filter held this one by mistake: email it to the inbox after all.
+  const release = async (application) => {
+    setReleasing(application.id);
+    try {
+      const response = await jobApplicationAPI.release(application.id);
+      const status = response.data.delivery_status;
+      setApplications((items) => items.map((item) => (
+        item.id === application.id ? { ...item, delivery_status: status, spam_reason: null } : item
+      )));
+      if (status === 'sent') toast.success(response.data.message);
+      else toast.error(response.data.message);
+    } catch (error) {
+      toast.error(apiErrorMessage(error, 'Could not send this on'));
+    } finally {
+      setReleasing(null);
+    }
+  };
 
   const download = async (application) => {
     setDownloading(application.id);
@@ -105,6 +124,11 @@ export default function Applications() {
                     <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
                       {application.delivery_status === 'spam' ? '' : 'Check: '}{application.spam_reason}
                     </p>
+                  )}
+                  {application.delivery_status === 'spam' && (
+                    <Button className="mt-2" variant="secondary" size="sm" isLoading={releasing === application.id} onClick={() => release(application)}>
+                      Not spam, send it
+                    </Button>
                   )}
                 </TableCell>
                 <TableCell className="min-w-44 align-top text-right">
