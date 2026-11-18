@@ -45,8 +45,15 @@ class JobApplicationController extends Controller
             'cv_name' => $file->getClientOriginalName(),
         ]);
 
-        // Junk is kept for review in the dashboard but never reaches an inbox.
-        if (SpamFilter::isSpam([$validated['cover_letter'], $validated['name']], $validated['form_token'] ?? null)) {
+        // Junk is kept in the dashboard, with the reason, but never reaches
+        // an inbox. Uncertain cases are emailed as normal and flagged.
+        $check = SpamFilter::judge([$validated['cover_letter'], $validated['name']], $validated['form_token'] ?? null);
+
+        if ($check['reason']) {
+            $application->update(['spam_reason' => $check['reason']]);
+        }
+
+        if ($check['verdict'] === SpamFilter::SPAM) {
             $application->update(['delivery_status' => 'spam']);
 
             return $this->thanks($application);
@@ -85,6 +92,7 @@ class JobApplicationController extends Controller
             'cover_letter' => $application->cover_letter,
             'cv_name' => $application->cv_name,
             'delivery_status' => $application->delivery_status,
+            'spam_reason' => $application->spam_reason,
             'emailed_at' => $application->emailed_at,
             'created_at' => $application->created_at,
             'job' => $application->jobPost ? [

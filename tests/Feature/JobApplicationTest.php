@@ -148,7 +148,7 @@ class JobApplicationTest extends TestCase
             'job' => $job->slug,
             'name' => 'Agency',
             'email' => 'agency@example.com',
-            'cover_letter' => 'We help businesses rank higher on Google.',
+            'cover_letter' => 'We help businesses rank higher on Google with affordable packages.',
             'form_token' => \App\Support\SpamFilter::issueToken(time() - 60),
             'cv' => UploadedFile::fake()->create('cv.pdf', 200, 'application/pdf'),
         ])->assertCreated();

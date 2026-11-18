@@ -34,7 +34,7 @@ class EnquiryController extends Controller
             'form_token' => ['nullable'],
         ]);
 
-        $spam = SpamFilter::isSpam(
+        $check = SpamFilter::judge(
             [$validated['message'] ?? null, $validated['organisation'] ?? null, $validated['name']],
             $validated['form_token'] ?? null
         );
@@ -51,13 +51,20 @@ class EnquiryController extends Controller
 
         // The same long message arriving again is a mass mailing, not a person.
         $message = trim((string) $enquiry->message);
-        if (! $spam && mb_strlen($message) >= 80) {
-            $spam = Enquiry::where('id', '!=', $enquiry->id)->where('message', $enquiry->message)->exists();
+        if ($check['verdict'] !== SpamFilter::SPAM && mb_strlen($message) >= 80
+            && Enquiry::where('id', '!=', $enquiry->id)->where('message', $enquiry->message)->exists()) {
+            $check = ['verdict' => SpamFilter::SPAM, 'reason' => 'Same message received before'];
         }
 
-        // Junk is kept for review in the dashboard but never reaches an inbox.
-        // The sender gets the usual reply, so they learn nothing from it.
-        if ($spam) {
+        // Keep the reason so a wrong call can be spotted in the dashboard.
+        if ($check['reason']) {
+            $enquiry->update(['spam_reason' => $check['reason']]);
+        }
+
+        // Junk is kept in the dashboard but never reaches an inbox. The
+        // sender gets the usual reply, so they learn nothing from it.
+        // Uncertain cases carry on and are emailed as normal.
+        if ($check['verdict'] === SpamFilter::SPAM) {
             $enquiry->update(['delivery_status' => 'spam']);
 
             return $this->thanks($enquiry);
@@ -113,6 +120,7 @@ class EnquiryController extends Controller
                 'message' => $enquiry->message,
                 'details' => $enquiry->details ?? [],
                 'delivery_status' => $enquiry->delivery_status,
+                'spam_reason' => $enquiry->spam_reason,
                 'created_at' => $enquiry->created_at,
             ]),
             'meta' => [

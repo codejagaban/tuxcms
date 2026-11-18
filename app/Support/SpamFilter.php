@@ -3,37 +3,66 @@
 namespace App\Support;
 
 /**
- * Decides whether a form submission looks like junk. Nothing is rejected:
- * a submission judged to be spam is still saved, so a wrong call can be
- * recovered from the dashboard. It is simply not emailed to the business.
+ * Decides whether a form submission is an unsolicited sales pitch or other
+ * junk. It judges intent, not single words: a message is only held when it
+ * both names something being sold and shows the sender is selling it.
+ *
+ * Nothing is rejected. A held submission is still saved with the reason, so
+ * a wrong call can be seen and recovered from the dashboard; it is simply not
+ * emailed to the business. An uncertain one is emailed as normal and flagged.
  */
 class SpamFilter
 {
+    public const OK = 'ok';
+
+    public const REVIEW = 'review';
+
+    public const SPAM = 'spam';
+
     /** A person cannot read and fill in a form faster than this. */
     private const MIN_SECONDS = 3;
 
-    /** One of these alone marks a message as a sales pitch. */
-    private const STRONG = [
-        'rank higher', 'ranking on google', 'rank on google', 'first page of google', 'top of google',
-        'search engine optim', 'seo ', 'seo.', 'seo,', 'backlink', 'link building', 'guest post',
-        'web design service', 'website redesign', 'redesign your website', 'web development service',
-        'ai-powered search', 'chatgpt, gemini', 'increase your traffic', 'more traffic to your',
-        'digital marketing agency', 'lead generation service', 'virtual assistant service',
-        'crypto', 'bitcoin', 'casino', 'forex', 'viagra', 'loan offer', 'business loan',
-        'squarespace', 'shopify', 'wordpress', 'fiverr', 'upwork',
-    ];
-
-    /** Two or more of these together do the same. */
-    private const WEAK = [
-        'your website', 'we help businesses', 'potential in your',
-        'i was going through your', 'i came across your', 'our agency',
-        'free quote', 'free audit', 'no obligation', 'affordable price', 'best price',
-        'boost your', 'grow your', 'presence on', 'online presence',
-        'reply to this', 'unsubscribe',
-    ];
-
     /** A page left open longer than this has to be reloaded. */
     private const MAX_SECONDS = 7 * 24 * 3600;
+
+    /** Never part of a genuine enquiry to a care staffing agency. */
+    private const JUNK = [
+        'crypto', 'bitcoin', 'casino', 'forex', 'viagra', 'backlink', 'backlinks',
+        'link building', 'guest post', 'guest posting', 'payday loan',
+    ];
+
+    /**
+     * What unsolicited pitches sell. Naming one of these is never enough on
+     * its own: a real customer may mention a website or an app.
+     */
+    private const TOPICS = [
+        'seo', 'search engine optimisation', 'search engine optimization', 'search ranking',
+        'rank higher', 'ranking on google', 'rank on google', 'page on google', 'page of google', 'top of google',
+        'ai-powered search', 'web design', 'website design', 'web designing', 'website designing',
+        'web development', 'website development', 'website redesign', 'redesign', 'website maintenance',
+        'custom website', 'custom websites', 'new website', 'mobile app', 'mobile apps', 'ios app', 'android app',
+        'app development', 'software development', 'business software', 'digital marketing',
+        'social media marketing', 'lead generation', 'google ads', 'virtual assistant',
+        'wordpress', 'shopify', 'squarespace', 'wix',
+    ];
+
+    /** Clear signs the sender is offering their own services. */
+    private const SELLING = [
+        'we help', 'we offer', 'we provide', 'we specialise', 'we specialize', 'we build', 'we develop',
+        'we design', 'we create', 'i can help', 'we can help',
+        'our agency', 'our company', 'our firm', 'our services', 'our team of',
+        'affordable', 'price list', 'package', 'packages', 'portfolio', 'portfolios', 'demo', 'demos',
+        'free audit', 'free quote', 'free consultation', 'no obligation', 'potential in your',
+        'skilled across', 'years of experience in',
+    ];
+
+    /** Weaker signs, which only count alongside the above. */
+    private const NUDGES = [
+        'we are a', 'we are an', 'i am a', 'i am an', 'your website', 'your site', 'your business', 'i was going through your', 'i came across your',
+        'pricing', 'discuss your requirement', 'discuss your requirements', 'grow your', 'boost your',
+        'increase your', 'more traffic', 'more customers', 'online presence', 'are you interested',
+        'if you are interested', 'reply to this', 'let me know if', 'unsubscribe',
+    ];
 
     /**
      * A signed note of when a form page was opened. The site script fetches
@@ -70,23 +99,24 @@ class SpamFilter
     /**
      * @param  array<int, string|null>  $texts  the free-text parts of the submission
      * @param  mixed  $token  the signed token the site script sent back
+     * @return array{verdict: string, reason: ?string}
      */
-    public static function isSpam(array $texts, mixed $token): bool
+    public static function judge(array $texts, mixed $token): array
     {
         // No valid token means something posted straight to the address
         // without opening the page. A very young one means no person could
         // have filled the form in yet.
         $age = self::tokenAge($token);
 
-        if ($age === null || $age < self::MIN_SECONDS || $age > self::MAX_SECONDS) {
-            return true;
+        if ($age === null) {
+            return self::result(self::SPAM, 'Sent without opening the form page');
         }
 
-        $text = ' '.mb_strtolower(implode(' ', array_filter($texts))).' ';
-
-        if ($text === '  ') {
-            return false;
+        if ($age < self::MIN_SECONDS) {
+            return self::result(self::SPAM, 'Sent faster than a person could fill in the form');
         }
+
+        $text = mb_strtolower(implode(' ', array_filter($texts)));
 
         // This business works in English. A message written mostly in another
         // script (Cyrillic, Chinese, Arabic and so on) is a mass mailing.
@@ -94,25 +124,55 @@ class SpamFilter
         $latin = preg_match_all('/\p{Latin}/u', $text);
 
         if ($letters >= 20 && $latin / $letters < 0.6) {
-            return true;
+            return self::result(self::SPAM, 'Not written in English');
         }
 
-        foreach (self::STRONG as $phrase) {
-            if (str_contains($text, $phrase)) {
-                return true;
-            }
+        if ($junk = self::found(self::JUNK, $text)) {
+            return self::result(self::SPAM, 'Junk topic: '.$junk[0]);
         }
 
-        $weak = 0;
-        foreach (self::WEAK as $phrase) {
-            if (str_contains($text, $phrase)) {
-                $weak++;
-            }
-        }
-
-        // Real enquiries rarely carry links; pitches usually do.
+        $topics = self::found(self::TOPICS, $text);
+        $selling = self::found(self::SELLING, $text);
+        $nudges = self::found(self::NUDGES, $text);
         $links = preg_match_all('#https?://|www\.#', $text);
 
-        return $weak >= 2 || $links >= 2 || ($weak >= 1 && $links >= 1);
+        // A pitch names what it sells and shows the sender is the one selling.
+        if ($topics && $selling && count($selling) + count($nudges) >= 2) {
+            return self::result(self::SPAM, 'Sales pitch for '.$topics[0].' ("'.$selling[0].'")');
+        }
+
+        if ($topics && ($selling || count($nudges) >= 2)) {
+            return self::result(self::REVIEW, 'Possible sales pitch: mentions '.$topics[0]);
+        }
+
+        if ($links >= 2) {
+            return self::result(self::REVIEW, 'Contains several links');
+        }
+
+        if ($age > self::MAX_SECONDS) {
+            return self::result(self::REVIEW, 'Form page was open for over a week');
+        }
+
+        return self::result(self::OK, null);
+    }
+
+    /** @return array{verdict: string, reason: ?string} */
+    private static function result(string $verdict, ?string $reason): array
+    {
+        return ['verdict' => $verdict, 'reason' => $reason];
+    }
+
+    /**
+     * The phrases from the list that appear as whole words in the text.
+     *
+     * @param  array<int, string>  $phrases
+     * @return array<int, string>
+     */
+    private static function found(array $phrases, string $text): array
+    {
+        return array_values(array_filter(
+            $phrases,
+            fn (string $phrase) => preg_match('/(?<![\p{L}\p{N}])'.preg_quote($phrase, '/').'(?![\p{L}\p{N}])/u', $text) === 1
+        ));
     }
 }

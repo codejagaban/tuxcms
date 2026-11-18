@@ -96,7 +96,35 @@ class EnquiryTest extends TestCase
         ]))->assertCreated();
 
         $this->assertSame('spam', Enquiry::sole()->delivery_status);
+        $this->assertStringContainsString('Sales pitch', Enquiry::sole()->spam_reason);
         Mail::assertNothingSent();
+    }
+
+    public function test_an_unclear_message_is_emailed_and_flagged_for_a_check(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+
+        $this->postJson('/api/v1/enquiries', $this->payload([
+            'message' => 'We offer WordPress support if that is ever useful to you.',
+        ]))->assertCreated();
+
+        $this->assertSame('sent', Enquiry::sole()->delivery_status);
+        $this->assertStringContainsString('Possible sales pitch', Enquiry::sole()->spam_reason);
+        Mail::assertSent(EnquiryReceived::class);
+    }
+
+    public function test_mentioning_a_website_or_app_alone_is_not_spam(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+
+        $this->postJson('/api/v1/enquiries', $this->payload([
+            'message' => 'Do you have a mobile app for booking shifts? We are a care home in Ashford.',
+        ]))->assertCreated();
+
+        $this->assertSame('sent', Enquiry::sole()->delivery_status);
+        $this->assertNull(Enquiry::sole()->spam_reason);
     }
 
     public function test_a_submission_sent_too_fast_is_held(): void
