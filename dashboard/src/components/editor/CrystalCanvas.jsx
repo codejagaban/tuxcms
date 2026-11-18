@@ -30,13 +30,14 @@ function editableFields(sections) {
 }
 
 function editableImages(sections) {
-  const imageKeys = new Set(['image', 'image_url', 'background_image', 'src']);
+  // A section can hold several photos: image, image_2, image_3 and so on.
+  const isImageKey = (key) => /^(image|image_url|background_image|src)(_\d+)?$/.test(key);
 
   const visit = (value, path, sectionUid, images, parent = null) => {
     if (!value || typeof value !== 'object') return;
     Object.entries(value).forEach(([key, child]) => {
       const field = path ? `${path}.${key}` : key;
-      if (typeof child === 'string' && imageKeys.has(key) && child.trim()) {
+      if (typeof child === 'string' && isImageKey(key) && child.trim()) {
         const altKey = key === 'image' ? 'image_alt' : `${key}_alt`;
         images.push({
           sectionUid,
@@ -100,6 +101,8 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
           [data-tuxcms-image-editable] { cursor: pointer; outline: 1px solid transparent; outline-offset: 5px; }
           [data-tuxcms-image-editable]:hover { outline: 2px solid #111; }
+          .tuxcms-photo-button { position: absolute; z-index: 2147483000; margin: 0; padding: 7px 12px; border: 0; border-radius: 6px; background: #111; color: #fff; font: 600 12px/1 system-ui, sans-serif; letter-spacing: 0; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
+          .tuxcms-photo-button:hover, .tuxcms-photo-button:focus-visible { background: #fff; color: #111; outline: 2px solid #111; }
         `;
         if (!style.isConnected) doc.head.appendChild(style);
 
@@ -186,6 +189,42 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           });
         };
 
+        // A photo that sits under a heading, a link or a tint never receives
+        // the click itself, so every changeable photo also gets a button laid
+        // over its corner, above everything else on the page.
+        doc.querySelectorAll('.tuxcms-photo-button').forEach((button) => button.remove());
+        const photoButtons = [];
+        const addPhotoButton = (element, handler) => {
+          const button = doc.createElement('button');
+          button.type = 'button';
+          button.className = 'tuxcms-photo-button';
+          button.textContent = 'Change photo';
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handler();
+          });
+          doc.body.appendChild(button);
+          photoButtons.push({ button, element });
+        };
+        const placePhotoButtons = () => {
+          const view = doc.defaultView;
+          // A hero photo starts underneath the site's navigation bar, so a
+          // button in its corner would be hidden there. Start below the bar.
+          // Its height is used, not its position: the bar hides as the page
+          // scrolls, which would otherwise move the button with it.
+          const bar = doc.querySelector('.site-header, body > header');
+          const barBottom = bar ? bar.offsetHeight : 0;
+          photoButtons.forEach(({ button, element }) => {
+            const box = element.getBoundingClientRect();
+            const shown = box.width > 60 && box.height > 40;
+            button.hidden = !shown;
+            if (!shown) return;
+            button.style.left = `${Math.max(box.left, 0) + view.scrollX + 12}px`;
+            button.style.top = `${Math.max(box.top + view.scrollY, barBottom) + 12}px`;
+          });
+        };
+
         const claimedImages = new Set();
         images.forEach((image) => {
           const match = [...doc.images].find((element) => {
@@ -200,6 +239,10 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
+            onSelect?.(image.sectionUid);
+            onImageEdit?.(image, match);
+          });
+          addPhotoButton(match, () => {
             onSelect?.(image.sectionUid);
             onImageEdit?.(image, match);
           });
@@ -223,7 +266,14 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             event.stopImmediatePropagation();
             onImageEdit?.({ overrideKey: index, url: element.src, alt: element.alt }, element);
           });
+          addPhotoButton(element, () => onImageEdit?.({ overrideKey: index, url: element.src, alt: element.alt }, element));
         });
+
+        // Keep each button on its photo as the page loads images and resizes.
+        placePhotoButtons();
+        doc.defaultView.addEventListener('resize', placePhotoButtons);
+        doc.defaultView.addEventListener('load', placePhotoButtons);
+        if (doc.defaultView.ResizeObserver) new doc.defaultView.ResizeObserver(placePhotoButtons).observe(doc.body);
 
         const editableRoutes = new Map(pages.map((page) => {
           const route = page.is_homepage ? '/' : `/${String(page.path || page.slug || '').replace(/^\/+|\/+$/g, '')}/`;
