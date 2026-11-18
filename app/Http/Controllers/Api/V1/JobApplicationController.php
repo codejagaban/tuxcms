@@ -59,16 +59,39 @@ class JobApplicationController extends Controller
             return $this->thanks($application);
         }
 
-        $recipient = $job->application_email ?: Setting::getString('contact_email');
+        $this->deliver($application);
+
+        return $this->thanks($application);
+    }
+
+    /** Send a held application on to the business after all. */
+    public function release(JobApplication $application): JsonResponse
+    {
+        abort_unless($application->delivery_status === 'spam', 422, 'This application is not being held.');
+
+        $application->update(['spam_reason' => null]);
+        $this->deliver($application);
+
+        return response()->json([
+            'delivery_status' => $application->delivery_status,
+            'message' => $application->delivery_status === 'sent'
+                ? 'Sent to the inbox.'
+                : 'Marked as not spam, but the email could not be sent.',
+        ]);
+    }
+
+    private function deliver(JobApplication $application): void
+    {
+        $application->loadMissing('jobPost');
+
+        $recipient = $application->jobPost?->application_email ?: Setting::getString('contact_email');
         try {
-            Mail::to($recipient)->send(new JobApplicationReceived($application->load('jobPost')));
+            Mail::to($recipient)->send(new JobApplicationReceived($application));
             $application->update(['delivery_status' => 'sent', 'emailed_at' => now()]);
         } catch (\Throwable $error) {
             $application->update(['delivery_status' => 'failed']);
             Log::error('Job application email failed', ['application_id' => $application->id, 'error' => $error->getMessage()]);
         }
-
-        return $this->thanks($application);
     }
 
     private function thanks(JobApplication $application): JsonResponse

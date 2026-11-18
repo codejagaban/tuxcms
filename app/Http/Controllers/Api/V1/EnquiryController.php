@@ -70,8 +70,34 @@ class EnquiryController extends Controller
             return $this->thanks($enquiry);
         }
 
-        // The enquiry is already stored, so a mail failure loses nothing: the
-        // dashboard inbox shows it either way, flagged as undelivered.
+        $this->deliver($enquiry);
+
+        return $this->thanks($enquiry);
+    }
+
+    /** Send a held enquiry on to the business after all. */
+    public function release(Enquiry $enquiry): JsonResponse
+    {
+        abort_unless($enquiry->delivery_status === 'spam', 422, 'This enquiry is not being held.');
+
+        $enquiry->update(['spam_reason' => null]);
+        $this->deliver($enquiry);
+
+        return response()->json([
+            'delivery_status' => $enquiry->delivery_status,
+            'message' => $enquiry->delivery_status === 'sent'
+                ? 'Sent to the inbox.'
+                : 'Marked as not spam, but the email could not be sent.',
+        ]);
+    }
+
+    /**
+     * Email the enquiry to the business. It is already stored, so a mail
+     * failure loses nothing: the dashboard shows it either way, flagged as
+     * undelivered.
+     */
+    private function deliver(Enquiry $enquiry): void
+    {
         // Each form can have its own inbox; without one it falls back to the
         // general enquiry address, then the public contact email.
         $recipient = Setting::getString('enquiry_email_'.$enquiry->type)
@@ -89,8 +115,6 @@ class EnquiryController extends Controller
             $enquiry->update(['delivery_status' => 'failed']);
             Log::error('Enquiry email failed', ['enquiry_id' => $enquiry->id, 'error' => $error->getMessage()]);
         }
-
-        return $this->thanks($enquiry);
     }
 
     private function thanks(Enquiry $enquiry): JsonResponse

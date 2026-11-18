@@ -158,4 +158,24 @@ class EnquiryTest extends TestCase
 
         $this->assertSame(0, \App\Support\SpamFilter::tokenAge($token));
     }
+
+    public function test_a_held_enquiry_can_be_released_from_the_dashboard(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_token' => null]))->assertCreated();
+        $enquiry = Enquiry::sole();
+        Mail::assertNothingSent();
+
+        $this->postJson("/api/v1/enquiries/{$enquiry->id}/release")->assertUnauthorized();
+
+        Sanctum::actingAs(User::factory()->create());
+        $this->postJson("/api/v1/enquiries/{$enquiry->id}/release")->assertOk()->assertJsonPath('delivery_status', 'sent');
+
+        $this->assertNull($enquiry->fresh()->spam_reason);
+        Mail::assertSent(EnquiryReceived::class, fn ($mail) => $mail->hasTo('office@example.com'));
+
+        // Only held enquiries can be released, so nothing is emailed twice.
+        $this->postJson("/api/v1/enquiries/{$enquiry->id}/release")->assertStatus(422);
+    }
 }
