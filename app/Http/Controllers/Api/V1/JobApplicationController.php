@@ -105,6 +105,7 @@ class JobApplicationController extends Controller
     public function index(Request $request): JsonResponse
     {
         $applications = JobApplication::with('jobPost:id,title')
+            ->when($request->boolean('held'), fn ($q) => $q->where('delivery_status', 'spam'))
             ->latest()->paginate(min(max($request->integer('per_page', 20), 1), 100));
 
         $data = collect($applications->items())->map(fn (JobApplication $application) => [
@@ -128,6 +129,7 @@ class JobApplicationController extends Controller
             'current_page' => $applications->currentPage(),
             'last_page' => $applications->lastPage(),
             'total' => $applications->total(),
+            'held' => JobApplication::where('delivery_status', 'spam')->count(),
         ]]);
     }
 

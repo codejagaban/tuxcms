@@ -129,6 +129,7 @@ class EnquiryController extends Controller
     {
         $enquiries = Enquiry::query()
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
+            ->when($request->boolean('held'), fn ($q) => $q->where('delivery_status', 'spam'))
             ->latest()
             ->paginate(min(max($request->integer('per_page', 20), 1), 100));
 
@@ -151,6 +152,8 @@ class EnquiryController extends Controller
                 'current_page' => $enquiries->currentPage(),
                 'last_page' => $enquiries->lastPage(),
                 'total' => $enquiries->total(),
+                // How many the spam filter is holding, whatever the filter.
+                'held' => Enquiry::where('delivery_status', 'spam')->count(),
             ],
         ]);
     }

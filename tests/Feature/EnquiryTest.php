@@ -178,4 +178,33 @@ class EnquiryTest extends TestCase
         // Only held enquiries can be released, so nothing is emailed twice.
         $this->postJson("/api/v1/enquiries/{$enquiry->id}/release")->assertStatus(422);
     }
+
+    public function test_the_dashboard_can_list_only_held_enquiries_and_count_them(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+        $this->postJson('/api/v1/enquiries', $this->payload())->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_token' => null, 'name' => 'Bot']))->assertCreated();
+
+        Sanctum::actingAs(User::factory()->create());
+
+        $this->getJson('/api/v1/enquiries')->assertOk()->assertJsonPath('meta.total', 2)->assertJsonPath('meta.held', 1);
+        $this->getJson('/api/v1/enquiries?held=1')->assertOk()
+            ->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.name', 'Bot');
+    }
+
+    public function test_old_held_spam_is_deleted_and_everything_else_is_kept(): void
+    {
+        $make = fn (string $name, string $status, int $daysOld) => Enquiry::forceCreate([
+            'type' => 'contact', 'name' => $name, 'email' => 'a@example.com',
+            'delivery_status' => $status, 'created_at' => now()->subDays($daysOld),
+        ]);
+        $make('Old spam', 'spam', 31);
+        $make('Recent spam', 'spam', 5);
+        $make('Old genuine', 'sent', 400);
+
+        $this->artisan('spam:prune')->assertSuccessful();
+
+        $this->assertSame(['Recent spam', 'Old genuine'], Enquiry::orderBy('id')->pluck('name')->all());
+    }
 }
