@@ -19,6 +19,7 @@ const FILTERS = [
   { value: 'staff_request', label: 'Staff requests' },
   { value: 'registration', label: 'Registrations' },
   { value: 'contact', label: 'Enquiries' },
+  { value: 'held', label: 'Held as spam' },
 ];
 
 export default function Enquiries() {
@@ -26,12 +27,12 @@ export default function Enquiries() {
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [releasing, setReleasing] = useState(null);
-  const [type, setType] = useState('');
+  const [type, setType] = useState(() => (new URLSearchParams(window.location.search).has('held') ? 'held' : ''));
 
   const load = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const response = await enquiryAPI.list({ page, per_page: 15, ...(type ? { type } : {}) });
+      const response = await enquiryAPI.list({ page, per_page: 15, ...(type === 'held' ? { held: 1 } : type ? { type } : {}) });
       setEnquiries(response.data.data || []);
       setMeta(response.data.meta || { current_page: 1, last_page: 1, total: 0 });
     } catch (error) {
@@ -52,6 +53,7 @@ export default function Enquiries() {
       setEnquiries((items) => items.map((item) => (
         item.id === enquiry.id ? { ...item, delivery_status: status, spam_reason: null } : item
       )));
+      setMeta((current) => ({ ...current, held: Math.max((current.held || 1) - 1, 0) }));
       if (status === 'sent') toast.success(response.data.message);
       else toast.error(response.data.message);
     } catch (error) {
@@ -79,7 +81,7 @@ export default function Enquiries() {
               ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >
-            {filter.label}
+            {filter.label}{filter.value === 'held' && meta.held > 0 ? ` (${meta.held})` : ''}
           </button>
         ))}
       </div>
@@ -138,6 +140,9 @@ export default function Enquiries() {
                     <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
                       {enquiry.delivery_status === 'spam' ? '' : 'Check: '}{enquiry.spam_reason}
                     </p>
+                  )}
+                  {enquiry.delivery_status === 'spam' && (
+                    <p className="mt-1 max-w-48 text-xs leading-4 text-[var(--color-muted)]">Deleted automatically after 30 days.</p>
                   )}
                   {enquiry.delivery_status === 'spam' && (
                     <Button className="mt-2" variant="secondary" size="sm" isLoading={releasing === enquiry.id} onClick={() => release(enquiry)}>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
-import { pageAPI, mediaAPI } from '../lib/api';
+import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI } from '../lib/api';
 import { Card, CardContent } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
@@ -12,6 +12,8 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ totalPages: 0, publishedPages: 0, draftPages: 0, mediaFiles: 0 });
   const [recentPages, setRecentPages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Submissions the spam filter is holding back from the inboxes.
+  const [held, setHeld] = useState({ enquiries: 0, applications: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +39,19 @@ const Dashboard = () => {
           setStats((prev) => ({ ...prev, mediaFiles: mediaResponse.data.meta?.total || mediaFiles.length }));
         } catch (error) {
           console.error('Error fetching media:', error);
+        }
+
+        try {
+          const [enquiries, applications] = await Promise.all([
+            enquiryAPI.list({ per_page: 1 }),
+            jobApplicationAPI.list({ per_page: 1 }),
+          ]);
+          setHeld({
+            enquiries: enquiries.data.meta?.held || 0,
+            applications: applications.data.meta?.held || 0,
+          });
+        } catch (error) {
+          console.error('Error fetching held submissions:', error);
         }
       } finally {
         setIsLoading(false);
@@ -70,6 +85,19 @@ const Dashboard = () => {
           Review content, prepare changes, and publish when everything is ready.
         </p>
       </section>
+
+      {(held.enquiries > 0 || held.applications > 0) && (
+        <section aria-label="Held as spam" className="rounded-md border border-[var(--color-rule-2)] px-5 py-4 text-sm leading-6">
+          <p className="font-semibold">The spam filter is holding {held.enquiries + held.applications} {held.enquiries + held.applications === 1 ? 'submission' : 'submissions'}.</p>
+          <p className="mt-1 text-neutral-600">
+            These were not emailed and are deleted after 30 days. Check that none is genuine:{' '}
+            {held.enquiries > 0 && <Link className="font-semibold underline" to="/dashboard/enquiries?held=1">{held.enquiries} in Enquiries</Link>}
+            {held.enquiries > 0 && held.applications > 0 && ' and '}
+            {held.applications > 0 && <Link className="font-semibold underline" to="/dashboard/applications?held=1">{held.applications} in Applications</Link>}
+            .
+          </p>
+        </section>
+      )}
 
       <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule)] lg:grid-cols-4">
         {metrics.map(({ label, value, note }, index) => (

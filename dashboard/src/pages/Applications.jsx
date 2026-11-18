@@ -18,11 +18,12 @@ export default function Applications() {
   const [loading, setLoading] = useState(true);
   const [releasing, setReleasing] = useState(null);
   const [downloading, setDownloading] = useState(null);
+  const [held, setHeld] = useState(() => new URLSearchParams(window.location.search).has('held'));
 
   const load = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const response = await jobApplicationAPI.list({ page, per_page: 15 });
+      const response = await jobApplicationAPI.list({ page, per_page: 15, ...(held ? { held: 1 } : {}) });
       setApplications(response.data.data || []);
       setMeta(response.data.meta || { current_page: 1, last_page: 1, total: 0 });
     } catch (error) {
@@ -30,7 +31,7 @@ export default function Applications() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [held]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -43,6 +44,7 @@ export default function Applications() {
       setApplications((items) => items.map((item) => (
         item.id === application.id ? { ...item, delivery_status: status, spam_reason: null } : item
       )));
+      setMeta((current) => ({ ...current, held: Math.max((current.held || 1) - 1, 0) }));
       if (status === 'sent') toast.success(response.data.message);
       else toast.error(response.data.message);
     } catch (error) {
@@ -76,6 +78,22 @@ export default function Applications() {
       <div>
         <h1 className="page-heading">Applications</h1>
         <p className="page-deck">Every careers submission is stored here, including applications whose notification email could not be delivered.</p>
+      </div>
+
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter applications">
+        {[{ value: false, label: 'All' }, { value: true, label: `Held as spam${meta.held > 0 ? ` (${meta.held})` : ''}` }].map((filter) => (
+          <button
+            key={filter.label}
+            type="button"
+            aria-pressed={held === filter.value}
+            onClick={() => setHeld(filter.value)}
+            className={`min-h-11 rounded-md border px-4 text-sm font-medium ${held === filter.value
+              ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
+              : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
@@ -124,6 +142,9 @@ export default function Applications() {
                     <p className="mt-2 max-w-48 text-xs leading-4 text-[var(--color-muted)]">
                       {application.delivery_status === 'spam' ? '' : 'Check: '}{application.spam_reason}
                     </p>
+                  )}
+                  {application.delivery_status === 'spam' && (
+                    <p className="mt-1 max-w-48 text-xs leading-4 text-[var(--color-muted)]">Deleted automatically after 30 days.</p>
                   )}
                   {application.delivery_status === 'spam' && (
                     <Button className="mt-2" variant="secondary" size="sm" isLoading={releasing === application.id} onClick={() => release(application)}>
