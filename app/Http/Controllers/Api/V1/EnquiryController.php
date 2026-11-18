@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\EnquiryReceived;
 use App\Models\Enquiry;
 use App\Models\Setting;
+use App\Support\SpamFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +30,14 @@ class EnquiryController extends Controller
             'details.*' => ['nullable'],
             // Honeypot — people never see it, bots fill it.
             'website' => ['nullable', 'max:0'],
+            // Seconds the form was open, reported by the site script.
+            'form_time' => ['nullable'],
         ]);
+
+        $spam = SpamFilter::isSpam(
+            [$validated['message'] ?? null, $validated['organisation'] ?? null, $validated['name']],
+            $validated['form_time'] ?? null
+        );
 
         $enquiry = Enquiry::create([
             'type' => $validated['type'],
@@ -40,6 +48,14 @@ class EnquiryController extends Controller
             'message' => $validated['message'] ?? null,
             'details' => $this->cleanDetails($validated['details'] ?? []),
         ]);
+
+        // Junk is kept for review in the dashboard but never reaches an inbox.
+        // The sender gets the usual reply, so they learn nothing from it.
+        if ($spam) {
+            $enquiry->update(['delivery_status' => 'spam']);
+
+            return $this->thanks($enquiry);
+        }
 
         // The enquiry is already stored, so a mail failure loses nothing: the
         // dashboard inbox shows it either way, flagged as undelivered.
@@ -61,6 +77,11 @@ class EnquiryController extends Controller
             Log::error('Enquiry email failed', ['enquiry_id' => $enquiry->id, 'error' => $error->getMessage()]);
         }
 
+        return $this->thanks($enquiry);
+    }
+
+    private function thanks(Enquiry $enquiry): JsonResponse
+    {
         return response()->json([
             'message' => 'Thank you. We have your details and will be in touch shortly.',
             'reference' => $enquiry->id,

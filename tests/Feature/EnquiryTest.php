@@ -22,6 +22,7 @@ class EnquiryTest extends TestCase
             'phone' => '01234 567890',
             'message' => 'Night cover needed this weekend.',
             'consent' => '1',
+            'form_time' => 40,
             'details' => ['roles' => ['Healthcare Assistant'], 'shifts' => ['Sat Night', 'Sun Night']],
         ], $overrides);
     }
@@ -82,5 +83,31 @@ class EnquiryTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
 
         $this->getJson('/api/v1/enquiries')->assertOk()->assertJsonPath('meta.total', 1);
+    }
+
+    public function test_a_sales_pitch_is_held_and_not_emailed(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+
+        $this->postJson('/api/v1/enquiries', $this->payload([
+            'type' => 'contact',
+            'message' => 'I was going through your website. We help businesses rank higher on Google.',
+        ]))->assertCreated();
+
+        $this->assertSame('spam', Enquiry::sole()->delivery_status);
+        Mail::assertNothingSent();
+    }
+
+    public function test_a_submission_sent_too_fast_is_held(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_time' => 0]))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_time' => null]))->assertCreated();
+
+        $this->assertSame(2, Enquiry::where('delivery_status', 'spam')->count());
+        Mail::assertNothingSent();
     }
 }
