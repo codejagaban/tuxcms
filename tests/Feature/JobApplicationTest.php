@@ -29,7 +29,7 @@ class JobApplicationTest extends TestCase
             'email' => 'jane@example.com',
             'phone' => '07123456789',
             'cover_letter' => 'I have the required experience.',
-            'form_time' => 60,
+            'form_token' => \App\Support\SpamFilter::issueToken(time() - 60),
             'cv' => UploadedFile::fake()->create('jane-cv.pdf', 200, 'application/pdf'),
         ]);
 
@@ -149,7 +149,7 @@ class JobApplicationTest extends TestCase
             'name' => 'Agency',
             'email' => 'agency@example.com',
             'cover_letter' => 'We help businesses rank higher on Google.',
-            'form_time' => 60,
+            'form_token' => \App\Support\SpamFilter::issueToken(time() - 60),
             'cv' => UploadedFile::fake()->create('cv.pdf', 200, 'application/pdf'),
         ])->assertCreated();
 

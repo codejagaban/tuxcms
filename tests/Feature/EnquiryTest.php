@@ -22,7 +22,7 @@ class EnquiryTest extends TestCase
             'phone' => '01234 567890',
             'message' => 'Night cover needed this weekend.',
             'consent' => '1',
-            'form_time' => 40,
+            'form_token' => \App\Support\SpamFilter::issueToken(time() - 40),
             'details' => ['roles' => ['Healthcare Assistant'], 'shifts' => ['Sat Night', 'Sun Night']],
         ], $overrides);
     }
@@ -104,10 +104,30 @@ class EnquiryTest extends TestCase
         Mail::fake();
         Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
 
-        $this->postJson('/api/v1/enquiries', $this->payload(['form_time' => 0]))->assertCreated();
-        $this->postJson('/api/v1/enquiries', $this->payload(['form_time' => null]))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_token' => \App\Support\SpamFilter::issueToken()]))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['form_token' => (time() - 40).'.'.str_repeat('a', 64)]))->assertCreated();
 
         $this->assertSame(2, Enquiry::where('delivery_status', 'spam')->count());
         Mail::assertNothingSent();
+    }
+
+    public function test_a_repeated_or_foreign_script_message_is_held(): void
+    {
+        Mail::fake();
+        Setting::updateOrCreate(['key' => 'contact_email'], ['value' => 'office@example.com', 'group' => 'contact']);
+        $long = str_repeat('We need two healthcare assistants for nights next week. ', 3);
+
+        $this->postJson('/api/v1/enquiries', $this->payload(['message' => $long]))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['message' => $long]))->assertCreated();
+        $this->postJson('/api/v1/enquiries', $this->payload(['message' => 'Здравствуйте, предлагаем услуги продвижения сайтов']))->assertCreated();
+
+        $this->assertSame(['sent', 'spam', 'spam'], Enquiry::orderBy('id')->pluck('delivery_status')->all());
+    }
+
+    public function test_the_site_can_fetch_a_form_token(): void
+    {
+        $token = $this->getJson('/api/v1/form-token')->assertOk()->json('token');
+
+        $this->assertSame(0, \App\Support\SpamFilter::tokenAge($token));
     }
 }

@@ -32,15 +32,53 @@ class SpamFilter
         'reply to this', 'unsubscribe',
     ];
 
+    /** A page left open longer than this has to be reloaded. */
+    private const MAX_SECONDS = 7 * 24 * 3600;
+
+    /**
+     * A signed note of when a form page was opened. The site script fetches
+     * one as the page loads and sends it back with the form, so the server
+     * knows the page was really opened in a browser, and how long ago,
+     * without trusting a number the sender could simply make up.
+     */
+    public static function issueToken(?int $at = null): string
+    {
+        $at ??= time();
+
+        return $at.'.'.self::sign($at);
+    }
+
+    /** Seconds since the token was issued, or null when it is not ours. */
+    public static function tokenAge(mixed $token): ?int
+    {
+        if (! is_string($token) || ! preg_match('/^(\d{1,12})\.([a-f0-9]{64})$/', $token, $parts)) {
+            return null;
+        }
+
+        if (! hash_equals(self::sign((int) $parts[1]), $parts[2])) {
+            return null;
+        }
+
+        return time() - (int) $parts[1];
+    }
+
+    private static function sign(int $at): string
+    {
+        return hash_hmac('sha256', 'form-token:'.$at, (string) config('app.key'));
+    }
+
     /**
      * @param  array<int, string|null>  $texts  the free-text parts of the submission
-     * @param  mixed  $elapsed  seconds the visitor had the form open, sent by the site script
+     * @param  mixed  $token  the signed token the site script sent back
      */
-    public static function isSpam(array $texts, mixed $elapsed): bool
+    public static function isSpam(array $texts, mixed $token): bool
     {
-        // The site script always reports how long the form was open. A missing
-        // or tiny value means something posted straight to the address.
-        if (! is_numeric($elapsed) || (float) $elapsed < self::MIN_SECONDS) {
+        // No valid token means something posted straight to the address
+        // without opening the page. A very young one means no person could
+        // have filled the form in yet.
+        $age = self::tokenAge($token);
+
+        if ($age === null || $age < self::MIN_SECONDS || $age > self::MAX_SECONDS) {
             return true;
         }
 
@@ -48,6 +86,15 @@ class SpamFilter
 
         if ($text === '  ') {
             return false;
+        }
+
+        // This business works in English. A message written mostly in another
+        // script (Cyrillic, Chinese, Arabic and so on) is a mass mailing.
+        $letters = preg_match_all('/\p{L}/u', $text);
+        $latin = preg_match_all('/\p{Latin}/u', $text);
+
+        if ($letters >= 20 && $latin / $letters < 0.6) {
+            return true;
         }
 
         foreach (self::STRONG as $phrase) {

@@ -32,6 +32,10 @@ Route::prefix('v1')->group(function () {
     Route::get('pages/{slugOrId}', [PageController::class, 'show']);
 
     Route::get('search', [SearchController::class, 'search']);
+    // Signed proof that a form page was opened; see App\Support\SpamFilter.
+    Route::get('form-token', fn () => response()->json(['token' => \App\Support\SpamFilter::issueToken()])
+        ->header('Cache-Control', 'no-store'))
+        ->middleware('throttle:30,1');
     Route::post('job-applications', [JobApplicationController::class, 'store'])
         ->middleware('throttle:5,1');
     Route::post('enquiries', [EnquiryController::class, 'store'])

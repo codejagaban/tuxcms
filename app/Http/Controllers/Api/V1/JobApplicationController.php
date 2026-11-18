@@ -27,8 +27,8 @@ class JobApplicationController extends Controller
             'cover_letter' => ['required', 'string', 'max:10000'],
             'cv' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'website' => ['nullable', 'max:0'],
-            // Seconds the form was open, reported by the site script.
-            'form_time' => ['nullable'],
+            // Signed proof of when the form page was opened.
+            'form_token' => ['nullable'],
         ]);
 
         $job = JobPost::published()->where('slug', $validated['job'])->firstOrFail();
@@ -46,7 +46,7 @@ class JobApplicationController extends Controller
         ]);
 
         // Junk is kept for review in the dashboard but never reaches an inbox.
-        if (SpamFilter::isSpam([$validated['cover_letter'], $validated['name']], $validated['form_time'] ?? null)) {
+        if (SpamFilter::isSpam([$validated['cover_letter'], $validated['name']], $validated['form_token'] ?? null)) {
             $application->update(['delivery_status' => 'spam']);
 
             return $this->thanks($application);

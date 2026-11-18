@@ -30,13 +30,13 @@ class EnquiryController extends Controller
             'details.*' => ['nullable'],
             // Honeypot — people never see it, bots fill it.
             'website' => ['nullable', 'max:0'],
-            // Seconds the form was open, reported by the site script.
-            'form_time' => ['nullable'],
+            // Signed proof of when the form page was opened.
+            'form_token' => ['nullable'],
         ]);
 
         $spam = SpamFilter::isSpam(
             [$validated['message'] ?? null, $validated['organisation'] ?? null, $validated['name']],
-            $validated['form_time'] ?? null
+            $validated['form_token'] ?? null
         );
 
         $enquiry = Enquiry::create([
@@ -48,6 +48,12 @@ class EnquiryController extends Controller
             'message' => $validated['message'] ?? null,
             'details' => $this->cleanDetails($validated['details'] ?? []),
         ]);
+
+        // The same long message arriving again is a mass mailing, not a person.
+        $message = trim((string) $enquiry->message);
+        if (! $spam && mb_strlen($message) >= 80) {
+            $spam = Enquiry::where('id', '!=', $enquiry->id)->where('message', $enquiry->message)->exists();
+        }
 
         // Junk is kept for review in the dashboard but never reaches an inbox.
         // The sender gets the usual reply, so they learn nothing from it.
