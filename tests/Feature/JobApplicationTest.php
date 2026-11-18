@@ -29,6 +29,7 @@ class JobApplicationTest extends TestCase
             'email' => 'jane@example.com',
             'phone' => '07123456789',
             'cover_letter' => 'I have the required experience.',
+            'form_time' => 60,
             'cv' => UploadedFile::fake()->create('jane-cv.pdf', 200, 'application/pdf'),
         ]);
 
@@ -132,5 +133,27 @@ class JobApplicationTest extends TestCase
             'id' => $application->id,
             'job_post_id' => $job->id,
         ]);
+    }
+
+    public function test_a_sales_pitch_application_is_held_and_not_emailed(): void
+    {
+        Storage::fake('local');
+        Mail::fake();
+        $job = JobPost::create([
+            'title' => 'Manager', 'slug' => 'manager', 'summary' => 'Lead the team',
+            'status' => 'published', 'published_at' => now(),
+        ]);
+
+        $this->postJson('/api/v1/job-applications', [
+            'job' => $job->slug,
+            'name' => 'Agency',
+            'email' => 'agency@example.com',
+            'cover_letter' => 'We help businesses rank higher on Google.',
+            'form_time' => 60,
+            'cv' => UploadedFile::fake()->create('cv.pdf', 200, 'application/pdf'),
+        ])->assertCreated();
+
+        $this->assertSame('spam', JobApplication::sole()->delivery_status);
+        Mail::assertNothingSent();
     }
 }

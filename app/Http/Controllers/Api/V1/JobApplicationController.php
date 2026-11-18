@@ -7,6 +7,7 @@ use App\Mail\JobApplicationReceived;
 use App\Models\JobApplication;
 use App\Models\JobPost;
 use App\Models\Setting;
+use App\Support\SpamFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,8 @@ class JobApplicationController extends Controller
             'cover_letter' => ['required', 'string', 'max:10000'],
             'cv' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'website' => ['nullable', 'max:0'],
+            // Seconds the form was open, reported by the site script.
+            'form_time' => ['nullable'],
         ]);
 
         $job = JobPost::published()->where('slug', $validated['job'])->firstOrFail();
@@ -42,6 +45,13 @@ class JobApplicationController extends Controller
             'cv_name' => $file->getClientOriginalName(),
         ]);
 
+        // Junk is kept for review in the dashboard but never reaches an inbox.
+        if (SpamFilter::isSpam([$validated['cover_letter'], $validated['name']], $validated['form_time'] ?? null)) {
+            $application->update(['delivery_status' => 'spam']);
+
+            return $this->thanks($application);
+        }
+
         $recipient = $job->application_email ?: Setting::getString('contact_email');
         try {
             Mail::to($recipient)->send(new JobApplicationReceived($application->load('jobPost')));
@@ -51,6 +61,11 @@ class JobApplicationController extends Controller
             Log::error('Job application email failed', ['application_id' => $application->id, 'error' => $error->getMessage()]);
         }
 
+        return $this->thanks($application);
+    }
+
+    private function thanks(JobApplication $application): JsonResponse
+    {
         return response()->json([
             'message' => 'Thank you. Your application has been received.',
             'reference' => $application->id,
