@@ -107,9 +107,13 @@ export default function Enquiries() {
                 </TableCell>
                 <TableCell className="min-w-44 align-top">{dateTime(enquiry.created_at)}</TableCell>
                 <TableCell className="align-top">
-                  <Badge variant={enquiry.delivery_status === 'sent' ? 'published' : 'danger'}>
-                    {enquiry.delivery_status === 'sent' ? 'Sent' : 'Not emailed'}
-                  </Badge>
+                  {enquiry.delivery_status === 'spam' ? (
+                    <Badge variant="draft">Held as spam</Badge>
+                  ) : (
+                    <Badge variant={enquiry.delivery_status === 'sent' ? 'published' : 'danger'}>
+                      {enquiry.delivery_status === 'sent' ? 'Sent' : 'Not emailed'}
+                    </Badge>
+                  )}
                 </TableCell>
               </TableRow>
             ))}</TableBody>
