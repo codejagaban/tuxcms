@@ -8,7 +8,7 @@ class JobApplication extends Model
 {
     protected $fillable = [
         'job_post_id', 'name', 'email', 'phone', 'cover_letter',
-        'cv_path', 'cv_name', 'delivery_status', 'emailed_at',
+        'cv_path', 'cv_name', 'delivery_status', 'emailed_at', 'spam_reason',
     ];
 
     protected $casts = ['emailed_at' => 'datetime'];

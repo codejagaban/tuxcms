@@ -10,7 +10,7 @@ class Enquiry extends Model
 
     protected $fillable = [
         'type', 'name', 'organisation', 'email', 'phone', 'message',
-        'details', 'delivery_status', 'emailed_at',
+        'details', 'delivery_status', 'emailed_at', 'spam_reason',
     ];
 
     protected function casts(): array
