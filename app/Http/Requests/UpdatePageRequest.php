@@ -24,7 +24,7 @@ class UpdatePageRequest extends FormRequest
             'slug' => 'sometimes|string|max:255',
             'content' => 'nullable|string',
             'excerpt' => 'nullable|string|max:1000',
-            'template' => ['nullable', 'string', Rule::in(config('tuxcms.pages.templates'))],
+            'template' => ['nullable', 'string', Rule::in(\App\Support\Site::templates())],
             'status' => 'nullable|string|in:draft,published,archived',
             'parent_id' => 'nullable|integer|exists:pages,id',
             'order' => 'nullable|integer|min:0',

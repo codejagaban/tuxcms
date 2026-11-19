@@ -13,6 +13,25 @@ use App\Models\Setting;
  */
 class Site
 {
+    /**
+     * Installed themes: every directory under resources/views/site/themes.
+     * Adding a theme folder is all it takes for its name to be accepted as a
+     * page template and for its pages to be edited on the live preview.
+     *
+     * @return array<int, string>
+     */
+    public static function themes(): array
+    {
+        $directories = glob(resource_path('views/site/themes/*'), GLOB_ONLYDIR) ?: [];
+
+        return array_values(array_map('basename', $directories));
+    }
+
+    /** Every template a page may use: the built-in layouts plus the themes. */
+    public static function templates(): array
+    {
+        return array_values(array_unique([...config('tuxcms.pages.templates', []), ...self::themes()]));
+    }
 
     /** The canonical site root, with no trailing slash. */
     public static function url(): string

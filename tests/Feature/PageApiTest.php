@@ -200,4 +200,16 @@ class PageApiTest extends TestCase
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['template', 'sections.0.type']);
     }
+
+    public function test_an_installed_theme_is_a_valid_template_and_uses_the_live_preview(): void
+    {
+        Sanctum::actingAs($this->editor());
+
+        // Crystal ships with the CMS, so its folder is always there.
+        $this->postJson('/api/v1/pages', ['title' => 'Themed', 'template' => 'crystal'])
+            ->assertCreated()->assertJsonPath('data.live_preview', true);
+
+        $this->postJson('/api/v1/pages', ['title' => 'Plain', 'template' => 'landing'])
+            ->assertCreated()->assertJsonPath('data.live_preview', false);
+    }
 }

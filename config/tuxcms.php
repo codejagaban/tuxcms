@@ -4,7 +4,9 @@ return [
 
     'pages' => [
         'per_page' => 15,
-        'templates' => ['default', 'landing', 'contact', 'about', 'services', 'blank', 'crystal', 'fineflow'],
+        // Built-in layouts. Installed themes are added automatically; see
+        // App\Support\Site::templates().
+        'templates' => ['default', 'landing', 'contact', 'about', 'services', 'blank'],
         'section_types' => [
             'hero', 'text', 'features', 'stats', 'testimonials', 'team',
             'faq', 'cta', 'contact', 'contact_form', 'map',
