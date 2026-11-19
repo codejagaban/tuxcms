@@ -38,7 +38,6 @@ const setNestedValue = (source, path, value) => {
   return root;
 };
 
-const LIVE_CANVAS_TEMPLATES = ['crystal', 'fineflow'];
 
 const crystalOverrides = (content) => {
   try {
@@ -312,7 +311,8 @@ export default function PageEditor() {
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
   // Themes that build real pages are edited on the page itself, so what the
   // editor shows is what the site shows. Only Crystal stores text overrides.
-  const liveCanvas = LIVE_CANVAS_TEMPLATES.includes(page.template);
+  // The API says which templates are installed themes.
+  const liveCanvas = Boolean(page.live_preview);
   const crystalPath = page.is_homepage ? '/' : `/${page.slug}/`;
 
   const sectionPreview = page.sections.map((section) => {
