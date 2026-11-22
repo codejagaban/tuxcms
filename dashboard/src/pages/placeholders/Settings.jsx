@@ -28,6 +28,7 @@ const Settings = () => {
     site_logo: '',
     web3forms_access_key: '',
     default_og_image: '',
+    schema_logo: '',
     robots_extra: '',
     site_noindex: '',
     footer_intro: '',
@@ -84,6 +85,7 @@ const Settings = () => {
         site_logo: data.site_logo || '',
         web3forms_access_key: data.web3forms_access_key || '',
         default_og_image: data.default_og_image || '',
+        schema_logo: data.schema_logo || '',
         robots_extra: data.robots_extra || '',
         site_noindex: data.site_noindex || '',
         footer_intro: data.footer_intro || '',
@@ -193,6 +195,12 @@ const Settings = () => {
             placeholder: 'https://example.com/share.jpg',
             help: 'Used when a page has no share image of its own. 1200×630 works best.',
           },
+          {
+            key: 'schema_logo',
+            label: 'Logo for Search Engines',
+            placeholder: '/themes/your-theme/images/logo-square.png',
+            help: 'A square PNG that reads well on white. Named in the business details search engines read. Falls back to the Logo URL above.',
+          },
           { key: 'google_analytics_id', label: 'Google Analytics ID', placeholder: 'UA-123456789-0' },
           { key: 'google_site_verification', label: 'Google Site Verification', placeholder: 'verification code' },
           {
@@ -211,7 +219,7 @@ const Settings = () => {
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('SEO', ['meta_keywords', 'default_og_image', 'google_analytics_id', 'google_site_verification', 'robots_extra', 'site_noindex'])}
+        onSave={() => saveGroup('SEO', ['meta_keywords', 'default_og_image', 'schema_logo', 'google_analytics_id', 'google_site_verification', 'robots_extra', 'site_noindex'])}
         isSaving={savingGroups.SEO}
       />
 
