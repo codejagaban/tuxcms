@@ -199,4 +199,13 @@ class SeoOutputTest extends TestCase
         $this->assertStringContainsString('href="/build/', $html);
         $this->assertStringNotContainsString('href="https://example.test/build/', $html);
     }
+
+    public function test_structured_data_prefers_the_logo_set_for_search_engines(): void
+    {
+        \App\Models\Setting::updateOrCreate(['key' => 'site_logo'], ['value' => '/media/header.svg', 'group' => 'site']);
+        $this->assertStringEndsWith('/media/header.svg', \App\Support\Site::schemaLogo());
+
+        \App\Models\Setting::updateOrCreate(['key' => 'schema_logo'], ['value' => '/media/square.png', 'group' => 'seo']);
+        $this->assertStringEndsWith('/media/square.png', \App\Support\Site::schemaLogo());
+    }
 }

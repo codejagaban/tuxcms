@@ -95,6 +95,16 @@ class Site
         return self::absolute(Setting::getString('site_logo'));
     }
 
+    /**
+     * The logo named in structured data. Search engines want a plain image
+     * they can show on white, which is often not the file a theme draws in
+     * its header, so it has its own setting and falls back to the site logo.
+     */
+    public static function schemaLogo(): ?string
+    {
+        return self::absolute(Setting::getString('schema_logo')) ?: self::logo();
+    }
+
     public static function defaultOgImage(): ?string
     {
         return self::absolute(Setting::getString('default_og_image'));

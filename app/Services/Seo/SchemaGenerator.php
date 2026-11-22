@@ -55,7 +55,7 @@ class SchemaGenerator
             'url' => $siteUrl . '/',
         ];
 
-        if ($logo = Site::logo()) {
+        if ($logo = Site::schemaLogo()) {
             $org['logo'] = $logo;
         }
 
