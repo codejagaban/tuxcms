@@ -205,7 +205,7 @@ const Settings = () => {
             placeholder: '/themes/your-theme/images/logo-square.png',
             help: 'A square PNG that reads well on white. Named in the business details search engines read. Falls back to the Logo URL above.',
           },
-          { key: 'google_analytics_id', label: 'Google Analytics ID', placeholder: 'UA-123456789-0' },
+          { key: 'google_analytics_id', label: 'Google Analytics ID', placeholder: 'G-XXXXXXXXXX', help: 'The measurement ID from Google Analytics. Loads once the site is visible to search engines.' },
           { key: 'google_site_verification', label: 'Google Site Verification', placeholder: 'verification code' },
           {
             key: 'robots_extra',
