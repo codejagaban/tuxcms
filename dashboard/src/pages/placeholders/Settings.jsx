@@ -261,7 +261,7 @@ const Settings = () => {
             key: 'whatsapp_number',
             label: 'WhatsApp Number',
             placeholder: '07000 000000',
-            help: 'Shows a WhatsApp button on every page. Leave blank to use the contact phone.',
+            help: 'Shows a WhatsApp button on every page. The number must be registered on WhatsApp. Leave blank to hide the button.',
           },
           { key: 'whatsapp_message', label: 'WhatsApp Opening Message', placeholder: 'Optional. The message already typed when a visitor opens the chat.' },
           { key: 'contact_address', label: 'Address', placeholder: '1 Example St, London' },
