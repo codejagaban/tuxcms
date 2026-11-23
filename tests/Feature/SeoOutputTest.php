@@ -221,4 +221,19 @@ class SeoOutputTest extends TestCase
         \App\Models\Setting::updateOrCreate(['key' => 'whatsapp_message'], ['value' => 'Set in settings', 'group' => 'contact']);
         $this->assertSame('https://wa.me/2348012345678?text=Set%20in%20settings', \App\Support\Site::whatsappUrl('Hi there'));
     }
+
+    public function test_the_shared_analytics_tag_accepts_either_kind_of_google_id(): void
+    {
+        $this->app['env'] = 'production';
+
+        \App\Models\Setting::updateOrCreate(['key' => 'google_analytics_id'], ['value' => 'G-TEST123', 'group' => 'seo']);
+        $measurement = view('site.partials.analytics')->render();
+        $this->assertStringContainsString('gtag/js?id=G-TEST123', $measurement);
+        $this->assertStringContainsString("gtag('config'", $measurement);
+
+        \App\Models\Setting::updateOrCreate(['key' => 'google_analytics_id'], ['value' => 'GTM-TEST123', 'group' => 'seo']);
+        $container = view('site.partials.analytics')->render();
+        $this->assertStringContainsString('gtm.js?id=GTM-TEST123', $container);
+        $this->assertStringNotContainsString("gtag('config'", $container);
+    }
 }
