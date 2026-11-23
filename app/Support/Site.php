@@ -115,6 +115,37 @@ class Site
         return Setting::getString('web3forms_access_key');
     }
 
+    /**
+     * The wa.me link for the WhatsApp number in Settings, with the opening
+     * message already typed, or null when no number is set. A theme decides
+     * whether and how to show a button, and may give its own default opening
+     * message; this only builds the address.
+     *
+     * The number is stored the way it is written on the page. A leading 0 is
+     * read as a UK national number and becomes 44; a number given with its
+     * country code is used as it is.
+     */
+    public static function whatsappUrl(?string $defaultMessage = null): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) Setting::getString('whatsapp_number'));
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '00')) {
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            $digits = '44'.substr($digits, 1);
+        }
+
+        $message = Setting::getString('whatsapp_message')
+            ?: $defaultMessage
+            ?: 'Hello '.self::name().", I'd like to make an enquiry.";
+
+        return 'https://wa.me/'.$digits.'?text='.rawurlencode($message);
+    }
+
     public static function analyticsId(): ?string
     {
         return Setting::getString('google_analytics_id');

@@ -208,4 +208,17 @@ class SeoOutputTest extends TestCase
         \App\Models\Setting::updateOrCreate(['key' => 'schema_logo'], ['value' => '/media/square.png', 'group' => 'seo']);
         $this->assertStringEndsWith('/media/square.png', \App\Support\Site::schemaLogo());
     }
+
+    public function test_the_whatsapp_link_is_built_from_the_number_in_settings(): void
+    {
+        $this->assertNull(\App\Support\Site::whatsappUrl());
+
+        \App\Models\Setting::updateOrCreate(['key' => 'whatsapp_number'], ['value' => '07466 771663', 'group' => 'contact']);
+        $this->assertStringStartsWith('https://wa.me/447466771663?text=Hello%20', \App\Support\Site::whatsappUrl());
+        $this->assertStringEndsWith('?text=Hi%20there', \App\Support\Site::whatsappUrl('Hi there'));
+
+        \App\Models\Setting::updateOrCreate(['key' => 'whatsapp_number'], ['value' => '+234 801 234 5678', 'group' => 'contact']);
+        \App\Models\Setting::updateOrCreate(['key' => 'whatsapp_message'], ['value' => 'Set in settings', 'group' => 'contact']);
+        $this->assertSame('https://wa.me/2348012345678?text=Set%20in%20settings', \App\Support\Site::whatsappUrl('Hi there'));
+    }
 }
