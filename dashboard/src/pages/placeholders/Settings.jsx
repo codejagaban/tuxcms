@@ -43,6 +43,8 @@ const Settings = () => {
     enquiry_email_staff_request: '',
     enquiry_email_registration: '',
     contact_phone_2: '',
+    whatsapp_number: '',
+    whatsapp_message: '',
     company_number: '',
     google_reviews_url: '',
     chatwoot_website_token: '',
@@ -100,6 +102,8 @@ const Settings = () => {
         enquiry_email_staff_request: data.enquiry_email_staff_request || '',
         enquiry_email_registration: data.enquiry_email_registration || '',
         contact_phone_2: data.contact_phone_2 || '',
+        whatsapp_number: data.whatsapp_number || '',
+        whatsapp_message: data.whatsapp_message || '',
         company_number: data.company_number || '',
         google_reviews_url: data.google_reviews_url || '',
         chatwoot_website_token: data.chatwoot_website_token || '',
@@ -253,12 +257,19 @@ const Settings = () => {
           { key: 'enquiry_email_registration', label: 'Job applications go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
           { key: 'contact_phone', label: 'Contact Phone', placeholder: '+44 20 7946 0000' },
           { key: 'contact_phone_2', label: 'Second Phone', placeholder: 'Optional' },
+          {
+            key: 'whatsapp_number',
+            label: 'WhatsApp Number',
+            placeholder: '07000 000000',
+            help: 'Shows a WhatsApp button on every page. Leave blank to use the contact phone.',
+          },
+          { key: 'whatsapp_message', label: 'WhatsApp Opening Message', placeholder: 'Optional. The message already typed when a visitor opens the chat.' },
           { key: 'contact_address', label: 'Address', placeholder: '1 Example St, London' },
           { key: 'company_number', label: 'Company Number', placeholder: 'Shown in the footer when set' },
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Contact', ['contact_email', 'hide_contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number'])}
+        onSave={() => saveGroup('Contact', ['contact_email', 'hide_contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number', 'whatsapp_number', 'whatsapp_message'])}
         isSaving={savingGroups.Contact}
       />
 
