@@ -1,31 +1,31 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  SquaresFour,
-  FileText,
-  ImageSquare,
-  Gear,
-  MagnifyingGlass,
+  IconOverview,
+  IconPages,
+  IconMedia,
+  IconSettings,
+  IconSearch,
   SignOut,
   CaretDown,
   List,
   X,
-  Briefcase,
-  Tray,
-  ChatText,
+  IconJobs,
+  IconApplications,
+  IconEnquiries,
 } from '../lib/icons';
 import { useAuth } from '../lib/auth';
 import PublishButton from '../components/PublishButton';
 
 const navItems = [
-  { path: '/dashboard', label: 'Overview', icon: SquaresFour },
-  { path: '/dashboard/pages', label: 'Pages', icon: FileText },
-  { path: '/dashboard/jobs', label: 'Jobs', icon: Briefcase },
-  { path: '/dashboard/enquiries', label: 'Enquiries', icon: ChatText },
-  { path: '/dashboard/applications', label: 'Applications', icon: Tray },
-  { path: '/dashboard/media', label: 'Media', icon: ImageSquare },
-  { path: '/dashboard/seo', label: 'Search', icon: MagnifyingGlass },
-  { path: '/dashboard/settings', label: 'Settings', icon: Gear },
+  { path: '/dashboard', label: 'Overview', icon: IconOverview },
+  { path: '/dashboard/pages', label: 'Pages', icon: IconPages },
+  { path: '/dashboard/jobs', label: 'Jobs', icon: IconJobs },
+  { path: '/dashboard/enquiries', label: 'Enquiries', icon: IconEnquiries },
+  { path: '/dashboard/applications', label: 'Applications', icon: IconApplications },
+  { path: '/dashboard/media', label: 'Media', icon: IconMedia },
+  { path: '/dashboard/seo', label: 'Search', icon: IconSearch },
+  { path: '/dashboard/settings', label: 'Settings', icon: IconSettings },
 ];
 
 const DashboardLayout = () => {
@@ -81,7 +81,7 @@ const DashboardLayout = () => {
                   active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[oklch(0%_0_0_/_0.045)] hover:text-[var(--color-ink)]'
                 }`}
               >
-                <Icon className="h-[17px] w-[17px]" weight={active ? 'fill' : 'regular'} />
+                <Icon className="h-[18px] w-[18px] shrink-0" />
                 <span>{item.label}</span>
               </Link>
             );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Files, CheckCircle, PencilSimpleLine, Image, FileText } from '../lib/icons';
+import { ArrowUpRight, IconPages, IconPublished, IconDrafts, IconMedia } from '../lib/icons';
 import { useAuth } from '../lib/auth';
 import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI } from '../lib/api';
 import { Card } from '../components/ui/Card';
@@ -76,10 +76,10 @@ const Dashboard = () => {
   }
 
   const metrics = [
-    { label: 'Pages', value: stats.totalPages, note: 'Total entries', icon: Files },
-    { label: 'Published', value: stats.publishedPages, note: 'Visible now', icon: CheckCircle },
-    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress', icon: PencilSimpleLine },
-    { label: 'Media', value: stats.mediaFiles, note: 'Stored files', icon: Image },
+    { label: 'Pages', value: stats.totalPages, note: 'Total entries', icon: IconPages },
+    { label: 'Published', value: stats.publishedPages, note: 'Visible now', icon: IconPublished },
+    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress', icon: IconDrafts },
+    { label: 'Media', value: stats.mediaFiles, note: 'Stored files', icon: IconMedia },
   ];
 
   return (
@@ -155,7 +155,7 @@ const Dashboard = () => {
                     className={`group grid gap-2 px-4 py-3 transition-colors hover:bg-[var(--color-paper-2)] sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-5 ${index ? 'border-t border-[var(--color-rule-2)]' : ''}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <FileText className="h-4 w-4 shrink-0 text-[var(--color-muted)]" aria-hidden="true" />
+                      <IconPages className="h-[18px] w-[18px] shrink-0 text-[var(--color-muted)]" />
                       <div className="min-w-0">
                         <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{page.title}</h3>
                         <p className="font-data truncate text-neutral-500">{page.full_path || `/${page.slug}`}</p>
