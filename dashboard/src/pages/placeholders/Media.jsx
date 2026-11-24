@@ -306,7 +306,7 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
             Copy URL
           </Button>
           <Button
-            variant="danger"
+            variant="dangerGhost"
             size="sm"
             onClick={onDelete}
           >

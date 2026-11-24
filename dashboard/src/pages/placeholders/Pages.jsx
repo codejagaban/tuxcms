@@ -184,7 +184,7 @@ const Pages = () => {
                   <TableCell className="font-medium">
                     <Link
                       to={`/dashboard/pages/${page.id}/edit`}
-                      className="text-gray-900 hover:text-black hover:underline"
+                      className="text-[var(--color-ink)] hover:text-[var(--color-accent-strong)]"
                     >
                       {page.title}
                     </Link>
@@ -206,7 +206,7 @@ const Pages = () => {
                         </Button>
                       </Link>
                       <Button
-                        variant="danger"
+                        variant="dangerGhost"
                         size="sm"
                         onClick={() => handleDeleteClick(page)}
                       >
