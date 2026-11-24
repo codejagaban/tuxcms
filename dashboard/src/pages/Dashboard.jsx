@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from '@phosphor-icons/react';
+import { ArrowUpRight, Files, CheckCircle, PencilSimpleLine, Image, FileText } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI } from '../lib/api';
-import { Card, CardContent } from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
 
@@ -66,18 +66,18 @@ const Dashboard = () => {
   }
 
   const metrics = [
-    { label: 'Pages', value: stats.totalPages, note: 'Total entries' },
-    { label: 'Published', value: stats.publishedPages, note: 'Visible now' },
-    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress' },
-    { label: 'Media', value: stats.mediaFiles, note: 'Stored files' },
+    { label: 'Pages', value: stats.totalPages, note: 'Total entries', icon: Files },
+    { label: 'Published', value: stats.publishedPages, note: 'Visible now', icon: CheckCircle },
+    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress', icon: PencilSimpleLine },
+    { label: 'Media', value: stats.mediaFiles, note: 'Stored files', icon: Image },
   ];
 
   return (
-    <div className="space-y-10">
-      <section className="grid gap-8 border-b border-[var(--color-rule)] pb-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+    <div className="space-y-6">
+      <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
         <div>
-          <p className="mb-3 text-sm text-neutral-500">Good to see you, {user?.name?.split(' ')[0]}.</p>
-          <h2 className="page-heading max-w-3xl">
+          <p className="mb-1 text-sm text-neutral-500">Good to see you, {user?.name?.split(' ')[0]}.</p>
+          <h2 className="page-heading max-w-3xl" style={{ fontSize: '1.75rem' }}>
             Website status
           </h2>
         </div>
@@ -100,23 +100,28 @@ const Dashboard = () => {
       )}
 
       <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule)] lg:grid-cols-4">
-        {metrics.map(({ label, value, note }, index) => (
+        {metrics.map(({ label, value, note, icon: Icon }, index) => (
           <div
             key={label}
-            className={`px-1 py-6 sm:px-5 lg:py-8 ${index % 2 ? 'border-l border-[var(--color-rule)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
+            className={`px-1 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
-            <p className="text-xs font-medium text-neutral-500">{label}</p>
-            <p className="tabular-nums mt-5 text-4xl font-semibold tracking-[-0.06em] sm:text-5xl">{value}</p>
-            <p className="mt-2 text-xs text-neutral-500">{note}</p>
+            <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {label}
+            </p>
+            <p className="mt-2 flex items-baseline gap-2">
+              <span className="tabular-nums text-3xl font-semibold tracking-[-0.04em]">{value}</span>
+              <span className="text-xs text-neutral-500">{note}</span>
+            </p>
           </div>
         ))}
       </section>
 
       <section>
-        <div className="mb-5 flex items-end justify-between gap-4">
+        <div className="mb-3 flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-[-0.035em]">Recent pages</h2>
-            <p className="mt-1 text-sm text-neutral-500">The latest content in your workspace.</p>
+            <h2 className="font-semibold tracking-[-0.02em]" style={{ fontSize: '1.125rem' }}>Recent pages</h2>
+            <p className="text-sm text-neutral-500">The latest content in your workspace.</p>
           </div>
           <Link to="/dashboard/pages" className="group flex shrink-0 items-center gap-2 text-sm font-semibold">
             View all
@@ -125,7 +130,7 @@ const Dashboard = () => {
         </div>
 
         <Card className="overflow-hidden">
-          <CardContent className="p-0">
+          <div>
             {recentPages.length === 0 ? (
               <div className="px-6 py-16 text-center">
                 <h3 className="font-semibold">No pages yet</h3>
@@ -137,11 +142,14 @@ const Dashboard = () => {
                   <Link
                     key={page.id}
                     to={`/dashboard/pages/${page.id}/edit`}
-                    className={`group grid gap-3 px-5 py-5 transition-colors hover:bg-neutral-50 sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-6 ${index ? 'border-t border-neutral-200' : ''}`}
+                    className={`group grid gap-2 px-4 py-3 transition-colors hover:bg-neutral-50 sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-5 ${index ? 'border-t border-neutral-200' : ''}`}
                   >
-                    <div className="min-w-0">
-                      <h3 className="truncate font-semibold tracking-[-0.015em]">{page.title}</h3>
-                      <p className="mt-1 truncate text-sm text-neutral-500">{page.full_path || `/${page.slug}`}</p>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <FileText className="h-5 w-5 shrink-0 text-neutral-400" aria-hidden="true" />
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{page.title}</h3>
+                        <p className="truncate text-xs text-neutral-500">{page.full_path || `/${page.slug}`}</p>
+                      </div>
                     </div>
                     <Badge variant={page.status === 'published' ? 'published' : 'draft'} className="w-fit">
                       {page.status || 'draft'}
@@ -153,7 +161,7 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
-          </CardContent>
+          </div>
         </Card>
       </section>
     </div>
