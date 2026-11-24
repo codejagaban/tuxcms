@@ -179,7 +179,7 @@ const SEO = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Page Selector */}
         <div>
-          <Card className="sticky top-6">
+          <Card className="sticky top-20">
             <CardHeader>
               <CardTitle className="text-lg">Pages</CardTitle>
             </CardHeader>
