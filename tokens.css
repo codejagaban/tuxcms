@@ -3,6 +3,8 @@
   /* Black and white, in the manner of Vercel: white
      surfaces, hairline grey rules, black actions, colour only for status. */
   --color-paper: oklch(100% 0 0);
+  /* The page the white panels sit on. */
+  --color-canvas: oklch(95.8% 0 0);
   --color-paper-2: oklch(98.5% 0 0);
   --color-paper-3: oklch(95.5% 0 0);
   --color-ink: oklch(14.5% 0 0);
@@ -38,6 +40,6 @@
   --space-7: 3rem;
   --radius-s: 0.25rem;
   --radius-m: 0.625rem;
-  --radius-l: 0.875rem;
+  --radius-l: 1rem;
   --control-height: 2.5rem;
 }

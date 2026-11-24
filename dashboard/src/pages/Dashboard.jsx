@@ -65,9 +65,9 @@ const Dashboard = () => {
     return (
       <div className="space-y-6">
         <div className="space-y-2"><Skeleton className="h-3.5 w-32" /><Skeleton className="h-6 w-44" /></div>
-        <div className="grid grid-cols-2 gap-px border-y border-[var(--color-rule-2)] lg:grid-cols-4">
+        <div className="work-surface grid grid-cols-2 lg:grid-cols-4">
           {[0, 1, 2, 3].map((n) => (
-            <div key={n} className="space-y-3 px-1 py-4 sm:px-5"><Skeleton className="h-3 w-16" /><Skeleton className="h-7 w-24" /></div>
+            <div key={n} className="space-y-3 px-4 py-4 sm:px-5"><Skeleton className="h-3 w-16" /><Skeleton className="h-7 w-24" /></div>
           ))}
         </div>
         <ListSkeleton rows={5} />
@@ -109,11 +109,11 @@ const Dashboard = () => {
         </section>
       )}
 
-      <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule-2)] lg:grid-cols-4">
+      <section aria-label="Website statistics" className="work-surface grid grid-cols-2 overflow-hidden lg:grid-cols-4">
         {metrics.map(({ label, value, note, icon: Icon }, index) => (
           <div
             key={label}
-            className={`px-1 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule-2)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule-2)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
+            className={`px-4 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule-2)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule-2)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
             <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />

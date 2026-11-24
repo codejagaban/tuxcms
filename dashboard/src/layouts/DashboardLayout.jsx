@@ -38,7 +38,7 @@ const DashboardLayout = () => {
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
 
   return (
-    <div className="min-h-dvh bg-[var(--color-paper)] text-[var(--color-ink)] lg:flex">
+    <div className="canvas min-h-dvh text-[var(--color-ink)] lg:flex">
       {sidebarOpen && (
         <button
           type="button"
@@ -49,7 +49,7 @@ const DashboardLayout = () => {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-[15rem] flex-col border-r border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-[var(--color-ink)] transition-transform duration-200 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[15rem] flex-col glass-rail text-[var(--color-ink)] transition-transform duration-200 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -78,7 +78,7 @@ const DashboardLayout = () => {
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
                 className={`mb-0.5 flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
-                  active ? 'bg-[var(--color-paper-3)] font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[var(--color-paper-3)] hover:text-[var(--color-ink)]'
+                  active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[oklch(0%_0_0_/_0.045)] hover:text-[var(--color-ink)]'
                 }`}
               >
                 <Icon className="h-[17px] w-[17px]" weight={active ? 'fill' : 'regular'} />
@@ -95,7 +95,7 @@ const DashboardLayout = () => {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 border-b border-[var(--color-rule-2)] bg-[var(--color-paper)]">
+        <header className="glass-bar sticky top-0 z-20 border-b border-[oklch(0%_0_0_/_0.06)]">
           <div className="mx-auto flex h-14 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button
@@ -119,7 +119,7 @@ const DashboardLayout = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen((open) => !open)}
-                  className="flex min-h-11 items-center gap-2 rounded-full px-2 py-1.5 text-left hover:bg-[var(--color-paper-3)] sm:px-3"
+                  className="flex min-h-11 items-center gap-2 rounded-full px-2 py-1.5 text-left hover:bg-[oklch(0%_0_0_/_0.05)] sm:px-3"
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >

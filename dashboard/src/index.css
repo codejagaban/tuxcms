@@ -14,7 +14,7 @@
   :root { font-family: var(--font-body); color: var(--color-ink); background: var(--color-paper); font-synthesis: none; }
   html, body { min-width: 320px; overflow-x: clip; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
+  body { margin: 0; background: var(--color-canvas); color: var(--color-ink); }
   h1, h2, h3, h4 { font-family: var(--font-display); overflow-wrap: anywhere; min-width: 0; }
   button, input, textarea, select { font: inherit; }
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
@@ -32,7 +32,12 @@
   textarea.field-control { min-height: 6rem; resize: vertical; }
   .icon-button { display: inline-grid; min-width: 2.75rem; min-height: 2.75rem; place-items: center; border-radius: var(--radius-m); color: var(--color-neutral); }
   .icon-button:disabled { cursor: not-allowed; opacity: .35; }
-  .work-surface { background: var(--color-paper); border: 1px solid var(--color-rule-2); border-radius: var(--radius-l); }
+  .work-surface { background: var(--color-paper); border: 1px solid oklch(100% 0 0); border-radius: var(--radius-l); box-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .04); }
+  /* Frosted panels: the page shows through, blurred, as content passes under. */
+  .glass-bar { background: oklch(95.8% 0 0 / .72); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
+  .glass-rail { background: linear-gradient(165deg, oklch(100% 0 0 / .96) 0%, oklch(98% 0 0 / .84) 38%, oklch(95.8% 0 0 / .74) 100%); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); box-shadow: inset -1px 0 0 oklch(100% 0 0 / .9), 1px 0 0 oklch(0% 0 0 / .05); }
+  .glass-chip { background: oklch(100% 0 0 / .9); box-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .05); }
+  .canvas { background: radial-gradient(120% 80% at 0% 0%, oklch(98.6% 0 0) 0%, oklch(95.8% 0 0) 55%, oklch(94.6% 0 0) 100%); }
   .text-gradient { color: var(--color-ink); }
 }
 
