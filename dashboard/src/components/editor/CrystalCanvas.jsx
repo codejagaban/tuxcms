@@ -20,12 +20,14 @@ function editableFields(sections) {
     visit(section.title, 'title', fields);
     visit(section.content, 'content', fields);
     visit(section.data, 'data', fields);
-    return fields.map(([field, value]) => ({
-      sectionUid: section._uid,
-      sectionKey: String(section.id ?? section._uid),
-      field,
-      value: normalise(value),
-    }));
+    return fields.flatMap(([field, value]) => {
+      const base = { sectionUid: section._uid, sectionKey: String(section.id ?? section._uid), field };
+      // Text written as several paragraphs (a blank line between each) is
+      // shown as several elements, so each paragraph is its own editable part.
+      const paragraphs = value.split(/\n\s*\n/).map(normalise).filter(Boolean);
+      if (paragraphs.length < 2) return [{ ...base, value: normalise(value) }];
+      return paragraphs.map((paragraph, part) => ({ ...base, value: paragraph, part, paragraphs }));
+    });
   });
 }
 
@@ -59,6 +61,8 @@ function editableImages(sections) {
   });
 }
 
+const fieldKey = (field) => `section:${field.sectionKey}:${field.field}${field.part != null ? `#${field.part}` : ''}`;
+
 const imagePath = (url = '', base = 'http://localhost') => {
   try { return new URL(url, base).pathname; } catch { return url; }
 };
@@ -78,7 +82,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
     if (!doc) return;
     const nodes = [...doc.querySelectorAll('[data-tuxcms-field-key]')];
     fields.forEach((field) => {
-      const key = `section:${field.sectionKey}:${field.field}`;
+      const key = fieldKey(field);
       const node = nodes.find((element) => element.dataset.tuxcmsFieldKey === key);
       if (node && normalise(node.textContent) !== field.value) node.textContent = field.value;
     });
@@ -132,7 +136,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             match.dataset.tuxcmsEditable = 'true';
             match.dataset.tuxcmsFieldKey = field.overrideKey != null
               ? `override:${field.overrideKey}`
-              : `section:${field.sectionKey}:${field.field}`;
+              : fieldKey(field);
             match.contentEditable = 'true';
             match.setAttribute('role', 'textbox');
             match.setAttribute('aria-label', `Edit ${match.tagName.toLowerCase()} text`);
@@ -160,6 +164,15 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
               const value = normalise(match.textContent);
               if (!value || value === initialValue) return;
               if (field.overrideKey != null) onOverrideEdit?.('text', field.overrideKey, value);
+              else if (field.part != null) {
+                // Save the whole text again: every paragraph as it now reads
+                // on the page, with the blank lines put back between them.
+                const whole = field.paragraphs.map((paragraph, part) => {
+                  const node = doc.querySelector(`[data-tuxcms-field-key="${fieldKey({ ...field, part })}"]`);
+                  return (node && normalise(node.textContent)) || paragraph;
+                });
+                onEdit?.(field.sectionUid, field.field, whole.join('\n\n'));
+              }
               else onEdit?.(field.sectionUid, field.field, value);
             });
           };
