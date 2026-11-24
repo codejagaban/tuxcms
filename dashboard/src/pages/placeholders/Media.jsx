@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UploadSimple, Trash, Copy, File, ImageSquare, MusicNote, VideoCamera } from '@phosphor-icons/react';
+import { UploadSimple, Trash, Copy, File, ImageSquare, MusicNote, VideoCamera } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
@@ -306,8 +306,10 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
             Copy URL
           </Button>
           <Button
-            variant="dangerGhost"
-            size="sm"
+            variant="iconDanger"
+            size="icon"
+            aria-label="Delete file"
+            title="Delete"
             onClick={onDelete}
           >
             <Trash className="h-4 w-4" weight="bold" />

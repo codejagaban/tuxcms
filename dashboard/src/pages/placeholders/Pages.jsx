@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, PencilSimple, Trash, FileText } from '@phosphor-icons/react';
+import { Plus, PencilSimple, Trash, FileText } from '../../lib/icons';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
@@ -199,15 +199,17 @@ const Pages = () => {
                   <TableCell className="text-gray-600">{page.author?.name || '—'}</TableCell>
                   <TableCell className="text-gray-600">{formatDate(page.updated_at)}</TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1">
                       <Link to={`/dashboard/pages/${page.id}/edit`}>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="icon" size="icon" aria-label={`Edit ${page.title}`} title="Edit">
                           <PencilSimple className="h-4 w-4" weight="bold" />
                         </Button>
                       </Link>
                       <Button
-                        variant="dangerGhost"
-                        size="sm"
+                        variant="iconDanger"
+                        size="icon"
+                        aria-label={`Delete ${page.title}`}
+                        title="Delete"
                         onClick={() => handleDeleteClick(page)}
                       >
                         <Trash className="h-4 w-4" weight="bold" />
