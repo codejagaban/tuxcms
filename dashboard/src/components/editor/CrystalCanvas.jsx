@@ -106,6 +106,9 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
           [data-tuxcms-image-editable] { cursor: pointer; outline: 1px solid transparent; outline-offset: 5px; }
           [data-tuxcms-image-editable]:hover { outline: 2px solid #111; }
+          [data-tuxcms-on-dark][data-tuxcms-editable]:hover { outline-color: rgba(255, 255, 255, .55); }
+          [data-tuxcms-on-dark][data-tuxcms-editable]:focus { outline-color: #fff; }
+          [data-tuxcms-on-dark][data-tuxcms-image-editable]:hover { outline-color: #fff; }
           .tuxcms-photo-button { position: absolute; z-index: 2147483000; margin: 0; padding: 7px 12px; border: 0; border-radius: 6px; background: #111; color: #fff; font: 600 12px/1 system-ui, sans-serif; letter-spacing: 0; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
           .tuxcms-photo-button:hover, .tuxcms-photo-button:focus-visible { background: #fff; color: #111; outline: 2px solid #111; }
         `;
@@ -309,6 +312,51 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             onPageNavigate?.(destination.id);
           });
         });
+
+        // The outline is dark by default. Where it would sit on a dark
+        // surface it is switched to white, judged when the pointer or the
+        // caret arrives so late-loading styles are taken into account.
+        if (!doc.documentElement.dataset.tuxcmsContrast) {
+          doc.documentElement.dataset.tuxcmsContrast = 'true';
+          const probe = doc.createElement('canvas');
+          probe.width = probe.height = 1;
+          const ink = probe.getContext('2d', { willReadFrequently: true });
+          // Any CSS colour, whatever its notation, as [lightness 0-1, alpha 0-1].
+          const read = (colour) => {
+            ink.clearRect(0, 0, 1, 1);
+            ink.fillStyle = '#000';
+            ink.fillStyle = colour;
+            ink.fillRect(0, 0, 1, 1);
+            const [r, g, b, alpha] = ink.getImageData(0, 0, 1, 1).data;
+            if (!alpha) return [0, 0];
+            const scale = 255 / alpha;
+            return [(0.2126 * r + 0.7152 * g + 0.0722 * b) * scale / 255, alpha / 255];
+          };
+          const onDark = (element) => {
+            const styleOf = (node) => doc.defaultView.getComputedStyle(node);
+            // The outline is drawn outside the element, so it sits on
+            // whatever surrounds it, not on the element's own fill.
+            const start = element.parentElement;
+            for (let node = start; node && node.nodeType === 1; node = node.parentElement) {
+              const style = styleOf(node);
+              const [lightness, alpha] = read(style.backgroundColor);
+              if (alpha > 0.5) return lightness < 0.45;
+              // A photo or gradient cannot be read; light text on it means it is dark.
+              if (style.backgroundImage !== 'none') break;
+            }
+            // A filled element (a button) sets its text against its own
+            // fill, so its parent's text colour is the one to read.
+            const filled = read(styleOf(element).backgroundColor)[1] > 0.5 || element.matches('img');
+            const [lightness, alpha] = read(styleOf(filled && start ? start : element).color);
+            return alpha > 0.5 && lightness > 0.6;
+          };
+          const judge = (event) => {
+            const element = event.target?.closest?.('[data-tuxcms-editable], [data-tuxcms-image-editable]');
+            if (element) element.toggleAttribute('data-tuxcms-on-dark', onDark(element));
+          };
+          doc.addEventListener('pointerover', judge);
+          doc.addEventListener('focusin', judge);
+        }
 
         installEditors();
         const view = frameRef.current?.contentWindow;
