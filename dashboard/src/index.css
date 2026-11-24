@@ -34,10 +34,10 @@
   .icon-button:disabled { cursor: not-allowed; opacity: .35; }
   .work-surface { background: var(--color-paper); border: 1px solid oklch(100% 0 0); border-radius: var(--radius-l); box-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .04); }
   /* Frosted panels: the page shows through, blurred, as content passes under. */
-  .glass-bar { background: oklch(98.4% 0 0 / .72); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
-  .glass-rail { background: linear-gradient(165deg, oklch(100% 0 0 / .96) 0%, oklch(99.2% 0 0 / .86) 38%, oklch(98.4% 0 0 / .76) 100%); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); box-shadow: inset -1px 0 0 oklch(100% 0 0 / .9), 1px 0 0 oklch(0% 0 0 / .05); }
+  .glass-bar { background: oklch(97% 0 0 / .72); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
+  .glass-rail { background: linear-gradient(165deg, oklch(100% 0 0 / .96) 0%, oklch(98.6% 0 0 / .86) 38%, oklch(97% 0 0 / .76) 100%); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); box-shadow: inset -1px 0 0 oklch(100% 0 0 / .9), 1px 0 0 oklch(0% 0 0 / .05); }
   .glass-chip { background: oklch(100% 0 0 / .9); box-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .05); }
-  .canvas { background: radial-gradient(120% 80% at 0% 0%, oklch(99.6% 0 0) 0%, oklch(98.4% 0 0) 55%, oklch(97.6% 0 0) 100%); }
+  .canvas { background: radial-gradient(70% 55% at 100% 0%, oklch(96.5% 0.022 250 / .9) 0%, oklch(97% 0 0 / 0) 70%), radial-gradient(120% 80% at 0% 0%, oklch(98.8% 0 0) 0%, oklch(97% 0 0) 55%, oklch(96% 0 0) 100%); }
   .text-gradient { color: var(--color-ink); }
 }
 

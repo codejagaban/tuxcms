@@ -81,7 +81,7 @@ const DashboardLayout = () => {
                   active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[oklch(0%_0_0_/_0.045)] hover:text-[var(--color-ink)]'
                 }`}
               >
-                <Icon className="h-[18px] w-[18px] shrink-0" />
+                <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[var(--color-blue)]' : ''}`} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -123,7 +123,7 @@ const DashboardLayout = () => {
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--color-accent)] text-xs font-bold text-[var(--color-accent-ink)]">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--color-blue)] text-xs font-bold text-[var(--color-accent-ink)]">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                   <span className="hidden max-w-32 truncate text-sm font-medium sm:block">{user?.name || 'User'}</span>

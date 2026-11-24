@@ -76,10 +76,10 @@ const Dashboard = () => {
   }
 
   const metrics = [
-    { label: 'Pages', value: stats.totalPages, note: 'Total entries', icon: IconPages },
-    { label: 'Published', value: stats.publishedPages, note: 'Visible now', icon: IconPublished },
-    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress', icon: IconDrafts },
-    { label: 'Media', value: stats.mediaFiles, note: 'Stored files', icon: IconMedia },
+    { label: 'Pages', value: stats.totalPages, note: 'Total entries', icon: IconPages, tone: 'var(--color-blue)' },
+    { label: 'Published', value: stats.publishedPages, note: 'Visible now', icon: IconPublished, tone: 'var(--color-success)' },
+    { label: 'Drafts', value: stats.draftPages, note: 'Work in progress', icon: IconDrafts, tone: 'var(--color-amber)' },
+    { label: 'Media', value: stats.mediaFiles, note: 'Stored files', icon: IconMedia, tone: 'var(--color-rose)' },
   ];
 
   return (
@@ -110,13 +110,13 @@ const Dashboard = () => {
       )}
 
       <section aria-label="Website statistics" className="work-surface grid grid-cols-2 overflow-hidden lg:grid-cols-4">
-        {metrics.map(({ label, value, note, icon: Icon }, index) => (
+        {metrics.map(({ label, value, note, icon: Icon, tone }, index) => (
           <div
             key={label}
             className={`px-4 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule-2)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule-2)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
             <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <Icon className="h-[18px] w-[18px] shrink-0" style={{ color: tone }} />
               {label}
             </p>
             <p className="mt-2 flex items-baseline gap-2">
@@ -133,7 +133,7 @@ const Dashboard = () => {
             <h2 className="font-semibold tracking-[-0.02em]" style={{ fontSize: '1.125rem' }}>Recent pages</h2>
             <p className="text-sm text-neutral-500">The latest content in your workspace.</p>
           </div>
-          <Link to="/dashboard/pages" className="group flex shrink-0 items-center gap-2 text-sm font-semibold">
+          <Link to="/dashboard/pages" className="group flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-blue)]">
             View all
             <ArrowUpRight className="h-4 w-4" weight="bold" />
           </Link>
@@ -152,10 +152,10 @@ const Dashboard = () => {
                   <Link
                     key={page.id}
                     to={`/dashboard/pages/${page.id}/edit`}
-                    className={`group grid gap-2 px-4 py-3 transition-colors hover:bg-[var(--color-paper-2)] sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-5 ${index ? 'border-t border-[var(--color-rule-2)]' : ''}`}
+                    className={`group grid gap-2 px-4 py-3 transition-colors hover:bg-[var(--color-hover)] sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-5 ${index ? 'border-t border-[var(--color-rule-2)]' : ''}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <IconPages className="h-[18px] w-[18px] shrink-0 text-[var(--color-muted)]" />
+                      <IconPages className="h-[18px] w-[18px] shrink-0 text-[var(--color-blue)]" />
                       <div className="min-w-0">
                         <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{page.title}</h3>
                         <p className="font-data truncate text-neutral-500">{page.full_path || `/${page.slug}`}</p>
