@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   IconOverview,
@@ -35,6 +35,29 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [appearance, setAppearance] = useAppearance();
+  const accountMenuRef = useRef(null);
+
+  // The account menu closes on a click or tap anywhere outside it, on
+  // Escape, and when the page changes.
+  useEffect(() => {
+    if (!userDropdownOpen) return undefined;
+    const onPointerDown = (event) => {
+      if (!accountMenuRef.current?.contains(event.target)) setUserDropdownOpen(false);
+    };
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setUserDropdownOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [userDropdownOpen]);
+
+  useEffect(() => {
+    setUserDropdownOpen(false);
+  }, [location.pathname]);
 
   const isActive = (path) => location.pathname === path;
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
@@ -117,7 +140,7 @@ const DashboardLayout = () => {
 
             <div className="flex items-center gap-2 sm:gap-3">
               <PublishButton />
-              <div className="relative">
+              <div className="relative" ref={accountMenuRef}>
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen((open) => !open)}
