@@ -84,7 +84,7 @@ export default function PublishButton() {
   return (
     <div className="flex items-center gap-3">
       <div className="hidden text-right sm:block">
-        <div className="flex items-center justify-end gap-1.5 text-xs text-gray-500">
+        <div className="flex items-center justify-end gap-1.5 text-xs text-[var(--color-muted)]">
           {failed ? (
             <WarningCircle className="h-3.5 w-3.5" weight="fill" />
           ) : pending > 0 ? (

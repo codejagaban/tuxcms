@@ -34,6 +34,20 @@
   --color-rose: oklch(62% 0.2 12);
   --color-amber: oklch(70% 0.16 65);
   --color-warn: oklch(75% 0.16 75);
+  /* The dark panel on the sign-in screen; dark in both modes. */
+  --color-stage: oklch(14.5% 0 0);
+  /* A see-through tint for hover on glass, and the hairline under the bar. */
+  --color-wash: oklch(0% 0 0 / .05);
+  --color-hairline: oklch(0% 0 0 / .06);
+  /* Panels: a lit edge and a tight shadow instead of a drawn border. */
+  --surface-edge: oklch(100% 0 0);
+  --surface-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .04);
+  --glass-bar: oklch(97% 0 0 / .72);
+  --glass-rail: linear-gradient(165deg, oklch(100% 0 0 / .96) 0%, oklch(98.6% 0 0 / .86) 38%, oklch(97% 0 0 / .76) 100%);
+  --glass-rail-edge: inset -1px 0 0 oklch(100% 0 0 / .9), 1px 0 0 oklch(0% 0 0 / .05);
+  --glass-chip: oklch(100% 0 0 / .9);
+  --glass-chip-edge: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .05);
+  --canvas: radial-gradient(70% 55% at 100% 0%, oklch(96.5% 0.022 250 / .9) 0%, oklch(97% 0 0 / 0) 70%), radial-gradient(120% 80% at 0% 0%, oklch(98.8% 0 0) 0%, oklch(97% 0 0) 55%, oklch(96% 0 0) 100%);
   --font-display: "Uncut Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-body: "Uncut Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;

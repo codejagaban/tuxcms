@@ -10,7 +10,7 @@ import {
 
 const Field = ({ label, children }) => (
   <label className="block">
-    <span className="mb-1 block text-xs font-medium text-gray-600">{label}</span>
+    <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">{label}</span>
     {children}
   </label>
 );
@@ -38,8 +38,8 @@ export default function Inspector({
       aria-selected={tab === id}
       className={`flex-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors ${
         tab === id
-          ? 'border-black text-black'
-          : 'border-transparent text-gray-500 hover:text-gray-700'
+          ? 'border-[var(--color-ink)] text-[var(--color-ink)]'
+          : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-ink-2)]'
       }`}
     >
       {text}
@@ -48,7 +48,7 @@ export default function Inspector({
 
   return (
     <aside className="flex h-full w-[340px] shrink-0 flex-col border-l border-[var(--color-rule-2)] bg-[var(--color-paper)] max-[767px]:fixed max-[767px]:inset-x-0 max-[767px]:bottom-0 max-[767px]:z-30 max-[767px]:h-[46dvh] max-[767px]:w-full max-[767px]:border-l-0 max-[767px]:border-t">
-      <div className="flex border-b border-gray-200" role="tablist" aria-label="Editor controls">
+      <div className="flex border-b border-[var(--color-rule-2)]" role="tablist" aria-label="Editor controls">
         {tabBtn('page', 'Page')}
         {tabBtn('section', 'Section')}
         {tabBtn('seo', 'SEO')}
@@ -108,17 +108,17 @@ function PageTab({
             <input className={inputCls} value={page.template || ''} onChange={(e) => updatePage({ template: e.target.value })} placeholder="default" />
           </Field>
         </div>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" className="rounded border-gray-300" checked={!!page.is_homepage} onChange={(e) => updatePage({ is_homepage: e.target.checked })} />
+        <label className="flex items-center gap-2 text-sm text-[var(--color-ink-2)]">
+          <input type="checkbox" className="rounded border-[var(--color-rule)]" checked={!!page.is_homepage} onChange={(e) => updatePage({ is_homepage: e.target.checked })} />
           Set as homepage
         </label>
 
         {/* Site navigation is derived from the page tree, so these two fields
             are the nav editor — there is no separate menu builder. */}
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <label className="flex items-center gap-2 text-sm text-[var(--color-ink-2)]">
           <input
             type="checkbox"
-            className="rounded border-gray-300"
+            className="rounded border-[var(--color-rule)]"
             checked={page.show_in_nav !== false}
             onChange={(e) => updatePage({ show_in_nav: e.target.checked })}
           />
@@ -142,27 +142,27 @@ function PageTab({
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Sections</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">Sections</h3>
           <div className="relative">
             <button
               type="button"
               onClick={() => setAddOpen((o) => !o)}
-              className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium"
+              className="inline-flex items-center gap-1 text-sm text-[var(--color-ink)] font-medium"
             >
               <Plus className="h-4 w-4" weight="bold" /> Add
             </button>
             {addOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setAddOpen(false)} />
-                <div className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-gray-200 bg-white shadow-lg py-1 max-h-72 overflow-y-auto">
+                <div className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-lg py-1 max-h-72 overflow-y-auto">
                   {SECTION_MENU.map((type) => (
                     <button
                       key={type}
                       onClick={() => { addSection(type); setAddOpen(false); }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                      className="w-full text-left px-3 py-2 hover:bg-[var(--color-paper-2)]"
                     >
-                      <div className="text-sm font-medium text-gray-900">{SECTION_REGISTRY[type].label}</div>
-                      <div className="text-xs text-gray-500">{SECTION_REGISTRY[type].blurb}</div>
+                      <div className="text-sm font-medium text-[var(--color-ink)]">{SECTION_REGISTRY[type].label}</div>
+                      <div className="text-xs text-[var(--color-muted)]">{SECTION_REGISTRY[type].blurb}</div>
                     </button>
                   ))}
                 </div>
@@ -172,7 +172,7 @@ function PageTab({
         </div>
 
         {(page.sections || []).length === 0 && (
-          <p className="text-sm text-gray-400 py-4 text-center">No sections yet. Add one to begin.</p>
+          <p className="text-sm text-[var(--color-muted)] py-4 text-center">No sections yet. Add one to begin.</p>
         )}
 
         <ul className="space-y-1.5">
@@ -182,7 +182,7 @@ function PageTab({
               <li
                 key={s._uid}
                 className={`group flex items-center gap-2 rounded-lg border px-2.5 py-2 cursor-pointer ${
-                  isSel ? 'border-black bg-neutral-100' : 'border-gray-200 hover:border-gray-300'
+                  isSel ? 'border-[var(--color-ink)] bg-[var(--color-paper-3)]' : 'border-[var(--color-rule-2)] hover:border-[var(--color-rule)]'
                 }`}
               >
                 <button
@@ -191,17 +191,17 @@ function PageTab({
                   aria-pressed={!!isSel}
                   className="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="w-5 shrink-0 text-center text-xs font-medium text-gray-600">{i + 1}</span>
+                  <span className="w-5 shrink-0 text-center text-xs font-medium text-[var(--color-muted)]">{i + 1}</span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-gray-900">
+                    <div className="truncate text-sm font-medium text-[var(--color-ink)]">
                       {s.title || sectionLabel(s.type)}
                     </div>
-                    <div className="text-xs text-gray-600">{sectionLabel(s.type)}</div>
+                    <div className="text-xs text-[var(--color-muted)]">{sectionLabel(s.type)}</div>
                   </div>
                 </button>
                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                   <IconBtn title={s.is_visible ? 'Hide' : 'Show'} onClick={(e) => { e.stopPropagation(); updateSection(s._uid, { is_visible: !s.is_visible }); }}>
-                    {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeSlash className="h-4 w-4 text-gray-400" />}
+                    {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeSlash className="h-4 w-4 text-[var(--color-muted)]" />}
                   </IconBtn>
                   <IconBtn title="Move up" disabled={i === 0} onClick={(e) => { e.stopPropagation(); moveSection(s._uid, -1); }}>
                     <CaretUp className="h-4 w-4" weight="bold" />
@@ -210,7 +210,7 @@ function PageTab({
                     <CaretDown className="h-4 w-4" weight="bold" />
                   </IconBtn>
                   <IconBtn title="Delete" onClick={(e) => { e.stopPropagation(); removeSection(s._uid); }}>
-                    <Trash className="h-4 w-4 text-black" weight="bold" />
+                    <Trash className="h-4 w-4 text-[var(--color-ink)]" weight="bold" />
                   </IconBtn>
                 </div>
               </li>
@@ -226,8 +226,8 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
   if (!selected) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-gray-500">No section selected.</p>
-        <button onClick={goToPage} className="mt-2 text-sm text-black hover:text-black">
+        <p className="text-sm text-[var(--color-muted)]">No section selected.</p>
+        <button onClick={goToPage} className="mt-2 text-sm text-[var(--color-ink)]">
           Choose one from the Page tab
         </button>
       </div>
@@ -257,13 +257,13 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <Badge variant="primary">{sectionLabel(selected.type)}</Badge>
-        <label className="flex items-center gap-2 text-sm text-gray-600">
-          <input type="checkbox" className="rounded border-gray-300" checked={!!selected.is_visible} onChange={(e) => updateSection(selected._uid, { is_visible: e.target.checked })} />
+        <label className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+          <input type="checkbox" className="rounded border-[var(--color-rule)]" checked={!!selected.is_visible} onChange={(e) => updateSection(selected._uid, { is_visible: e.target.checked })} />
           Visible
         </label>
       </div>
 
-      <p className="text-xs text-gray-500 -mt-2">
+      <p className="text-xs text-[var(--color-muted)] -mt-2">
         Text is edited directly on the preview. Structural options are here.
       </p>
 
@@ -368,22 +368,22 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
       {listCfg && (
         <div>
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
               {listCfg.label} items ({listItems.length})
             </h3>
-            <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-black hover:text-black font-medium">
+            <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-[var(--color-ink)] font-medium">
               <Plus className="h-4 w-4" weight="bold" /> Add
             </button>
           </div>
           <ul className="space-y-1.5">
             {listItems.map((item, idx) => (
-              <li key={idx} className="rounded-lg border border-gray-200 px-2.5 py-2">
+              <li key={idx} className="rounded-lg border border-[var(--color-rule-2)] px-2.5 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 w-5">{idx + 1}</span>
-                  <span className="flex-1 text-sm text-gray-700 truncate">
+                  <span className="text-xs text-[var(--color-muted)] w-5">{idx + 1}</span>
+                  <span className="flex-1 text-sm text-[var(--color-ink-2)] truncate">
                     {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
                   </span>
-                  <button onClick={() => removeItem(idx)} title="Remove" aria-label={`Remove ${listCfg.label} ${idx + 1}`} className="min-h-11 min-w-11 text-gray-400 hover:text-black">
+                  <button onClick={() => removeItem(idx)} title="Remove" aria-label={`Remove ${listCfg.label} ${idx + 1}`} className="min-h-11 min-w-11 text-[var(--color-muted)] hover:text-[var(--color-ink)]">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -402,7 +402,7 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
       )}
 
       {!listCfg && !['hero', 'cta', 'contact_form', 'map', 'features'].includes(selected.type) && (
-        <p className="text-sm text-gray-400">This section has no extra options — edit its text on the preview.</p>
+        <p className="text-sm text-[var(--color-muted)]">This section has no extra options — edit its text on the preview.</p>
       )}
     </div>
   );
@@ -449,7 +449,7 @@ function IconBtn({ children, onClick, title, disabled }) {
       title={title}
       aria-label={title}
       disabled={disabled}
-      className="min-h-11 min-w-11 rounded hover:bg-white text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent"
+      className="min-h-11 min-w-11 rounded hover:bg-[var(--color-paper)] text-[var(--color-muted)] disabled:opacity-30 disabled:hover:bg-transparent"
     >
       {children}
     </button>

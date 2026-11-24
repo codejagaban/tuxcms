@@ -25,7 +25,7 @@ const Login = () => {
 
   return (
     <div className="dashboard-grain grid min-h-dvh bg-[var(--color-paper)] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
-      <section className="relative hidden overflow-hidden bg-[var(--color-ink)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <section className="relative hidden overflow-hidden bg-[var(--color-stage)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-black tracking-[-0.09em]">TUX</span>
           <span className="text-xs tracking-[0.28em] text-[oklch(70%_0_0)]">CMS</span>
@@ -49,9 +49,9 @@ const Login = () => {
           </div>
 
           <div className="mb-9">
-            <p className="mb-3 text-sm text-neutral-500">Private workspace</p>
+            <p className="mb-3 text-sm text-[var(--color-muted)]">Private workspace</p>
             <h1 className="text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">Welcome back.</h1>
-            <p className="mt-4 text-sm leading-6 text-neutral-600">Sign in to manage your website.</p>
+            <p className="mt-4 text-sm leading-6 text-[var(--color-muted)]">Sign in to manage your website.</p>
           </div>
 
           {/* Form */}
@@ -98,7 +98,7 @@ const Login = () => {
 
           {/* Accounts are created with `php artisan user:create` — there is
               no public registration on a single-site CMS. */}
-          <p className="mt-7 text-sm text-neutral-500">
+          <p className="mt-7 text-sm text-[var(--color-muted)]">
             Access is managed by your site administrator.
           </p>
         </div>

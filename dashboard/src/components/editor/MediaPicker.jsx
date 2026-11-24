@@ -80,7 +80,7 @@ export default function MediaPicker({ isOpen, currentUrl = '', currentAlt = '', 
       <ModalContent className="space-y-5">
         <div className="flex flex-wrap items-end gap-3">
           <label className="min-w-0 flex-1">
-            <span className="mb-1 block text-xs font-medium text-gray-600">Alternative text</span>
+            <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">Alternative text</span>
             <input
               className="field-control text-sm"
               value={altText}

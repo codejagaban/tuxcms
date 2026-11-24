@@ -277,7 +277,7 @@ const Settings = () => {
       <Card>
         <CardHeader>
           <CardTitle>Footer Directory</CardTitle>
-          <p className="mt-1 text-sm text-gray-600">Maintain the footer introduction, support address, and service shortcuts.</p>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">Maintain the footer introduction, support address, and service shortcuts.</p>
         </CardHeader>
         <CardContent className="space-y-5">
           <Input label="Footer introduction" name="footer_intro" value={settings.footer_intro} onChange={handleInputChange} placeholder="A short description of the business" />
@@ -361,13 +361,13 @@ const DirectoryField = ({ label, name, value, onChange }) => {
   return (
     <fieldset>
       <div className="mb-2 flex items-center justify-between gap-3">
-        <legend className="text-sm font-medium text-gray-700">{label}</legend>
+        <legend className="text-sm font-medium text-[var(--color-ink-2)]">{label}</legend>
         <Button type="button" variant="ghost" size="sm" onClick={() => emit([...rows, { label: '', url: '' }])}>
           <Plus className="h-4 w-4" weight="bold" /> Add link
         </Button>
       </div>
       <div className="space-y-2">
-        {rows.length === 0 && <p className="text-sm text-gray-500">Using the Crystal website defaults. Add a link to replace them.</p>}
+        {rows.length === 0 && <p className="text-sm text-[var(--color-muted)]">Using the Crystal website defaults. Add a link to replace them.</p>}
         {rows.map((row, index) => (
           <div key={`${name}-${index}`} className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] items-center gap-2">
             <input className="field-control text-sm" aria-label={`${label} link ${index + 1} label`} value={row.label || ''} onChange={(event) => update(index, 'label', event.target.value)} placeholder="Label" />
@@ -389,7 +389,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
         <div className="flex items-start justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
+            <p className="text-sm text-[var(--color-muted)] mt-1">{description}</p>
           </div>
         </div>
       </CardHeader>
@@ -401,10 +401,10 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
           if (field.type === 'checkbox') {
             return (
               <div key={field.key}>
-                <label className="flex items-start gap-2 text-sm text-gray-700">
+                <label className="flex items-start gap-2 text-sm text-[var(--color-ink-2)]">
                   <input
                     type="checkbox"
-                    className="mt-0.5 rounded border-gray-300"
+                    className="mt-0.5 rounded border-[var(--color-rule)]"
                     name={field.key}
                     checked={!!value}
                     // Settings are stored as strings, so map the checked state
@@ -415,7 +415,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
                   />
                   <span>{field.label}</span>
                 </label>
-                {field.help && <p className="mt-1 ml-6 text-xs text-gray-500">{field.help}</p>}
+                {field.help && <p className="mt-1 ml-6 text-xs text-[var(--color-muted)]">{field.help}</p>}
               </div>
             );
           }
@@ -423,7 +423,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
           if (field.type === 'textarea') {
             return (
               <div key={field.key}>
-                <label className="mb-2 block text-sm font-medium text-gray-700">{field.label}</label>
+                <label className="mb-2 block text-sm font-medium text-[var(--color-ink-2)]">{field.label}</label>
                 <textarea
                   name={field.key}
                   rows={3}
@@ -432,7 +432,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
                   onChange={onChange}
                   className="field-control font-mono text-sm"
                 />
-                {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
+                {field.help && <p className="mt-1 text-xs text-[var(--color-muted)]">{field.help}</p>}
               </div>
             );
           }
@@ -448,7 +448,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
                 onChange={onChange}
                 containerClassName="w-full"
               />
-              {field.help && <p className="mt-1 text-xs text-gray-500">{field.help}</p>}
+              {field.help && <p className="mt-1 text-xs text-[var(--color-muted)]">{field.help}</p>}
             </div>
           );
         })}

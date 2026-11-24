@@ -75,16 +75,16 @@ const Media = () => {
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    e.currentTarget.classList.add('bg-neutral-100', 'border-black');
+    e.currentTarget.classList.add('bg-[var(--color-paper-3)]', 'border-[var(--color-ink)]');
   };
 
   const handleDragLeave = (e) => {
-    e.currentTarget.classList.remove('bg-neutral-100', 'border-black');
+    e.currentTarget.classList.remove('bg-[var(--color-paper-3)]', 'border-[var(--color-ink)]');
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('bg-neutral-100', 'border-black');
+    e.currentTarget.classList.remove('bg-[var(--color-paper-3)]', 'border-[var(--color-ink)]');
 
     uploadFiles(Array.from(e.dataTransfer.files || []));
   };
@@ -139,10 +139,10 @@ const Media = () => {
   };
 
   const getMediaIcon = (mimeType) => {
-    if (mimeType.startsWith('image/')) return <ImageSquare className="h-6 w-6 text-black" />;
-    if (mimeType.startsWith('audio/')) return <MusicNote className="h-6 w-6 text-black" />;
-    if (mimeType.startsWith('video/')) return <VideoCamera className="h-6 w-6 text-black" />;
-    return <File className="h-6 w-6 text-gray-500" />;
+    if (mimeType.startsWith('image/')) return <ImageSquare className="h-6 w-6 text-[var(--color-ink)]" />;
+    if (mimeType.startsWith('audio/')) return <MusicNote className="h-6 w-6 text-[var(--color-ink)]" />;
+    if (mimeType.startsWith('video/')) return <VideoCamera className="h-6 w-6 text-[var(--color-ink)]" />;
+    return <File className="h-6 w-6 text-[var(--color-muted)]" />;
   };
 
   const isImageMedia = (mimeType) => mimeType.startsWith('image/');
@@ -169,7 +169,7 @@ const Media = () => {
               <UploadSimple className="mx-auto mb-4 h-9 w-9 text-[var(--color-muted)]" />
               <h3 className="font-semibold text-[var(--color-ink)]">Drop files here</h3>
               <p className="mt-2 text-[var(--color-muted)]">or select files from your device</p>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, PDF, and other formats</p>
+              <p className="text-xs text-[var(--color-muted)] mt-1">PNG, JPG, GIF, PDF, and other formats</p>
             </div>
             <input
               type="file"
@@ -190,11 +190,11 @@ const Media = () => {
         <Card>
           <CardContent className="pt-12">
             <div className="text-center">
-              <div className="text-gray-400 mb-4">
+              <div className="text-[var(--color-muted)] mb-4">
                 <ImageSquare className="mx-auto h-9 w-9" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900">No media files</h3>
-              <p className="text-gray-600 mt-2">
+              <h3 className="text-lg font-medium text-[var(--color-ink)]">No media files</h3>
+              <p className="text-[var(--color-muted)] mt-2">
                 Upload your first file using the area above
               </p>
             </div>
@@ -249,7 +249,7 @@ const Media = () => {
           <ModalTitle>Delete Media</ModalTitle>
         </ModalHeader>
         <ModalContent>
-          <p className="text-gray-600">
+          <p className="text-[var(--color-muted)]">
             Are you sure you want to delete <strong>{deleteModal.mediaName}</strong>? This action cannot be undone.
           </p>
         </ModalContent>
@@ -268,7 +268,7 @@ const Media = () => {
 
 const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, getMediaIcon }) => {
   return (
-    <div className="overflow-hidden rounded-md bg-white ring-1 ring-inset ring-[var(--color-rule-2)]">
+    <div className="overflow-hidden rounded-md bg-[var(--color-paper)] ring-1 ring-inset ring-[var(--color-rule-2)]">
       {isImageMedia ? (
         <div className="aspect-[4/3] overflow-hidden bg-[var(--color-paper-2)]">
           <img
@@ -289,8 +289,8 @@ const MediaCard = ({ media, isImageMedia, onDelete, onViewDetails, onCopyUrl, ge
 
       <div className="space-y-2.5 p-3">
         <div>
-          <p className="truncate text-sm font-medium text-gray-900">{media.file_name}</p>
-          <p className="mt-0.5 text-[11px] text-gray-500">{media.mime_type}</p>
+          <p className="truncate text-sm font-medium text-[var(--color-ink)]">{media.file_name}</p>
+          <p className="mt-0.5 text-[11px] text-[var(--color-muted)]">{media.mime_type}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
 
       <ModalContent className="space-y-4">
         {isImageMedia && (
-          <div className="bg-gray-100 rounded-lg p-4 aspect-video flex items-center justify-center">
+          <div className="bg-[var(--color-paper-3)] rounded-lg p-4 aspect-video flex items-center justify-center">
             <img
               src={media.url}
               alt={media.file_name}
@@ -342,18 +342,18 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
 
         <div className="space-y-3 border-t pt-4">
           <div>
-            <p className="text-xs font-medium text-gray-600 uppercase">Filename</p>
-            <p className="text-sm text-gray-900 mt-1 break-words">{media.file_name}</p>
+            <p className="text-xs font-medium text-[var(--color-muted)] uppercase">Filename</p>
+            <p className="text-sm text-[var(--color-ink)] mt-1 break-words">{media.file_name}</p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-600 uppercase">URL</p>
+            <p className="text-xs font-medium text-[var(--color-muted)] uppercase">URL</p>
             <div className="flex items-center gap-2 mt-1">
               <input
                 type="text"
                 value={media.url}
                 readOnly
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50"
+                className="flex-1 px-3 py-2 border border-[var(--color-rule)] rounded-lg text-sm bg-[var(--color-paper-2)]"
               />
               <Button variant="ghost" size="sm" onClick={onCopyUrl}>
                 <Copy className="h-4 w-4" />
@@ -361,18 +361,18 @@ const MediaDetailsModal = ({ isOpen, media, onClose, onCopyUrl, onDelete, format
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-3 gap-4 p-4 bg-[var(--color-paper-2)] rounded-lg">
             <div>
-              <p className="text-xs font-medium text-gray-600 uppercase">Size</p>
-              <p className="text-sm text-gray-900 mt-1">{formatFileSize(media.size)}</p>
+              <p className="text-xs font-medium text-[var(--color-muted)] uppercase">Size</p>
+              <p className="text-sm text-[var(--color-ink)] mt-1">{formatFileSize(media.size)}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-600 uppercase">Type</p>
-              <p className="text-sm text-gray-900 mt-1">{media.mime_type}</p>
+              <p className="text-xs font-medium text-[var(--color-muted)] uppercase">Type</p>
+              <p className="text-sm text-[var(--color-ink)] mt-1">{media.mime_type}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-600 uppercase">Uploaded</p>
-              <p className="text-sm text-gray-900 mt-1">{formatDate(media.created_at)}</p>
+              <p className="text-xs font-medium text-[var(--color-muted)] uppercase">Uploaded</p>
+              <p className="text-sm text-[var(--color-ink)] mt-1">{formatDate(media.created_at)}</p>
             </div>
           </div>
         </div>

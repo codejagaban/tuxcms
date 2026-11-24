@@ -78,7 +78,7 @@ const DashboardLayout = () => {
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
                 className={`mb-0.5 flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
-                  active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[oklch(0%_0_0_/_0.045)] hover:text-[var(--color-ink)]'
+                  active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[var(--color-wash)] hover:text-[var(--color-ink)]'
                 }`}
               >
                 <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[var(--color-blue)]' : ''}`} />
@@ -95,7 +95,7 @@ const DashboardLayout = () => {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="glass-bar sticky top-0 z-20 border-b border-[oklch(0%_0_0_/_0.06)]">
+        <header className="glass-bar sticky top-0 z-20 border-b border-[var(--color-hairline)]">
           <div className="mx-auto flex h-14 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button
@@ -119,7 +119,7 @@ const DashboardLayout = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen((open) => !open)}
-                  className="flex min-h-11 items-center gap-2 rounded-full px-2 py-1.5 text-left hover:bg-[oklch(0%_0_0_/_0.05)] sm:px-3"
+                  className="flex min-h-11 items-center gap-2 rounded-full px-2 py-1.5 text-left hover:bg-[var(--color-wash)] sm:px-3"
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >
@@ -134,12 +134,12 @@ const DashboardLayout = () => {
                   <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
-                      <div className="mt-1 truncate text-xs text-neutral-500">{user?.email}</div>
+                      <div className="mt-1 truncate text-xs text-[var(--color-muted)]">{user?.email}</div>
                     </div>
                     <button
                       type="button"
                       onClick={logout}
-                      className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-neutral-100"
+                      className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-[var(--color-paper-3)]"
                     >
                       <SignOut className="h-4 w-4" />
                       Sign out

@@ -142,13 +142,13 @@ const Pages = () => {
         <Card>
           <CardContent className="pt-12">
             <div className="text-center">
-              <div className="text-gray-400 mb-4">
+              <div className="text-[var(--color-muted)] mb-4">
                 <FileText className="mx-auto h-9 w-9" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-[var(--color-ink)]">
                 {searchTerm ? 'No pages found' : 'No pages yet'}
               </h3>
-              <p className="text-gray-600 mt-2">
+              <p className="text-[var(--color-muted)] mt-2">
                 {searchTerm ? 'Try adjusting your search' : 'Create your first page to get started'}
               </p>
               {!searchTerm && (
@@ -188,14 +188,14 @@ const Pages = () => {
                     </Link>
                   </TableCell>
                   <TableCell className="font-data text-[var(--color-muted)]">/{page.slug}</TableCell>
-                  <TableCell className="text-gray-600 capitalize">{page.template || 'default'}</TableCell>
+                  <TableCell className="text-[var(--color-muted)] capitalize">{page.template || 'default'}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadge(page.status)}>
                       {page.status || 'draft'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-600">{page.author?.name || '—'}</TableCell>
-                  <TableCell className="text-gray-600">{formatDate(page.updated_at)}</TableCell>
+                  <TableCell className="text-[var(--color-muted)]">{page.author?.name || '—'}</TableCell>
+                  <TableCell className="text-[var(--color-muted)]">{formatDate(page.updated_at)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       <Link to={`/dashboard/pages/${page.id}/edit`}>
@@ -239,7 +239,7 @@ const Pages = () => {
           <ModalTitle>Delete Page</ModalTitle>
         </ModalHeader>
         <ModalContent>
-          <p className="text-gray-600">
+          <p className="text-[var(--color-muted)]">
             Are you sure you want to delete <strong>{deleteModal.pageTitle}</strong>? This action cannot be undone.
           </p>
         </ModalContent>

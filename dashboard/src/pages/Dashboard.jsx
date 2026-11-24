@@ -86,12 +86,12 @@ const Dashboard = () => {
     <div className="space-y-6">
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
         <div>
-          <p className="mb-1 text-sm text-neutral-500">Good to see you, {user?.name?.split(' ')[0]}.</p>
+          <p className="mb-1 text-sm text-[var(--color-muted)]">Good to see you, {user?.name?.split(' ')[0]}.</p>
           <h2 className="page-heading max-w-3xl">
             Website status
           </h2>
         </div>
-        <p className="max-w-sm text-sm leading-6 text-neutral-600 lg:pb-1">
+        <p className="max-w-sm text-sm leading-6 text-[var(--color-muted)] lg:pb-1">
           Review content, prepare changes, and publish when everything is ready.
         </p>
       </section>
@@ -99,7 +99,7 @@ const Dashboard = () => {
       {(held.enquiries > 0 || held.applications > 0) && (
         <section aria-label="Held as spam" className="rounded-md border border-[var(--color-rule-2)] px-5 py-4 text-sm leading-6">
           <p className="font-semibold">The spam filter is holding {held.enquiries + held.applications} {held.enquiries + held.applications === 1 ? 'submission' : 'submissions'}.</p>
-          <p className="mt-1 text-neutral-600">
+          <p className="mt-1 text-[var(--color-muted)]">
             These were not emailed and are deleted after 30 days. Check that none is genuine:{' '}
             {held.enquiries > 0 && <Link className="font-semibold underline" to="/dashboard/enquiries?held=1">{held.enquiries} in Enquiries</Link>}
             {held.enquiries > 0 && held.applications > 0 && ' and '}
@@ -115,13 +115,13 @@ const Dashboard = () => {
             key={label}
             className={`px-4 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule-2)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule-2)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
-            <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+            <p className="flex items-center gap-2 text-xs font-medium text-[var(--color-muted)]">
               <Icon className="h-[18px] w-[18px] shrink-0" style={{ color: tone }} />
               {label}
             </p>
             <p className="mt-2 flex items-baseline gap-2">
               <span className="tabular-nums text-3xl font-semibold tracking-[-0.04em]">{value}</span>
-              <span className="text-xs text-neutral-500">{note}</span>
+              <span className="text-xs text-[var(--color-muted)]">{note}</span>
             </p>
           </div>
         ))}
@@ -131,7 +131,7 @@ const Dashboard = () => {
         <div className="mb-3 flex items-end justify-between gap-4">
           <div>
             <h2 className="font-semibold tracking-[-0.02em]" style={{ fontSize: '1.125rem' }}>Recent pages</h2>
-            <p className="text-sm text-neutral-500">The latest content in your workspace.</p>
+            <p className="text-sm text-[var(--color-muted)]">The latest content in your workspace.</p>
           </div>
           <Link to="/dashboard/pages" className="group flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-blue)]">
             View all
@@ -144,7 +144,7 @@ const Dashboard = () => {
             {recentPages.length === 0 ? (
               <div className="px-6 py-16 text-center">
                 <h3 className="font-semibold">No pages yet</h3>
-                <p className="mt-2 text-sm text-neutral-500">Create your first page to begin shaping the site.</p>
+                <p className="mt-2 text-sm text-[var(--color-muted)]">Create your first page to begin shaping the site.</p>
               </div>
             ) : (
               <div>
@@ -158,13 +158,13 @@ const Dashboard = () => {
                       <IconPages className="h-[18px] w-[18px] shrink-0 text-[var(--color-blue)]" />
                       <div className="min-w-0">
                         <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{page.title}</h3>
-                        <p className="font-data truncate text-neutral-500">{page.full_path || `/${page.slug}`}</p>
+                        <p className="font-data truncate text-[var(--color-muted)]">{page.full_path || `/${page.slug}`}</p>
                       </div>
                     </div>
                     <Badge variant={page.status === 'published' ? 'published' : 'draft'} className="w-fit">
                       {page.status || 'draft'}
                     </Badge>
-                    <p className="tabular-nums text-xs text-neutral-500 sm:text-right">
+                    <p className="tabular-nums text-xs text-[var(--color-muted)] sm:text-right">
                       {new Date(page.updated_at).toLocaleDateString()}
                     </p>
                   </Link>

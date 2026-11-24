@@ -154,10 +154,10 @@ const SEO = () => {
         <Card>
           <CardContent className="pt-12">
             <div className="text-center">
-              <div className="text-gray-400 mb-4">
+              <div className="text-[var(--color-muted)] mb-4">
               </div>
-              <h3 className="text-lg font-medium text-gray-900">No pages yet</h3>
-              <p className="text-gray-600 mt-2">
+              <h3 className="text-lg font-medium text-[var(--color-ink)]">No pages yet</h3>
+              <p className="text-[var(--color-muted)] mt-2">
                 Create a page first to manage its SEO settings
               </p>
             </div>
@@ -190,8 +190,8 @@ const SEO = () => {
                   onClick={() => handlePageSelect(page.id)}
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                     selectedPageId === page.id
-                      ? 'bg-neutral-100 text-black font-medium'
-                      : 'hover:bg-gray-100 text-gray-700'
+                      ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)] font-medium'
+                      : 'hover:bg-[var(--color-paper-3)] text-[var(--color-ink-2)]'
                   }`}
                 >
                   {page.title}
@@ -225,7 +225,7 @@ const SEO = () => {
                   />
 
                   <div>
-                    <label className="mb-2 text-sm font-medium text-gray-700 block">
+                    <label className="mb-2 text-sm font-medium text-[var(--color-ink-2)] block">
                       Meta Description
                     </label>
                     <textarea
@@ -237,10 +237,10 @@ const SEO = () => {
                           meta_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-[var(--color-rule)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ink)]"
                       rows="3"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--color-muted)] mt-1">
                       {seoData.meta_description.length} characters
                     </p>
                   </div>
@@ -263,14 +263,14 @@ const SEO = () => {
                   <CardTitle className="text-lg">Google Search Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                    <div className="text-black text-sm font-medium truncate">
+                  <div className="border border-[var(--color-rule)] rounded-lg p-4 bg-[var(--color-paper-2)]">
+                    <div className="text-[var(--color-ink)] text-sm font-medium truncate">
                       {seoData.meta_title || selectedPage.title}
                     </div>
-                    <div className="text-black text-xs mt-1">
+                    <div className="text-[var(--color-ink)] text-xs mt-1">
                       example.com/{selectedPage.slug}
                     </div>
-                    <div className="text-gray-700 text-sm mt-2 line-clamp-2">
+                    <div className="text-[var(--color-ink-2)] text-sm mt-2 line-clamp-2">
                       {seoData.meta_description || selectedPage.excerpt}
                     </div>
                   </div>
@@ -297,7 +297,7 @@ const SEO = () => {
                   />
 
                   <div>
-                    <label className="mb-2 text-sm font-medium text-gray-700 block">
+                    <label className="mb-2 text-sm font-medium text-[var(--color-ink-2)] block">
                       OG Description
                     </label>
                     <textarea
@@ -309,7 +309,7 @@ const SEO = () => {
                           og_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-[var(--color-rule)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ink)]"
                       rows="3"
                     />
                   </div>
@@ -329,7 +329,7 @@ const SEO = () => {
                       <img
                         src={seoData.og_image}
                         alt="OG Preview"
-                        className="w-full max-w-sm rounded-lg border border-gray-300"
+                        className="w-full max-w-sm rounded-lg border border-[var(--color-rule)]"
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
@@ -345,7 +345,7 @@ const SEO = () => {
                   <CardTitle className="text-lg">Social Media Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="border border-gray-300 rounded-lg overflow-hidden">
+                  <div className="border border-[var(--color-rule)] rounded-lg overflow-hidden">
                     {seoData.og_image && (
                       <img
                         src={seoData.og_image}
@@ -356,11 +356,11 @@ const SEO = () => {
                         }}
                       />
                     )}
-                    <div className="p-4 bg-gray-50">
-                      <div className="font-medium text-gray-900 text-sm">
+                    <div className="p-4 bg-[var(--color-paper-2)]">
+                      <div className="font-medium text-[var(--color-ink)] text-sm">
                         {seoData.og_title || selectedPage.title}
                       </div>
-                      <div className="text-gray-600 text-xs mt-1">
+                      <div className="text-[var(--color-muted)] text-xs mt-1">
                         {seoData.og_description || selectedPage.excerpt}
                       </div>
                     </div>
@@ -375,7 +375,7 @@ const SEO = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="mb-2 text-sm font-medium text-gray-700 block">
+                    <label className="mb-2 text-sm font-medium text-[var(--color-ink-2)] block">
                       Card Type
                     </label>
                     <select
@@ -383,7 +383,7 @@ const SEO = () => {
                       onChange={(e) =>
                         setSeoData({ ...seoData, twitter_card: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-[var(--color-rule)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ink)]"
                     >
                       <option value="summary">Summary</option>
                       <option value="summary_large_image">
@@ -405,7 +405,7 @@ const SEO = () => {
                   />
 
                   <div>
-                    <label className="mb-2 text-sm font-medium text-gray-700 block">
+                    <label className="mb-2 text-sm font-medium text-[var(--color-ink-2)] block">
                       Twitter Description
                     </label>
                     <textarea
@@ -417,7 +417,7 @@ const SEO = () => {
                           twitter_description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-[var(--color-rule)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ink)]"
                       rows="3"
                     />
                   </div>
@@ -451,7 +451,7 @@ const SEO = () => {
                   />
 
                   <div>
-                    <label className="mb-2 text-sm font-medium text-gray-700 block">
+                    <label className="mb-2 text-sm font-medium text-[var(--color-ink-2)] block">
                       Schema Markup (JSON-LD)
                     </label>
                     <textarea
@@ -460,7 +460,7 @@ const SEO = () => {
                       onChange={(e) =>
                         setSeoData({ ...seoData, schema_markup: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm"
+                      className="w-full px-4 py-2 border border-[var(--color-rule)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ink)] font-mono text-sm"
                       rows="6"
                     />
                   </div>

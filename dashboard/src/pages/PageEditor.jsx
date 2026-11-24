@@ -301,7 +301,7 @@ export default function PageEditor() {
   if (!page) {
     return (
       <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-[var(--color-paper)]">
-        <p className="text-gray-600">Page not found.</p>
+        <p className="text-[var(--color-muted)]">Page not found.</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard/pages')}>Back to pages</Button>
       </div>
     );
@@ -330,7 +330,7 @@ export default function PageEditor() {
           <div
             aria-hidden="true"
             className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
-              isSel ? 'ring-2 ring-inset ring-black' : 'ring-0 ring-inset ring-black group-hover:ring-1'
+              isSel ? 'ring-2 ring-inset ring-[var(--color-ink)]' : 'ring-0 ring-inset ring-[var(--color-ink)] group-hover:ring-1'
             }`}
           />
         )}
@@ -367,11 +367,11 @@ export default function PageEditor() {
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-900 truncate">{page.title || 'Untitled'}</span>
+            <span className="font-semibold text-[var(--color-ink)] truncate">{page.title || 'Untitled'}</span>
             <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
             {dirty && <span className="h-2 w-2 rounded-full bg-[var(--color-warn)]" title="Unsaved changes" />}
           </div>
-          <div className="text-xs text-gray-600 truncate">
+          <div className="text-xs text-[var(--color-muted)] truncate">
             {publishing
               ? 'Publishing to the live site…'
               : saving
@@ -435,9 +435,9 @@ export default function PageEditor() {
           <div className={`mx-auto ${canvasWidth} ${liveCanvas ? 'h-full' : ''} transition-[max-width] duration-200`}>
             <div className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${liveCanvas ? 'h-full' : ''}`}>
               {page.sections.length === 0 && (
-                <div className="py-24 text-center text-gray-400">
+                <div className="py-24 text-center text-[var(--color-muted)]">
                   <p className="mb-3">This page has no sections yet.</p>
-                  <p className="text-sm">Use <span className="font-medium text-gray-500">Add</span> in the Page panel to start building.</p>
+                  <p className="text-sm">Use <span className="font-medium text-[var(--color-muted)]">Add</span> in the Page panel to start building.</p>
                 </div>
               )}
               {liveCanvas
@@ -464,7 +464,7 @@ export default function PageEditor() {
                 : sectionPreview}
             </div>
             {!liveCanvas && (
-              <p className="text-center text-xs text-gray-400 mt-4">
+              <p className="text-center text-xs text-[var(--color-muted)] mt-4">
                 Click any text above to edit it inline. Use the panel to manage structure.
               </p>
             )}
