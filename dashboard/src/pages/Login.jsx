@@ -31,7 +31,7 @@ const Login = () => {
           <span className="text-xs tracking-[0.28em] text-[oklch(70%_0_0)]">CMS</span>
         </div>
         <div>
-          <p className="max-w-sm text-4xl font-medium leading-[1.04] tracking-[-0.055em]">
+          <p className="max-w-sm text-4xl font-medium leading-[1.04] tracking-[-0.035em]">
             The quiet place behind your website.
           </p>
           <p className="mt-6 max-w-xs text-sm leading-6 text-[oklch(70%_0_0)]">
@@ -50,7 +50,7 @@ const Login = () => {
 
           <div className="mb-9">
             <p className="mb-3 text-sm text-neutral-500">Private workspace</p>
-            <h1 className="text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">Welcome back.</h1>
+            <h1 className="text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">Welcome back.</h1>
             <p className="mt-4 text-sm leading-6 text-neutral-600">Sign in to manage your website.</p>
           </div>
 
