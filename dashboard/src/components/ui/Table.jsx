@@ -3,7 +3,7 @@ import Button from './Button';
 
 const Table = ({ className = '', children, ...props }) => {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-[inherit]">
       <table
         className={`w-full text-left text-sm text-[var(--color-neutral)] ${className}`}
         {...props}
@@ -36,7 +36,7 @@ const TableBody = ({ className = '', children, ...props }) => {
 const TableRow = ({ className = '', children, ...props }) => {
   return (
     <tr
-      className={`border-b border-[var(--color-rule-2)] transition-colors duration-150 hover:bg-[var(--color-paper-2)] ${className}`}
+      className={`border-b border-[var(--color-rule-2)] transition-colors duration-150 last:border-b-0 hover:bg-[var(--color-paper-2)] ${className}`}
       {...props}
     >
       {children}
