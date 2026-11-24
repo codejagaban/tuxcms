@@ -1,13 +1,13 @@
 const Badge = ({ variant = 'default', className = '', children, ...props }) => {
   const variants = {
-    default: 'bg-neutral-100 text-neutral-700',
-    primary: 'bg-black text-white',
-    success: 'bg-black text-white',
-    warning: 'bg-neutral-200 text-black',
-    danger: 'bg-black text-white',
-    published: 'bg-black text-white',
-    draft: 'bg-neutral-200 text-neutral-700',
-    pending: 'bg-neutral-200 text-black',
+    default: 'bg-[var(--color-paper-3)] text-[var(--color-ink-2)]',
+    primary: 'bg-[var(--color-accent)] text-[var(--color-accent-ink)]',
+    success: 'bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]',
+    warning: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
+    danger: 'bg-[var(--color-danger-soft)] text-[var(--color-danger)]',
+    published: 'bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]',
+    draft: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
+    pending: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
   };
 
   return (

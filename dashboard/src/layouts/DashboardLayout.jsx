@@ -43,32 +43,32 @@ const DashboardLayout = () => {
         <button
           type="button"
           aria-label="Close navigation"
-          className="fixed inset-0 z-30 bg-[oklch(18%_0.01_95_/_0.42)] lg:hidden"
+          className="fixed inset-0 z-30 bg-[oklch(21%_0.035_165_/_0.5)] lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-[16.5rem] flex-col bg-[var(--color-ink)] text-[var(--color-paper)] transition-transform duration-200 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[16.5rem] flex-col bg-[var(--color-side)] text-[var(--color-paper)] transition-transform duration-200 lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex h-20 items-center justify-between px-6">
+        <div className="flex h-16 items-center justify-between px-6">
           <Link to="/dashboard" className="flex items-baseline gap-2" aria-label="TuxCMS overview">
             <span className="font-[var(--font-display)] text-[1.65rem] font-bold tracking-[-0.07em]">TUX</span>
-            <span className="text-xs text-[oklch(72%_0.008_95)]">CMS</span>
+            <span className="text-xs font-semibold text-[var(--color-lime)]">CMS</span>
           </Link>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="icon-button text-[oklch(72%_0.008_95)] lg:hidden"
+            className="icon-button text-[var(--color-side-ink)] lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" weight="bold" />
           </button>
         </div>
 
-        <div className="px-6 pb-4 text-xs leading-5 text-[oklch(65%_0.008_95)]">
+        <div className="px-6 pb-3 text-xs leading-5 text-[var(--color-side-ink)]">
           Publishing workbench
         </div>
 
@@ -81,8 +81,8 @@ const DashboardLayout = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`mb-1 flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  active ? 'bg-[var(--color-paper)] text-[var(--color-ink)]' : 'text-[oklch(72%_0.008_95)] hover:bg-[oklch(24%_0.01_95)] hover:text-[var(--color-paper)]'
+                className={`mb-0.5 flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  active ? 'bg-[var(--color-lime)] text-[var(--color-ink)]' : 'text-[var(--color-side-ink)] hover:bg-[var(--color-side-2)] hover:text-[var(--color-paper)]'
                 }`}
               >
                 <Icon className="h-[19px] w-[19px]" weight={active ? 'fill' : 'regular'} />
@@ -92,15 +92,15 @@ const DashboardLayout = () => {
           })}
         </nav>
 
-        <div className="mx-6 border-t border-[oklch(31%_0.009_95)] py-5">
-          <div className="text-xs text-[oklch(62%_0.008_95)]">Signed in</div>
+        <div className="mx-6 border-t border-[var(--color-side-2)] py-4">
+          <div className="text-xs text-[var(--color-side-ink)]">Signed in</div>
           <div className="mt-1 truncate text-sm font-medium text-[var(--color-paper)]">{user?.email}</div>
         </div>
       </aside>
 
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-20 border-b border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-          <div className="mx-auto flex h-20 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
+          <div className="mx-auto flex h-16 max-w-[96rem] items-center justify-between px-5 sm:px-8 lg:px-10">
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -126,7 +126,7 @@ const DashboardLayout = () => {
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >
-                  <span className="grid h-8 w-8 place-items-center rounded-sm bg-[var(--color-ink)] text-xs font-bold text-[var(--color-paper)]">
+                  <span className="grid h-8 w-8 place-items-center rounded-sm bg-[var(--color-accent)] text-xs font-bold text-[var(--color-accent-ink)]">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                   <span className="hidden max-w-32 truncate text-sm font-medium sm:block">{user?.name || 'User'}</span>
@@ -154,7 +154,7 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        <main className="dashboard-grain mx-auto min-h-[calc(100dvh-5rem)] max-w-[96rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <main className="dashboard-grain mx-auto min-h-[calc(100dvh-4rem)] max-w-[96rem] px-5 py-6 sm:px-8 lg:px-10 lg:py-7">
           <Outlet />
         </main>
       </div>

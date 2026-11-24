@@ -77,8 +77,8 @@ export default function Enquiries() {
             type="button"
             aria-pressed={type === filter.value}
             onClick={() => setType(filter.value)}
-            className={`min-h-11 rounded-md border px-4 text-sm font-medium ${type === filter.value
-              ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
+            className={`min-h-9 rounded-md border px-3.5 text-sm font-medium ${type === filter.value
+              ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >
             {filter.label}{filter.value === 'held' && meta.held > 0 ? ` (${meta.held})` : ''}

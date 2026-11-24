@@ -88,7 +88,7 @@ export default function PublishButton() {
           {failed ? (
             <WarningCircle className="h-3.5 w-3.5" weight="fill" />
           ) : pending > 0 ? (
-            <span className="h-2 w-2 rounded-full bg-black" />
+            <span className="h-2 w-2 rounded-full bg-[var(--color-warn)]" />
           ) : lastPublished ? (
             <Check className="h-3.5 w-3.5" weight="bold" />
           ) : null}
@@ -99,7 +99,7 @@ export default function PublishButton() {
       <button
         onClick={publish}
         disabled={publishing}
-        className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-[var(--color-paper)] transition-colors hover:bg-[var(--color-ink-2)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-[var(--color-accent-ink)] transition-colors hover:bg-[var(--color-accent-strong)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
       >
         {publishing ? (
           <CircleNotch className="h-4 w-4 animate-spin" weight="bold" />

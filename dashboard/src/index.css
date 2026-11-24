@@ -19,12 +19,12 @@
   button, input, textarea, select { font: inherit; }
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-  ::selection { background: var(--color-ink); color: var(--color-paper); }
+  ::selection { background: var(--color-lime); color: var(--color-ink); }
 }
 
 @layer components {
-  .page-heading { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.05rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.045em; }
-  .page-deck { margin-top: .5rem; max-width: 62ch; color: var(--color-muted); font-size: .9375rem; line-height: 1.6; }
+  .page-heading { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.035em; }
+  .page-deck { margin-top: .25rem; max-width: 62ch; color: var(--color-muted); font-size: .9375rem; line-height: 1.6; }
   .field-control { min-height: var(--control-height); width: 100%; border: 1px solid var(--color-rule-2); border-radius: var(--radius-m); outline: 2px solid transparent; outline-offset: 1px; background: var(--color-paper); color: var(--color-ink); padding: .625rem .875rem; transition: background-color 120ms ease, border-color 120ms ease; }
   .field-control::placeholder { color: var(--color-muted); }
   .field-control:focus-visible { border-color: var(--color-ink-2); outline-color: var(--color-focus); }
@@ -37,7 +37,7 @@
 }
 
 .tux-editable { outline: none; cursor: text; border-radius: 4px; transition: box-shadow 120ms ease, background-color 120ms ease; }
-.tux-editable:focus { box-shadow: 0 0 0 2px var(--color-focus); background-color: oklch(97% .008 95 / .9); }
+.tux-editable:focus { box-shadow: 0 0 0 2px var(--color-focus); background-color: oklch(96.5% .018 155 / .9); }
 .tux-editable[data-empty="true"]:not(:focus)::before { content: attr(data-placeholder); color: var(--color-muted); font-style: italic; }
 
 @media (hover: hover) and (pointer: fine) {

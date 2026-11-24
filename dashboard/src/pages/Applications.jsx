@@ -87,8 +87,8 @@ export default function Applications() {
             type="button"
             aria-pressed={held === filter.value}
             onClick={() => setHeld(filter.value)}
-            className={`min-h-11 rounded-md border px-4 text-sm font-medium ${held === filter.value
-              ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]'
+            className={`min-h-9 rounded-md border px-3.5 text-sm font-medium ${held === filter.value
+              ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >
             {filter.label}

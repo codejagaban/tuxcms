@@ -369,7 +369,7 @@ export default function PageEditor() {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-gray-900 truncate">{page.title || 'Untitled'}</span>
             <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
-            {dirty && <span className="h-2 w-2 rounded-full bg-black" title="Unsaved changes" />}
+            {dirty && <span className="h-2 w-2 rounded-full bg-[var(--color-warn)]" title="Unsaved changes" />}
           </div>
           <div className="text-xs text-gray-600 truncate">
             {publishing
