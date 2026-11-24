@@ -47,7 +47,7 @@ const TableRow = ({ className = '', children, ...props }) => {
 const TableCell = ({ className = '', children, isHeader = false, ...props }) => {
   const Tag = isHeader ? 'th' : 'td';
   return (
-    <Tag className={`px-4 ${isHeader ? 'h-10 font-medium' : 'h-12'} ${className}`} {...props}>
+    <Tag className={`px-4 ${isHeader ? 'h-10 font-medium' : 'h-12 py-3'} ${className}`} {...props}>
       {children}
     </Tag>
   );
