@@ -6,6 +6,17 @@ import Button from '../ui/Button';
 import Modal, { ModalContent, ModalFooter, ModalHeader, ModalTitle } from '../ui/Modal';
 import Spinner from '../ui/Spinner';
 
+// The page stores an image as a full address or as a path; the library
+// always gives a full address. Compare the path so both forms match.
+const pathOf = (url) => {
+  try {
+    return new URL(url, window.location.origin).pathname;
+  } catch {
+    return url || '';
+  }
+};
+const sameImage = (a, b) => Boolean(a && b) && pathOf(a) === pathOf(b);
+
 export default function MediaPicker({ isOpen, currentUrl = '', currentAlt = '', onClose, onSelect }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +64,7 @@ export default function MediaPicker({ isOpen, currentUrl = '', currentAlt = '', 
     }
   };
 
-  const availableImages = currentUrl && !images.some((image) => image.url === currentUrl)
+  const availableImages = currentUrl && !images.some((image) => sameImage(image.url, currentUrl))
     ? [{ id: `current:${currentUrl}`, url: currentUrl, file_name: 'Current image', name: currentAlt }, ...images]
     : images;
 
@@ -87,9 +98,9 @@ export default function MediaPicker({ isOpen, currentUrl = '', currentAlt = '', 
         {loading ? (
           <div className="flex min-h-48 items-center justify-center"><Spinner /></div>
         ) : availableImages.length ? (
-          <div className="grid max-h-[52dvh] grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3 md:grid-cols-4">
+          <div className="grid max-h-[52dvh] grid-cols-2 gap-3 overflow-y-auto p-1 sm:grid-cols-3 md:grid-cols-4">
             {availableImages.map((image) => {
-              const active = selected?.url === image.url;
+              const active = sameImage(selected?.url, image.url);
               return (
                 <button
                   key={image.id}
@@ -98,7 +109,8 @@ export default function MediaPicker({ isOpen, currentUrl = '', currentAlt = '', 
                     setSelected(image);
                     if (!altText) setAltText(image.custom_properties?.alt_text || image.name || '');
                   }}
-                  className={`overflow-hidden rounded-md bg-[var(--color-paper-2)] text-left ${active ? 'ring-2 ring-black ring-offset-2' : 'ring-1 ring-[var(--color-rule-2)]'}`}
+                  className={`overflow-hidden rounded-md bg-[var(--color-paper-2)] text-left ${active ? 'ring-2 ring-[var(--color-ink)]' : 'ring-1 ring-[var(--color-rule-2)] hover:ring-[var(--color-rule)]'}`}
+                  aria-pressed={active}
                 >
                   <img src={image.url} alt="" className="aspect-[4/3] w-full object-cover" />
                   <span className="block truncate px-2.5 py-2 text-xs text-[var(--color-ink)]">{image.file_name}</span>
