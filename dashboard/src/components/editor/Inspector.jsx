@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Plus, Trash, CaretUp, CaretDown, Eye, EyeSlash, X,
-} from '@phosphor-icons/react';
+} from '../../lib/icons';
 import Input from '../ui/Input';
 import Badge from '../ui/Badge';
 import {

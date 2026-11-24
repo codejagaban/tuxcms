@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest, ClockCounterClockwise } from '@phosphor-icons/react';
+import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest, ClockCounterClockwise } from '../lib/icons';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection } from '../lib/editorSchema';

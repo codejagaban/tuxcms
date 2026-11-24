@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GlobeHemisphereWest, Check, CircleNotch, WarningCircle } from '@phosphor-icons/react';
+import { GlobeHemisphereWest, Check, CircleNotch, WarningCircle } from '../lib/icons';
 import toast from 'react-hot-toast';
 import { siteAPI } from '../lib/api';
 

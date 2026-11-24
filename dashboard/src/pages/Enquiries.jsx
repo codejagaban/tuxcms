@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ChatText } from '@phosphor-icons/react';
+import { ChatText } from '../lib/icons';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, enquiryAPI } from '../lib/api';
 import Badge from '../components/ui/Badge';

@@ -1,7 +1,7 @@
 import {
   Sparkle, Lightning, Shield, Star, Compass, Code, Stack, PenNib,
   Gauge, Users, Envelope, Phone, MapPin, Clock, Question, Cube,
-} from '@phosphor-icons/react';
+} from '../../lib/icons';
 import Editable from './Editable';
 import { setPath } from '../../lib/editorSchema';
 

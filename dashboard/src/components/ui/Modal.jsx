@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useRef } from 'react';
-import { X } from '@phosphor-icons/react';
+import { X } from '../../lib/icons';
 
 const Modal = forwardRef(
   ({ isOpen, onClose, className = '', children, ...props }, ref) => {

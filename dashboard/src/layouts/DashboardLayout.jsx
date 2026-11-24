@@ -13,7 +13,7 @@ import {
   Briefcase,
   Tray,
   ChatText,
-} from '@phosphor-icons/react';
+} from '../lib/icons';
 import { useAuth } from '../lib/auth';
 import PublishButton from '../components/PublishButton';
 

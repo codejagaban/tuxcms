@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Files, CheckCircle, PencilSimpleLine, Image, FileText } from '@phosphor-icons/react';
+import { ArrowUpRight, Files, CheckCircle, PencilSimpleLine, Image, FileText } from '../lib/icons';
 import { useAuth } from '../lib/auth';
 import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI } from '../lib/api';
 import { Card } from '../components/ui/Card';

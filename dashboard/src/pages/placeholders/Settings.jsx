@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash } from '@phosphor-icons/react';
+import { Plus, Trash } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';

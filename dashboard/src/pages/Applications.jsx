@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { DownloadSimple, EnvelopeSimple, FileText } from '@phosphor-icons/react';
+import { DownloadSimple, EnvelopeSimple, FileText } from '../lib/icons';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, jobApplicationAPI } from '../lib/api';
 import Badge from '../components/ui/Badge';

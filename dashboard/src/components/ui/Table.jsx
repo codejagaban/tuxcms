@@ -1,4 +1,4 @@
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { CaretLeft, CaretRight } from '../../lib/icons';
 import Button from './Button';
 
 const Table = ({ className = '', children, ...props }) => {

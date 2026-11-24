@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowCounterClockwise, ClockCounterClockwise } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, ClockCounterClockwise } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import { pageAPI } from '../../lib/api';
 import Button from '../ui/Button';

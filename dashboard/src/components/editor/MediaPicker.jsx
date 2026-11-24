@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImageSquare, UploadSimple } from '@phosphor-icons/react';
+import { ImageSquare, UploadSimple } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, mediaAPI } from '../../lib/api';
 import Button from '../ui/Button';
