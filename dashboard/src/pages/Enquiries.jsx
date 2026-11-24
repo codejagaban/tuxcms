@@ -77,7 +77,7 @@ export default function Enquiries() {
             type="button"
             aria-pressed={type === filter.value}
             onClick={() => setType(filter.value)}
-            className={`min-h-8 rounded-md border px-3 text-[13px] font-medium ${type === filter.value
+            className={`min-h-8 rounded-full border px-3.5 text-[13px] font-medium ${type === filter.value
               ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >

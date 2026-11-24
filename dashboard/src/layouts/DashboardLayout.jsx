@@ -77,7 +77,7 @@ const DashboardLayout = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`mb-0.5 flex min-h-9 items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+                className={`mb-0.5 flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
                   active ? 'bg-[var(--color-paper-3)] font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[var(--color-paper-3)] hover:text-[var(--color-ink)]'
                 }`}
               >
@@ -119,7 +119,7 @@ const DashboardLayout = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen((open) => !open)}
-                  className="flex min-h-11 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-[var(--color-paper-3)] sm:px-3"
+                  className="flex min-h-11 items-center gap-2 rounded-full px-2 py-1.5 text-left hover:bg-[var(--color-paper-3)] sm:px-3"
                   aria-expanded={userDropdownOpen}
                   aria-label="Open account menu"
                 >
@@ -131,7 +131,7 @@ const DashboardLayout = () => {
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-md border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
                       <div className="mt-1 truncate text-xs text-neutral-500">{user?.email}</div>
