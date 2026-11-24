@@ -45,7 +45,7 @@ const DashboardLayout = () => {
         <button
           type="button"
           aria-label="Close navigation"
-          className="fixed inset-0 z-30 bg-[oklch(14.5%_0_0_/_0.4)] lg:hidden"
+          className="glass-veil fixed inset-0 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -133,7 +133,7 @@ const DashboardLayout = () => {
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
+                  <div className="glass-panel absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
                       <div className="mt-1 truncate text-xs text-[var(--color-muted)]">{user?.email}</div>
@@ -162,7 +162,7 @@ const DashboardLayout = () => {
                     <button
                       type="button"
                       onClick={logout}
-                      className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-[var(--color-paper-3)]"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[var(--color-wash)]"
                     >
                       <SignOut className="h-4 w-4" />
                       Sign out

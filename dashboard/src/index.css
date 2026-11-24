@@ -34,7 +34,12 @@
   .icon-button:disabled { cursor: not-allowed; opacity: .35; }
   .work-surface { background: var(--color-paper); border: 1px solid var(--surface-edge); border-radius: var(--radius-l); box-shadow: var(--surface-shadow); }
   /* Frosted panels: the page shows through, blurred, as content passes under. */
-  .glass-bar { background: var(--glass-bar); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
+  /* The frost sits on a layer behind the bar's contents. A menu opened
+     from the bar can then frost the page itself, which it could not do
+     from inside an element that is already frosted. */
+  .glass-bar::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--glass-bar); -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8); }
+  .glass-panel { background: var(--glass-panel); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }
+  .glass-veil { background: oklch(0% 0 0 / .45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
   .glass-rail { background: var(--glass-rail); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); box-shadow: var(--glass-rail-edge); }
   .glass-chip { background: var(--glass-chip); box-shadow: var(--glass-chip-edge); }
   .canvas { background: var(--canvas); }
