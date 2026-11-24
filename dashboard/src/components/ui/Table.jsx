@@ -17,7 +17,7 @@ const Table = ({ className = '', children, ...props }) => {
 const TableHeader = ({ className = '', children, ...props }) => {
   return (
     <thead
-      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-[13px] font-medium text-[var(--color-muted)] ${className}`}
+      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-[13px] font-medium text-[var(--color-muted)] [&_tr:hover]:bg-transparent ${className}`}
       {...props}
     >
       {children}
@@ -36,7 +36,7 @@ const TableBody = ({ className = '', children, ...props }) => {
 const TableRow = ({ className = '', children, ...props }) => {
   return (
     <tr
-      className={`border-b border-[var(--color-rule-2)] transition-colors duration-150 last:border-b-0 hover:bg-[var(--color-paper-2)] ${className}`}
+      className={`border-b border-[var(--color-rule-2)] transition-colors duration-150 last:border-b-0 hover:bg-[var(--color-hover)] ${className}`}
       {...props}
     >
       {children}
