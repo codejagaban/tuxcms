@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth';
 import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI } from '../lib/api';
 import { Card } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
-import Spinner from '../components/ui/Spinner';
+import { Skeleton, ListSkeleton } from '../components/ui/Skeleton';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -62,7 +62,17 @@ const Dashboard = () => {
   }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center py-24"><Spinner size="lg" /></div>;
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2"><Skeleton className="h-3.5 w-32" /><Skeleton className="h-6 w-44" /></div>
+        <div className="grid grid-cols-2 gap-px border-y border-[var(--color-rule-2)] lg:grid-cols-4">
+          {[0, 1, 2, 3].map((n) => (
+            <div key={n} className="space-y-3 px-1 py-4 sm:px-5"><Skeleton className="h-3 w-16" /><Skeleton className="h-7 w-24" /></div>
+          ))}
+        </div>
+        <ListSkeleton rows={5} />
+      </div>
+    );
   }
 
   const metrics = [

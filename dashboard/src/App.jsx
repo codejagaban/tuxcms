@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './lib/auth';
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/Login';
-import Spinner from './components/ui/Spinner';
+import { Skeleton, ListSkeleton } from './components/ui/Skeleton';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Pages = lazy(() => import('./pages/placeholders/Pages'));
@@ -16,7 +16,7 @@ const Applications = lazy(() => import('./pages/Applications'));
 const Enquiries = lazy(() => import('./pages/Enquiries'));
 
 const Deferred = ({ children }) => (
-  <Suspense fallback={<div className="grid min-h-72 place-items-center"><Spinner size="lg" /></div>}>
+  <Suspense fallback={<div className="space-y-5"><Skeleton className="h-6 w-40" /><ListSkeleton /></div>}>
     {children}
   </Suspense>
 );

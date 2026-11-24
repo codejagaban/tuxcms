@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Spinner from '../../components/ui/Spinner';
+import { Skeleton, FormSkeleton } from '../../components/ui/Skeleton';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/Card';
 import { pageAPI, seoAPI } from '../../lib/api';
 
@@ -134,8 +134,9 @@ const SEO = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Spinner size="lg" />
+      <div className="space-y-5">
+        <Skeleton className="h-6 w-40" />
+        <FormSkeleton />
       </div>
     );
   }

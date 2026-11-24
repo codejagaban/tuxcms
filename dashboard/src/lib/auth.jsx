@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from './api';
 import toast from 'react-hot-toast';
+import { BootScreen } from '../components/ui/Skeleton';
 
 const AuthContext = createContext();
 
@@ -108,14 +109,7 @@ export const ProtectedRoute = ({ children }) => {
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-accent)]"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <BootScreen />;
   }
 
   return isAuthenticated ? children : null;

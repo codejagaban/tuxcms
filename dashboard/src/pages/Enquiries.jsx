@@ -5,7 +5,7 @@ import { apiErrorMessage, enquiryAPI } from '../lib/api';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import Spinner from '../components/ui/Spinner';
+import { ListSkeleton } from '../components/ui/Skeleton';
 import { Pagination, Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from '../components/ui/Table';
 
 const dateTime = (value) => value
@@ -87,7 +87,7 @@ export default function Enquiries() {
       </div>
 
       {loading ? (
-        <div className="grid place-items-center py-20"><Spinner size="lg" /></div>
+        <ListSkeleton rows={5} />
       ) : enquiries.length === 0 ? (
         <Card className="p-12 text-center">
           <ChatText className="mx-auto h-9 w-9 text-[var(--color-muted)]" />

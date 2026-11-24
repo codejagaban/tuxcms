@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { UploadSimple, Trash, Copy, File, ImageSquare, MusicNote, VideoCamera } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
-import Spinner from '../../components/ui/Spinner';
+import { GridSkeleton } from '../../components/ui/Skeleton';
 import Modal, { ModalHeader, ModalTitle, ModalContent, ModalFooter } from '../../components/ui/Modal';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Pagination } from '../../components/ui/Table';
@@ -183,9 +183,7 @@ const Media = () => {
       </Card>
 
       {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <Spinner size="lg" />
-        </div>
+        <GridSkeleton />
       )}
 
       {!isLoading && media.length === 0 && (

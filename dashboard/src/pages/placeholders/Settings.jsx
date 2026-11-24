@@ -3,7 +3,7 @@ import { Plus, Trash } from '../../lib/icons';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Spinner from '../../components/ui/Spinner';
+import { Skeleton, FormSkeleton } from '../../components/ui/Skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { settingsAPI } from '../../lib/api';
 
@@ -157,8 +157,9 @@ const Settings = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Spinner size="lg" />
+      <div className="space-y-5">
+        <Skeleton className="h-6 w-40" />
+        <FormSkeleton />
       </div>
     );
   }
