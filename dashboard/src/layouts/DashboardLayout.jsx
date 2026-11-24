@@ -15,6 +15,7 @@ import {
   IconEnquiries,
 } from '../lib/icons';
 import { useAuth } from '../lib/auth';
+import { useAppearance } from '../lib/theme';
 import PublishButton from '../components/PublishButton';
 
 const navItems = [
@@ -33,6 +34,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [appearance, setAppearance] = useAppearance();
 
   const isActive = (path) => location.pathname === path;
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
@@ -135,6 +137,27 @@ const DashboardLayout = () => {
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
                       <div className="mt-1 truncate text-xs text-[var(--color-muted)]">{user?.email}</div>
+                    </div>
+                    <div className="px-3 pb-3">
+                      <div id="appearance-label" className="mb-2 text-xs text-[var(--color-muted)]">Appearance</div>
+                      <div role="radiogroup" aria-labelledby="appearance-label" className="grid grid-cols-3 gap-0.5 rounded-full bg-[var(--color-paper-3)] p-0.5">
+                        {[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([value, label]) => (
+                          <button
+                            key={value}
+                            type="button"
+                            role="radio"
+                            aria-checked={appearance === value}
+                            onClick={() => setAppearance(value)}
+                            className={`min-h-8 rounded-full text-[13px] transition-colors duration-150 ${
+                              appearance === value
+                                ? 'bg-[var(--color-paper)] font-medium text-[var(--color-ink)] shadow-[var(--glass-chip-edge)]'
+                                : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <button
                       type="button"

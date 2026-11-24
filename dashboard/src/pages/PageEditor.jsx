@@ -433,7 +433,9 @@ export default function PageEditor() {
       <div className="flex min-h-0 flex-1">
         <main className={`flex-1 p-3 sm:p-4 ${liveCanvas ? 'overflow-hidden' : 'overflow-y-auto pb-[48dvh] sm:pb-[48dvh] md:pb-6'}`}>
           <div className={`mx-auto ${canvasWidth} ${liveCanvas ? 'h-full' : ''} transition-[max-width] duration-200`}>
-            <div className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${liveCanvas ? 'h-full' : ''}`}>
+            {/* The built-in preview draws a light website, so it keeps the
+                light colours whatever the dashboard is set to. */}
+            <div data-theme={liveCanvas ? undefined : 'light'} className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${liveCanvas ? 'h-full' : ''}`}>
               {page.sections.length === 0 && (
                 <div className="py-24 text-center text-[var(--color-muted)]">
                   <p className="mb-3">This page has no sections yet.</p>

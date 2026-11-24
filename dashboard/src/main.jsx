@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './lib/auth'
 import './index.css'
+import './lib/theme'
 import App from './App.jsx'
 
 // Vite rewrites BASE_URL to '/admin/' for a production build and leaves it
