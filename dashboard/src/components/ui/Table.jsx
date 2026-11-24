@@ -17,7 +17,7 @@ const Table = ({ className = '', children, ...props }) => {
 const TableHeader = ({ className = '', children, ...props }) => {
   return (
     <thead
-      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-[13px] font-medium text-[var(--color-muted)] [&_tr:hover]:bg-transparent ${className}`}
+      className={`border-b border-[var(--color-rule-2)] bg-[var(--surface-head)] text-[13px] font-medium text-[var(--color-muted)] [&_tr:hover]:bg-transparent ${className}`}
       {...props}
     >
       {children}
@@ -69,7 +69,7 @@ const Pagination = ({
 }) => {
   return (
     <div
-      className={`flex items-center justify-between border-t border-[var(--color-rule-2)] bg-[var(--color-paper)] px-6 py-4 ${className}`}
+      className={`flex items-center justify-between border-t border-[var(--color-rule-2)] px-6 py-4 ${className}`}
     >
       <div className="text-sm text-[var(--color-muted)]">
         Page {currentPage} of {totalPages}

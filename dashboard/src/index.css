@@ -32,7 +32,7 @@
   textarea.field-control { min-height: 6rem; resize: vertical; }
   .icon-button { display: inline-grid; min-width: 2.75rem; min-height: 2.75rem; place-items: center; border-radius: var(--radius-m); color: var(--color-neutral); }
   .icon-button:disabled { cursor: not-allowed; opacity: .35; }
-  .work-surface { background: var(--color-paper); border: 1px solid var(--surface-edge); border-radius: var(--radius-l); box-shadow: var(--surface-shadow); }
+  .work-surface { background: var(--surface-fill); border: 1px solid var(--surface-edge); border-radius: var(--radius-l); box-shadow: var(--surface-shadow); }
   /* Frosted panels: the page shows through, blurred, as content passes under. */
   /* The frost sits on a layer behind the bar's contents. A menu opened
      from the bar can then frost the page itself, which it could not do

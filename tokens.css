@@ -40,6 +40,9 @@
   --color-wash: oklch(0% 0 0 / .05);
   --color-hairline: oklch(0% 0 0 / .06);
   /* Panels: a lit edge and a tight shadow instead of a drawn border. */
+  --surface-fill: var(--color-paper);
+  /* The header band of a table. */
+  --surface-head: var(--color-paper-2);
   --surface-edge: oklch(100% 0 0);
   --surface-shadow: 0 0 0 1px oklch(0% 0 0 / .05), 0 1px 2px oklch(0% 0 0 / .04);
   --glass-bar: oklch(97% 0 0 / .58);
@@ -73,26 +76,25 @@
   --control-height: 2.5rem;
 }
 
-/* Dark mode: a true black page with panels in a faintly cool grey tint
-   lifted off it, the reverse of the light arrangement. Declared after the
-   light set so it wins on the root element. */
+/* Dark mode: a true black page and neutral greys, with white actions.
+   Declared after the light set so it wins on the root element. */
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-paper: oklch(20% 0.007 262);
+  --color-paper: oklch(17.5% 0 0);
   --color-canvas: oklch(0% 0 0);
-  --color-paper-2: oklch(22% 0.007 262);
-  --color-hover: oklch(24% 0.008 262);
-  --color-paper-3: oklch(26.5% 0.008 262);
-  --color-ink: oklch(95.5% 0.003 262);
-  --color-ink-2: oklch(87% 0.004 262);
-  --color-muted: oklch(68% 0.012 262);
-  --color-neutral: oklch(78% 0.008 262);
-  --color-rule: oklch(38% 0.01 262);
-  --color-rule-2: oklch(29% 0.009 262);
-  --color-accent: oklch(96% 0 0);
-  --color-accent-strong: oklch(84% 0 0);
-  --color-accent-ink: oklch(14.5% 0 0);
-  --color-focus: oklch(70% 0.16 255);
+  --color-paper-2: oklch(19.5% 0 0);
+  --color-hover: oklch(100% 0 0 / .05);
+  --color-paper-3: oklch(23.5% 0 0);
+  --color-ink: oklch(97% 0 0);
+  --color-ink-2: oklch(88% 0 0);
+  --color-muted: oklch(64% 0 0);
+  --color-neutral: oklch(76% 0 0);
+  --color-rule: oklch(34% 0 0);
+  --color-rule-2: oklch(25.5% 0 0);
+  --color-accent: oklch(100% 0 0);
+  --color-accent-strong: oklch(87% 0 0);
+  --color-accent-ink: oklch(0% 0 0);
+  --color-focus: oklch(68% 0.15 240);
   --color-danger: oklch(66% 0.2 27);
   --color-danger-soft: oklch(27% 0.07 27);
   --color-danger-ink: oklch(82% 0.11 27);
@@ -101,22 +103,26 @@
   --color-success-ink: oklch(84% 0.13 152);
   --color-warn-soft: oklch(28% 0.055 80);
   --color-warn-ink: oklch(85% 0.12 82);
-  --color-blue-soft: oklch(27% 0.06 255);
-  --color-blue-ink: oklch(82% 0.1 255);
-  --color-blue: oklch(70% 0.16 255);
+  --color-blue-soft: oklch(25% 0.05 240);
+  --color-blue-ink: oklch(80% 0.1 240);
+  --color-blue: oklch(68% 0.15 240);
   --color-rose: oklch(72% 0.17 12);
   --color-amber: oklch(79% 0.15 70);
   --color-warn: oklch(81% 0.15 80);
   --color-stage: oklch(0% 0 0);
   --color-wash: oklch(100% 0 0 / .07);
   --color-hairline: oklch(100% 0 0 / .08);
-  --surface-edge: oklch(100% 0 0 / .06);
-  --surface-shadow: 0 0 0 1px oklch(0% 0 0 / .6);
+  /* Panels carry a soft sheen: lit at the top left, falling away to the
+     black of the page, inside an edge that fades the same way. */
+  --surface-fill: linear-gradient(140deg, oklch(17.5% 0 0) 0%, oklch(11% 0 0) 42%, oklch(5% 0 0) 100%) padding-box, linear-gradient(140deg, oklch(100% 0 0 / .17) 0%, oklch(100% 0 0 / .07) 55%, oklch(100% 0 0 / .05) 100%) border-box;
+  --surface-head: oklch(100% 0 0 / .035);
+  --surface-edge: transparent;
+  --surface-shadow: none;
   --glass-bar: oklch(0% 0 0 / .52);
-  --glass-panel: oklch(20% 0.007 262 / .8);
-  --glass-rail: linear-gradient(165deg, oklch(13% 0.006 262 / .84) 0%, oklch(7% 0.004 262 / .76) 38%, oklch(0% 0 0 / .68) 100%);
+  --glass-panel: oklch(11% 0 0 / .78);
+  --glass-rail: linear-gradient(150deg, oklch(13% 0 0 / .8) 0%, oklch(5% 0 0 / .72) 40%, oklch(0% 0 0 / .66) 100%);
   --glass-rail-edge: inset -1px 0 0 oklch(100% 0 0 / .06), 1px 0 0 oklch(0% 0 0 / .4);
-  --glass-chip: oklch(100% 0.02 262 / .1);
+  --glass-chip: oklch(100% 0 0 / .09);
   --glass-chip-edge: 0 0 0 1px oklch(100% 0 0 / .07), 0 1px 2px oklch(0% 0 0 / .35);
-  --canvas: radial-gradient(70% 55% at 100% 0%, oklch(22% 0.035 258 / .55) 0%, oklch(0% 0 0 / 0) 70%), oklch(0% 0 0);
+  --canvas: oklch(0% 0 0);
 }
