@@ -87,7 +87,7 @@ export default function Applications() {
             type="button"
             aria-pressed={held === filter.value}
             onClick={() => setHeld(filter.value)}
-            className={`min-h-9 rounded-md border px-3.5 text-sm font-medium ${held === filter.value
+            className={`min-h-8 rounded-md border px-3 text-[13px] font-medium ${held === filter.value
               ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >
@@ -101,7 +101,7 @@ export default function Applications() {
       ) : applications.length === 0 ? (
         <Card className="p-12 text-center">
           <EnvelopeSimple className="mx-auto h-9 w-9 text-[var(--color-muted)]" />
-          <h2 className="mt-4 text-lg font-semibold">No applications yet</h2>
+          <h2 className="mt-3 text-base font-semibold">No applications yet</h2>
           <p className="mt-2 text-sm text-[var(--color-muted)]">New submissions from the Careers page will appear here.</p>
         </Card>
       ) : (

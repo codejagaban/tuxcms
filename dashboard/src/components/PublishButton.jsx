@@ -99,7 +99,7 @@ export default function PublishButton() {
       <button
         onClick={publish}
         disabled={publishing}
-        className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-[var(--color-accent-ink)] transition-colors hover:bg-[var(--color-accent-strong)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-9 items-center gap-2 whitespace-nowrap rounded-md bg-[var(--color-accent)] px-3.5 py-1.5 text-sm font-medium text-[var(--color-accent-ink)] transition-colors hover:bg-[var(--color-accent-strong)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
       >
         {publishing ? (
           <CircleNotch className="h-4 w-4 animate-spin" weight="bold" />

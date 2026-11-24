@@ -283,7 +283,7 @@ const Settings = () => {
           <Input label="Support email" name="footer_support_email" type="email" value={settings.footer_support_email} onChange={handleInputChange} placeholder="support@example.com" />
           <DirectoryField label="Cleaning services" name="footer_cleaning_links" value={settings.footer_cleaning_links} onChange={handleInputChange} />
           <DirectoryField label="Salon services" name="footer_salon_links" value={settings.footer_salon_links} onChange={handleInputChange} />
-          <div className="flex items-center justify-end border-t pt-4">
+          <div className="flex items-center justify-end border-t border-[var(--color-rule-2)] pt-4">
             <Button
               variant="primary"
               onClick={() => saveGroup('Footer', ['footer_intro', 'footer_support_email', 'footer_cleaning_links', 'footer_salon_links'])}
@@ -452,7 +452,7 @@ const SettingsGroup = ({ title, description, fields, settings, onChange, onSave,
           );
         })}
 
-        <div className="flex items-center justify-end pt-4 border-t">
+        <div className="flex items-center justify-end pt-4 border-t border-[var(--color-rule-2)]">
           <Button variant="primary" onClick={onSave} isLoading={isSaving}>
             Save Changes
           </Button>

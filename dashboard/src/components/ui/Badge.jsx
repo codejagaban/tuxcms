@@ -1,21 +1,23 @@
+// A status is a small coloured dot beside plain text, not a filled label.
 const Badge = ({ variant = 'default', className = '', children, ...props }) => {
-  const variants = {
-    default: 'bg-[var(--color-paper-3)] text-[var(--color-ink-2)]',
-    primary: 'bg-[var(--color-accent)] text-[var(--color-accent-ink)]',
-    success: 'bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]',
-    warning: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
-    danger: 'bg-[var(--color-danger-soft)] text-[var(--color-danger)]',
-    published: 'bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]',
-    draft: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
-    pending: 'bg-[var(--color-warn-soft)] text-[var(--color-warn)]',
+  const dots = {
+    default: 'bg-[var(--color-rule)]',
+    primary: 'bg-[var(--color-ink)]',
+    success: 'bg-[var(--color-success)]',
+    warning: 'bg-[var(--color-warn)]',
+    danger: 'bg-[var(--color-danger)]',
+    published: 'bg-[var(--color-success)]',
+    draft: 'bg-[var(--color-warn)]',
+    pending: 'bg-[var(--color-warn)]',
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-1 rounded-sm text-[11px] font-semibold ${variants[variant]} ${className}`}
+      className={`inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[var(--color-ink-2)] first-letter:uppercase ${className}`}
       {...props}
     >
-      {children}
+      <span className={`h-2 w-2 shrink-0 rounded-full ${dots[variant] || dots.default}`} aria-hidden="true" />
+      <span className="first-letter:uppercase">{children}</span>
     </span>
   );
 };

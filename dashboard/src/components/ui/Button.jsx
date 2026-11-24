@@ -15,24 +15,24 @@ const Button = forwardRef(
     ref
   ) => {
     const baseClasses =
-      'inline-flex items-center justify-center whitespace-nowrap font-semibold rounded-md transition-colors duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:translate-y-px';
+      'inline-flex items-center justify-center whitespace-nowrap font-medium rounded-md transition-colors duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:translate-y-px';
 
     const variants = {
       primary:
         'bg-[var(--color-accent)] text-[var(--color-accent-ink)] hover:bg-[var(--color-accent-strong)]',
       secondary:
-        'bg-[var(--color-paper-3)] text-[var(--color-ink)] hover:bg-[var(--color-rule-2)]',
+        'bg-[var(--color-paper)] text-[var(--color-ink)] border border-[var(--color-rule-2)] hover:bg-[var(--color-paper-3)]',
       danger: 'bg-[var(--color-danger)] text-[var(--color-paper)] hover:brightness-90',
       dangerGhost:
         'bg-transparent text-[var(--color-danger)] hover:bg-[var(--color-danger-soft)] border border-[var(--color-rule-2)]',
       ghost:
-        'bg-transparent text-[var(--color-neutral)] hover:bg-[var(--color-paper-3)] border border-[var(--color-rule-2)]',
+        'bg-[var(--color-paper)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-3)] border border-[var(--color-rule-2)]',
     };
 
     const sizes = {
-      sm: 'min-h-9 px-2.5 py-1.5 text-sm gap-2',
-      md: 'min-h-10 px-4 py-2 text-sm gap-2',
-      lg: 'min-h-11 px-6 py-3 text-lg gap-3',
+      sm: 'min-h-8 px-2.5 py-1 text-[13px] gap-2',
+      md: 'min-h-9 px-3.5 py-1.5 text-sm gap-2',
+      lg: 'min-h-11 px-5 py-2.5 text-base gap-2.5',
     };
 
     return (

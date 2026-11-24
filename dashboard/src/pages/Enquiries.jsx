@@ -77,7 +77,7 @@ export default function Enquiries() {
             type="button"
             aria-pressed={type === filter.value}
             onClick={() => setType(filter.value)}
-            className={`min-h-9 rounded-md border px-3.5 text-sm font-medium ${type === filter.value
+            className={`min-h-8 rounded-md border px-3 text-[13px] font-medium ${type === filter.value
               ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
               : 'border-[var(--color-rule-2)] text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)]'}`}
           >
@@ -91,7 +91,7 @@ export default function Enquiries() {
       ) : enquiries.length === 0 ? (
         <Card className="p-12 text-center">
           <ChatText className="mx-auto h-9 w-9 text-[var(--color-muted)]" />
-          <h2 className="mt-4 text-lg font-semibold">Nothing here yet</h2>
+          <h2 className="mt-3 text-base font-semibold">Nothing here yet</h2>
           <p className="mt-2 text-sm text-[var(--color-muted)]">New submissions from the website forms will appear here.</p>
         </Card>
       ) : (

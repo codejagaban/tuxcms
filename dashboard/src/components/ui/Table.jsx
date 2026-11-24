@@ -17,7 +17,7 @@ const Table = ({ className = '', children, ...props }) => {
 const TableHeader = ({ className = '', children, ...props }) => {
   return (
     <thead
-      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-xs font-semibold text-[var(--color-ink-2)] ${className}`}
+      className={`border-b border-[var(--color-rule-2)] bg-[var(--color-paper-2)] text-[13px] font-medium text-[var(--color-muted)] ${className}`}
       {...props}
     >
       {children}
@@ -47,7 +47,7 @@ const TableRow = ({ className = '', children, ...props }) => {
 const TableCell = ({ className = '', children, isHeader = false, ...props }) => {
   const Tag = isHeader ? 'th' : 'td';
   return (
-    <Tag className={`px-5 ${isHeader ? 'py-2.5' : 'py-2'} ${className}`} {...props}>
+    <Tag className={`px-4 ${isHeader ? 'h-10 font-medium' : 'h-12'} ${className}`} {...props}>
       {children}
     </Tag>
   );

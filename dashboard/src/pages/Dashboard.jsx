@@ -99,14 +99,14 @@ const Dashboard = () => {
         </section>
       )}
 
-      <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule)] lg:grid-cols-4">
+      <section aria-label="Website statistics" className="grid grid-cols-2 border-y border-[var(--color-rule-2)] lg:grid-cols-4">
         {metrics.map(({ label, value, note, icon: Icon }, index) => (
           <div
             key={label}
-            className={`px-1 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
+            className={`px-1 py-4 sm:px-5 ${index % 2 ? 'border-l border-[var(--color-rule-2)]' : ''} ${index > 1 ? 'border-t border-[var(--color-rule-2)] lg:border-t-0' : ''} ${index > 0 ? 'lg:border-l' : ''}`}
           >
             <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-              <Icon className="h-4 w-4 shrink-0 text-[var(--color-accent)]" weight="fill" aria-hidden="true" />
+              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
               {label}
             </p>
             <p className="mt-2 flex items-baseline gap-2">
@@ -145,10 +145,10 @@ const Dashboard = () => {
                     className={`group grid gap-2 px-4 py-3 transition-colors hover:bg-[var(--color-paper-2)] sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center sm:px-5 ${index ? 'border-t border-[var(--color-rule-2)]' : ''}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <FileText className="h-5 w-5 shrink-0 text-[var(--color-accent)]" aria-hidden="true" />
+                      <FileText className="h-4 w-4 shrink-0 text-[var(--color-muted)]" aria-hidden="true" />
                       <div className="min-w-0">
                         <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{page.title}</h3>
-                        <p className="truncate text-xs text-neutral-500">{page.full_path || `/${page.slug}`}</p>
+                        <p className="font-data truncate text-neutral-500">{page.full_path || `/${page.slug}`}</p>
                       </div>
                     </div>
                     <Badge variant={page.status === 'published' ? 'published' : 'draft'} className="w-fit">

@@ -184,12 +184,12 @@ const Pages = () => {
                   <TableCell className="font-medium">
                     <Link
                       to={`/dashboard/pages/${page.id}/edit`}
-                      className="text-[var(--color-ink)] hover:text-[var(--color-accent-strong)]"
+                      className="text-[var(--color-ink)] hover:underline"
                     >
                       {page.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-gray-600">/{page.slug}</TableCell>
+                  <TableCell className="font-data text-[var(--color-muted)]">/{page.slug}</TableCell>
                   <TableCell className="text-gray-600 capitalize">{page.template || 'default'}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadge(page.status)}>

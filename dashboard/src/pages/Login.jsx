@@ -25,20 +25,20 @@ const Login = () => {
 
   return (
     <div className="dashboard-grain grid min-h-dvh bg-[var(--color-paper)] lg:grid-cols-[minmax(20rem,0.72fr)_1fr]">
-      <section className="relative hidden overflow-hidden bg-[var(--color-side)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <section className="relative hidden overflow-hidden bg-[var(--color-ink)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-black tracking-[-0.09em]">TUX</span>
-          <span className="text-xs tracking-[0.28em] text-[var(--color-side-ink)]">CMS</span>
+          <span className="text-xs tracking-[0.28em] text-[oklch(70%_0_0)]">CMS</span>
         </div>
         <div>
           <p className="max-w-sm text-4xl font-medium leading-[1.04] tracking-[-0.055em]">
             The quiet place behind your website.
           </p>
-          <p className="mt-6 max-w-xs text-sm leading-6 text-[var(--color-side-ink)]">
+          <p className="mt-6 max-w-xs text-sm leading-6 text-[oklch(70%_0_0)]">
             Edit, review, and publish without getting in the way of the work.
           </p>
         </div>
-        <p className="text-xs text-[var(--color-side-ink)]">TuxCMS / Private workspace</p>
+        <p className="text-xs text-[oklch(70%_0_0)]">TuxCMS / Private workspace</p>
       </section>
 
       <main className="flex min-h-dvh items-center px-6 py-12 sm:px-12 lg:px-20">
