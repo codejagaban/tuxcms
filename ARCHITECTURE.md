@@ -144,6 +144,25 @@ and `dashboard/src/components/editor/SitePreview.jsx` prepares it:
 
 Pages on a built-in template get a plain field editor instead.
 
+### Field markers
+
+Matching text is a guess, and it fails on duplicate strings or on any text a
+template reshapes. Templates can instead say exactly which element shows which
+field, with three Blade directives from `App\Support\Preview`:
+
+```blade
+<section @tuxsection($section)>
+    <h2 @field($section, 'title')>{{ $section->title }}</h2>
+    <img src="{{ $d['image'] }}" alt="" @image($section, 'data.image')>
+</section>
+```
+
+They print `data-tuxcms-field="{section id}:{path}"` and its siblings only
+while `PageController::preview()` renders a page, inside `Preview::during()`.
+The static build never switches them on, so the published site carries none;
+where a marker was, a tag keeps a single space. The themes are being marked up
+and the editor taught to read the markers; until then it still matches text.
+
 ## SEO
 
 `App\Traits\HasSeo` attaches a polymorphic `Seo` record. In practice it is

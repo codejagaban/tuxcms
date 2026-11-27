@@ -2,6 +2,7 @@
 
 ## Active
 
+- [ ] **Replace text matching in the preview with field markers** - done: the server prints `@field`, `@image` and `@tuxsection` markers in preview renders only. Next: the editor reads them, falling back to text matching (2); mark up Shopfront, Crystal's section and hand-built views (3); edit every page on the live canvas and delete `SectionRenderer.jsx` (4); remove the text matcher (5); a test that every theme marks every field (6). Crystal's overrides need a decision first (7).
 - [ ] **Move the Crystal client site out of this repository** - its templates and 52 MB of assets (`resources/views/site/themes/crystal`, `public/themes/crystal`), its seeders (`database/seeders/Clients/Crystal`) and its test are a client's website, in a public repository. They need a home of their own and a way to be installed onto that client's server.
 
 ## Waiting On
