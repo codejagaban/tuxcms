@@ -41,12 +41,11 @@ class SettingSeeder extends Seeder
             ['key' => 'contact_phone', 'value' => '', 'group' => 'contact'],
             ['key' => 'contact_address', 'value' => '', 'group' => 'contact'],
 
-            // Footer directories. Stored as JSON so the dashboard can manage
-            // ordered label and URL rows without requiring a schema change.
+            // Footer. A theme may add lists of links of its own, as settings
+            // named `footer_<something>_links`; the dashboard shows whichever
+            // a site's settings hold.
             ['key' => 'footer_intro', 'value' => '', 'group' => 'footer'],
             ['key' => 'footer_support_email', 'value' => '', 'group' => 'footer'],
-            ['key' => 'footer_cleaning_links', 'value' => '', 'group' => 'footer'],
-            ['key' => 'footer_salon_links', 'value' => '', 'group' => 'footer'],
 
             // Legal pages are normal CMS pages; these settings expose them in
             // the shared footer only after an editor provides their paths.

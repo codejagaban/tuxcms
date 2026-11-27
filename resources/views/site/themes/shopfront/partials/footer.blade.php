@@ -7,7 +7,7 @@
 <footer class="foot">
     <div class="wrap">
         <div class="foot__grid">
-            <p class="foot__line">{{ Site::tagline() ?: (Site::description() ?: Site::name()) }}</p>
+            <p class="foot__line">{{ \App\Models\Setting::getString('footer_intro') ?: (Site::tagline() ?: (Site::description() ?: Site::name())) }}</p>
 
             @if (! empty($navigation))
                 <div>

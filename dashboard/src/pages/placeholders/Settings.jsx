@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { settingsAPI } from '../../lib/api';
 
 const Settings = () => {
+  // The footer link lists this site's settings hold.
+  const [directories, setDirectories] = useState([]);
   const [settings, setSettings] = useState({
     site_name: '',
     site_description: '',
@@ -33,8 +35,6 @@ const Settings = () => {
     site_noindex: '',
     footer_intro: '',
     footer_support_email: '',
-    footer_cleaning_links: '',
-    footer_salon_links: '',
     privacy_url: '',
     terms_url: '',
     cookie_url: '',
@@ -67,6 +67,7 @@ const Settings = () => {
       const response = await settingsAPI.get();
       const data = response.data.data || {};
 
+      setDirectories(directoryKeys(data));
       setSettings({
         site_name: data.site_name || '',
         site_description: data.site_description || '',
@@ -92,8 +93,8 @@ const Settings = () => {
         site_noindex: data.site_noindex || '',
         footer_intro: data.footer_intro || '',
         footer_support_email: data.footer_support_email || '',
-        footer_cleaning_links: data.footer_cleaning_links || '',
-        footer_salon_links: data.footer_salon_links || '',
+        // Any footer link lists this site has; see `directories` below.
+        ...Object.fromEntries(directoryKeys(data).map((key) => [key, data[key] || ''])),
         privacy_url: data.privacy_url || '',
         terms_url: data.terms_url || '',
         cookie_url: data.cookie_url || '',
@@ -282,12 +283,13 @@ const Settings = () => {
         <CardContent className="space-y-5">
           <Input label="Footer introduction" name="footer_intro" value={settings.footer_intro} onChange={handleInputChange} placeholder="A short description of the business" />
           <Input label="Support email" name="footer_support_email" type="email" value={settings.footer_support_email} onChange={handleInputChange} placeholder="support@example.com" />
-          <DirectoryField label="Cleaning services" name="footer_cleaning_links" value={settings.footer_cleaning_links} onChange={handleInputChange} />
-          <DirectoryField label="Salon services" name="footer_salon_links" value={settings.footer_salon_links} onChange={handleInputChange} />
+          {directories.map((key) => (
+            <DirectoryField key={key} label={directoryLabel(key)} name={key} value={settings[key]} onChange={handleInputChange} />
+          ))}
           <div className="flex items-center justify-end border-t border-[var(--color-rule-2)] pt-4">
             <Button
               variant="primary"
-              onClick={() => saveGroup('Footer', ['footer_intro', 'footer_support_email', 'footer_cleaning_links', 'footer_salon_links'])}
+              onClick={() => saveGroup('Footer', ['footer_intro', 'footer_support_email', ...directories])}
               isLoading={savingGroups.Footer}
             >
               Save Changes
@@ -344,6 +346,15 @@ const Settings = () => {
   );
 };
 
+// A theme can keep lists of footer links in settings named
+// `footer_<something>_links`. Which lists exist is up to the site, so the
+// screen shows whichever ones its settings hold rather than a fixed set.
+const directoryKeys = (data) => Object.keys(data).filter((key) => /^footer_.+_links$/.test(key)).sort();
+const directoryLabel = (key) => {
+  const words = key.replace(/^footer_|_links$/g, '').replace(/_/g, ' ');
+  return `${words.charAt(0).toUpperCase()}${words.slice(1)} links`;
+};
+
 const parseDirectory = (value) => {
   try {
     const rows = JSON.parse(value || '[]');
@@ -367,7 +378,7 @@ const DirectoryField = ({ label, name, value, onChange }) => {
         </Button>
       </div>
       <div className="space-y-2">
-        {rows.length === 0 && <p className="text-sm text-[var(--color-muted)]">Using the Crystal website defaults. Add a link to replace them.</p>}
+        {rows.length === 0 && <p className="text-sm text-[var(--color-muted)]">Using the theme's own links. Add a link to replace them.</p>}
         {rows.map((row, index) => (
           <div key={`${name}-${index}`} className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] items-center gap-2">
             <input className="field-control text-sm" aria-label={`${label} link ${index + 1} label`} value={row.label || ''} onChange={(event) => update(index, 'label', event.target.value)} placeholder="Label" />

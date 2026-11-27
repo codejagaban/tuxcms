@@ -43,6 +43,10 @@ class CrystalContentSeeder extends Seeder
             'contact_email' => ['info@crystalservicesltd.co.uk', 'contact'],
             'contact_phone' => ['+44 771 729 9921', 'contact'],
             'contact_address' => ['56 Northfield Street, Worcester, Worcestershire, WR1 1NT', 'contact'],
+            // This site's footer has two lists of service links. Empty means
+            // the theme's own defaults; the dashboard can replace them.
+            'footer_cleaning_links' => ['', 'footer'],
+            'footer_salon_links' => ['', 'footer'],
             'web3forms_access_key' => ['65e32145-fc60-4ad1-86a7-6398381cfc30', 'forms'],
         ];
 
