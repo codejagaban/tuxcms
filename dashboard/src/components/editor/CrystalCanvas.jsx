@@ -8,7 +8,10 @@ function editableFields(sections) {
   const visit = (value, path, fields) => {
     if (typeof value === 'string') {
       const key = path.split('.').at(-1);
-      if (!ignoredKeys.has(key) && normalise(value).length > 1) fields.push([path, value]);
+      // A single character is only worth matching when it is a letter or a
+      // digit, such as a figure of "9"; a lone symbol would match anything.
+      const text = normalise(value);
+      if (!ignoredKeys.has(key) && (text.length > 1 || /^[\p{L}\p{N}]$/u.test(text))) fields.push([path, value]);
       return;
     }
     if (!value || typeof value !== 'object') return;
@@ -141,7 +144,10 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
             element.textContent = normalise(element.textContent);
           });
 
-          const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div')]
+          // Every kind of element a theme might reasonably put one field's
+          // text in. Figures and their labels are often a definition list,
+          // and lists and captions are just as common as paragraphs.
+          const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div, dt, dd, li, figcaption, summary, td, th')]
             .filter((element) => !element.closest('form'));
           const claimed = new Set();
 
