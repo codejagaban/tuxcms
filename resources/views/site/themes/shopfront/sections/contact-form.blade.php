@@ -14,11 +14,11 @@
     $privacy = collect(Site::legalLinks())->firstWhere('label', 'Privacy');
 @endphp
 @if (count($fields))
-<section class="block">
+<section class="block" @tuxsection($section)>
     <div class="wrap split">
         <div>
             @if (filled($section->title))
-                <h2 class="display head">{{ $section->title }}</h2>
+                <h2 class="display head" @field($section, 'title')>{{ $section->title }}</h2>
             @endif
         </div>
 
@@ -71,7 +71,7 @@
             @endif
 
             <div>
-                <button type="submit" class="plate"><span>{{ data_get($d, 'button_label', 'Send message') }}</span>@include('site.themes.shopfront.partials.arrow')</button>
+                <button type="submit" class="plate"><span @field($section, 'data.button_label')>{{ data_get($d, 'button_label', 'Send message') }}</span>@include('site.themes.shopfront.partials.arrow')</button>
             </div>
             <p class="form__result" role="status" aria-live="polite" data-result></p>
         </form>
