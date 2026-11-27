@@ -9,6 +9,7 @@ use App\Http\Resources\PageResource;
 use App\Models\Page;
 use App\Services\Content\PageRevisionService;
 use App\Services\Site\SiteBuilder;
+use App\Support\Preview;
 use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -287,13 +288,15 @@ class PageController extends Controller
     }
 
     /**
-     * The page as its theme renders it, for the editor's preview of a page
-     * that is not on the built site yet. Marked so the theme can tell it is
-     * being edited, and never indexed.
+     * The page as its theme renders it, for the editor's preview. Rendered
+     * with the field markers on, so the editor knows which element shows
+     * which field, and marked so the theme can tell it is being edited.
+     * Never indexed.
      */
     public function preview(Page $page, SiteBuilder $builder): Response
     {
-        $html = preg_replace('/<html\b/', '<html data-tuxcms-preview', $builder->renderPage($page), 1);
+        $html = Preview::during(fn () => $builder->renderPage($page));
+        $html = preg_replace('/<html\b/', '<html data-tuxcms-preview', $html, 1);
 
         return response($html)
             ->header('Content-Type', 'text/html; charset=UTF-8')
