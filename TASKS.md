@@ -6,12 +6,12 @@
 
 ## Waiting On
 
-- [ ] **Decide what happens to `feat/fine-flow-care`** - two commits from 2026-11-07 adding `config/fine-flow.php`, a `FineFlowContentSeeder` and publishing hooks, now 76 commits behind `main`. Its worktree at `../fine-flow-care-preview` is gone from disk and shows as prunable.
 
 ## Someday
 
 ## Done
 
+- [x] ~~**Decide what happens to `feat/fine-flow-care`** - deleted; its hooks were superseded by the theme system~~ (2026-11-27)
 - [x] ~~**Give the CMS a theme of its own** - Shopfront renders every section type, the careers pages and the 404, is the default in `.env.example`, and `bin/demo.sh` runs it on throwaway data~~ (2026-11-27)
 - [x] ~~**Replace the three stale documents** - rewrite `ARCHITECTURE.md` and `API_DOCUMENTATION.md` from the current code, and turn `SETUP_COMPLETE.md` into a working `SETUP.md`~~ (2026-11-27)
 - [x] ~~**Show which parts of the preview can be edited** - draw a resting outline on every editable region and judge each one against the colour behind it, so editable text and images are visible without hovering~~ (2026-11-27)
