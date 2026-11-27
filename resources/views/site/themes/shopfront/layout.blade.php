@@ -34,6 +34,7 @@
 
     @include('site.themes.shopfront.partials.footer')
 
+    <script src="/themes/shopfront/js/site.js" defer></script>
     @stack('scripts')
     @include('site.partials.analytics')
 </body>
