@@ -2,7 +2,6 @@
 
 ## Active
 
-- [ ] **Drop Crystal as the careers fallback** - `SiteBuilder::themeView` still falls back to the `crystal` client site for the careers views when `SITE_THEME` is unset. Set `SITE_THEME=crystal` on that client's server first, then remove the fallback so only Shopfront and the unthemed views remain.
 
 ## Waiting On
 
@@ -11,6 +10,7 @@
 
 ## Done
 
+- [x] ~~**Drop Crystal as the careers fallback** - careers views now fall back to Shopfront; the Crystal client site needs `SITE_THEME=crystal` on its server to keep its own careers pages~~ (2026-11-27)
 - [x] ~~**Decide what happens to `feat/fine-flow-care`** - deleted; its hooks were superseded by the theme system~~ (2026-11-27)
 - [x] ~~**Give the CMS a theme of its own** - Shopfront renders every section type, the careers pages and the 404, is the default in `.env.example`, and `bin/demo.sh` runs it on throwaway data~~ (2026-11-27)
 - [x] ~~**Replace the three stale documents** - rewrite `ARCHITECTURE.md` and `API_DOCUMENTATION.md` from the current code, and turn `SETUP_COMPLETE.md` into a working `SETUP.md`~~ (2026-11-27)

@@ -198,10 +198,9 @@ the careers pages and for the 404. Every page that theme renders is edited on
 the live preview.
 
 A view is resolved in order: the page's own template if it names a theme, then
-`SITE_THEME`, then the unthemed views in `resources/views/site`. The careers
-views still fall back to `crystal` before the unthemed ones, a leftover from
-when that client's site was the only complete set; it only applies when
-`SITE_THEME` is unset.
+`SITE_THEME`, then the unthemed views in `resources/views/site`. There are no
+unthemed careers views, so those fall back to Shopfront when `SITE_THEME` is
+unset.
 
 Shopfront is the bundled theme and the default in `.env.example`. A theme's
 stylesheet lives at `public/themes/<name>/css/site.css` and is minified beside
