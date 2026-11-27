@@ -5,6 +5,8 @@ namespace App\Services\Media;
 use App\Models\MediaLibrary;
 use App\Models\Page;
 use Illuminate\Support\Str;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -13,11 +15,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * can be browsed there and picked again in the editor. The originals stay
  * where they are and pages keep pointing at them, so nothing on the site
  * changes. Running it twice imports nothing twice.
+ *
+ * A theme with hand-built pages (an `original` folder beside its views) also
+ * has photos that no section mentions; those can be gathered as well.
  */
 class ThemeMediaImporter
 {
     /** @return array{imported: int, skipped: int, missing: int} */
-    public function import(string $theme): array
+    public function import(string $theme, bool $handBuiltPages = false): array
     {
         $library = MediaLibrary::singleton();
         $existing = Media::query()
@@ -28,7 +33,7 @@ class ThemeMediaImporter
 
         $result = ['imported' => 0, 'skipped' => 0, 'missing' => 0];
 
-        foreach ($this->discover($theme) as $sourcePath => $altText) {
+        foreach ($this->discover($theme, $handBuiltPages) as $sourcePath => $altText) {
             if ($existing->has($sourcePath)) {
                 $result['skipped']++;
 
@@ -65,7 +70,7 @@ class ThemeMediaImporter
      *
      * @return array<string, string>
      */
-    public function discover(string $theme): array
+    public function discover(string $theme, bool $handBuiltPages = false): array
     {
         $images = [];
         $prefix = "/themes/{$theme}/images/";
@@ -77,9 +82,49 @@ class ThemeMediaImporter
                 }
             });
 
+        if ($handBuiltPages) {
+            foreach ($this->photosInHandBuiltPages($theme) as $path) {
+                $images[$path] = ($images[$path] ?? '') ?: Str::headline(pathinfo($path, PATHINFO_FILENAME));
+            }
+        }
+
         ksort($images);
 
         return $images;
+    }
+
+    /**
+     * Photos named in a theme's hand-built views. Logos, favicons and
+     * decorative shapes are left out: they are furniture, not content.
+     *
+     * @return array<int, string>
+     */
+    private function photosInHandBuiltPages(string $theme): array
+    {
+        $directory = resource_path("views/site/themes/{$theme}/original");
+
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        $found = [];
+        $pattern = '#/themes/'.preg_quote($theme, '#').'/images/[^"\'\s>]+\.(?:jpe?g|png|webp|gif)#i';
+
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory)) as $file) {
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
+
+            preg_match_all($pattern, file_get_contents($file->getPathname()), $matches);
+
+            foreach ($matches[0] as $path) {
+                if (! preg_match('#/(?:logo|logotypes|originals|showcases|intro-sections|design-concepts)/|/(?:decoration-|bg-shape-|favicon)#i', $path)) {
+                    $found[$path] = true;
+                }
+            }
+        }
+
+        return array_keys($found);
     }
 
     /** @param array<string, string> $images */

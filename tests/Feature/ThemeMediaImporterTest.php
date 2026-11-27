@@ -39,4 +39,29 @@ class ThemeMediaImporterTest extends TestCase
         $this->assertSame('A carer with a resident', $hero->getCustomProperty('alt_text'));
         $this->assertFileExists(public_path('themes/crystal/images/intro/hero.png'));
     }
+
+    public function test_it_can_also_gather_photos_from_a_themes_hand_built_pages(): void
+    {
+        Storage::fake('public');
+
+        $importer = app(ThemeMediaImporter::class);
+
+        // Without the option, a theme with no pages in the database has none.
+        $this->assertSame([], $importer->discover('crystal'));
+
+        $images = $importer->discover('crystal', handBuiltPages: true);
+
+        $this->assertArrayHasKey('/themes/crystal/images/intro/hero.png', $images);
+        $this->assertArrayHasKey('/themes/crystal/images/salon/braiding.jpg', $images);
+        // Furniture, not content.
+        $this->assertArrayNotHasKey('/themes/crystal/images/logo/favicon.png', $images);
+
+        $first = $importer->import('crystal', handBuiltPages: true);
+        $second = $importer->import('crystal', handBuiltPages: true);
+
+        $this->assertGreaterThan(0, $first['imported']);
+        $this->assertSame(0, $first['missing']);
+        $this->assertSame(0, $second['imported']);
+        $this->assertSame($first['imported'], $second['skipped']);
+    }
 }
