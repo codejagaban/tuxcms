@@ -132,6 +132,52 @@ class ShopfrontThemeTest extends TestCase
         $this->assertStringContainsString('name="form_token"', $this->contents('careers/bench-joiner/index.html'));
     }
 
+    public function test_the_contact_form_goes_to_the_cms_inbox_unless_web3forms_is_set(): void
+    {
+        $this->homepageWithEverySection();
+
+        app(SiteBuilder::class)->build();
+        $html = $this->contents('index.html');
+
+        $this->assertStringContainsString('action="/api/v1/enquiries"', $html);
+        $this->assertStringContainsString('name="form_token"', $html);
+        $this->assertStringContainsString('name="consent"', $html);
+        $this->assertStringNotContainsString('web3forms.com', $html);
+
+        \App\Models\Setting::set('web3forms_access_key', 'demo-key', 'forms');
+
+        app(SiteBuilder::class)->build();
+        $html = $this->contents('index.html');
+
+        $this->assertStringContainsString('action="https://api.web3forms.com/submit"', $html);
+        $this->assertStringNotContainsString('action="/api/v1/enquiries"', $html);
+    }
+
+    public function test_the_demo_content_uses_every_part_of_the_cms(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $this->seed(\Database\Seeders\DemoContentSeeder::class);
+
+        $this->assertSame(
+            ['closed' => 1, 'draft' => 1, 'published' => 2],
+            JobPost::all()->countBy('status')->sortKeys()->all()
+        );
+        $this->assertTrue(\App\Models\Enquiry::where('delivery_status', 'spam')->exists());
+        $this->assertTrue(\App\Models\JobApplication::where('delivery_status', 'spam')->exists());
+        $this->assertTrue(Page::where('status', 'draft')->exists());
+        $this->assertTrue(Page::where('published_at', '>', now())->exists());
+
+        $used = \App\Models\PageSection::distinct()->pluck('type')->sort()->values()->all();
+        $every = collect(config('tuxcms.pages.section_types'))->sort()->values()->all();
+        $this->assertSame($every, $used);
+
+        app(SiteBuilder::class)->build();
+
+        $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');
+        $this->assertFileDoesNotExist($this->output . '/careers/studio-manager/index.html');
+        $this->assertFileDoesNotExist($this->output . '/open-studio-day/index.html');
+    }
+
     public function test_careers_fall_back_to_the_theme_when_no_site_theme_is_set(): void
     {
         config(['site.theme' => null]);

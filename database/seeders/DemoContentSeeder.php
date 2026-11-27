@@ -2,18 +2,27 @@
 
 namespace Database\Seeders;
 
+use App\Models\Enquiry;
+use App\Models\JobApplication;
+use App\Models\JobPost;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Seo;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * Seeds a realistic business website: pages with builder sections and SEO.
+ * Seeds a realistic business website that uses everything the CMS does:
+ * pages built from every section type, nested service pages, a draft and a
+ * scheduled page, SEO, site settings, vacancies in each status, and an inbox
+ * of enquiries and applications, including ones the spam filter is holding.
  *
  * Idempotent — re-running wipes the demo pages and rebuilds them, so it never
- * accumulates duplicates.
+ * accumulates duplicates. It replaces every page in the database, so it is
+ * for an empty or throwaway database only.
  *
  *   php artisan db:seed --class=DemoContentSeeder
  */
@@ -30,8 +39,11 @@ class DemoContentSeeder extends Seeder
 
         $this->wipeExistingPages();
         $pages = $this->seedPages();
+        $this->seedSettings();
+        $jobs = $this->seedJobs();
+        $this->seedInbox($jobs);
 
-        $this->command?->info('Demo content seeded: ' . count($pages) . ' pages.');
+        $this->command?->info('Demo content seeded: ' . count($pages) . ' pages, ' . count($jobs) . ' vacancies and a sample inbox.');
         $this->command?->info('Log in as admin@tuxcms.com to edit it.');
     }
 
@@ -269,27 +281,229 @@ class DemoContentSeeder extends Seeder
             'robots' => 'index, follow',
         ]);
 
+        // A second service page, so the Services menu has more than one entry.
+        $brand = $this->makePage([
+            'title' => 'Brand Identity',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $services->id,
+            'show_in_nav' => true,
+            'order' => 1,
+            'excerpt' => 'Naming, marks and a system the whole team can use.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Brand identity',
+                'content' => 'A name, a mark and the rules that keep them consistent everywhere they appear.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Talk to us', 'url' => '/contact/']],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'How it runs',
+                'content' => "We start with a week of listening: to you, your customers and the people who answer your phones.\n\nThen three directions, one chosen, and a guide short enough that people read it.",
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'Starting from a blank page?',
+                'content' => 'Send us what you have, even if it is only a name.',
+                'data' => ['primary_cta' => ['label' => 'Get in touch', 'url' => '/contact/']],
+            ],
+        ], [
+            'meta_title' => 'Brand identity — Lumen Studio',
+            'meta_description' => 'Naming, logo design and brand guidelines from Lumen Studio.',
+            'robots' => 'index, follow',
+        ]);
+
+        // Kept out of the menu; the footer links to it through the legal settings.
+        $privacy = $this->makePage([
+            'title' => 'Privacy',
+            'template' => 'default',
+            'status' => 'published',
+            'show_in_nav' => false,
+            'order' => 8,
+            'excerpt' => 'How we use the details you send us.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Privacy',
+                'data' => ['alignment' => 'left'],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'What we keep',
+                'content' => "When you write to us or apply for a role, we keep what you send so that we can reply.\n\nWe do not sell it or pass it on, and you can ask us to delete it at any time.",
+            ],
+        ], [
+            'meta_title' => 'Privacy — Lumen Studio',
+            'robots' => 'noindex, follow',
+        ]);
+
+        // Published, but dated in the future: it goes live by itself on the
+        // day, once the scheduler next rebuilds the site.
+        $openDay = $this->makePage([
+            'title' => 'Open Studio Day',
+            'template' => 'default',
+            'status' => 'published',
+            'published_at' => now()->addDays(14),
+            'show_in_nav' => false,
+            'order' => 9,
+            'excerpt' => 'Come and see how we work.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Open studio day',
+                'content' => 'Coffee, work in progress on the walls, and the whole team in one room.',
+                'data' => ['subheading' => 'Doors open at ten'],
+            ],
+        ], [
+            'meta_title' => 'Open studio day — Lumen Studio',
+            'robots' => 'index, follow',
+        ]);
+
         // A draft page, so the dashboard shows a non-published status too.
-        $careers = $this->makePage([
-            'title' => 'Careers',
+        $caseStudies = $this->makePage([
+            'title' => 'Case Studies',
             'template' => 'default',
             'status' => 'draft',
             'show_in_nav' => false,
             'order' => 4,
-            'excerpt' => 'Work with us (coming soon).',
-            'content' => 'We are putting this page together — check back soon.',
+            'excerpt' => 'Work we are proud of (coming soon).',
         ], [
             [
-                'key' => 'hero', 'type' => 'hero', 'title' => 'Careers at Lumen',
-                'content' => 'We hire slowly and rarely, but when we do we look for senior, curious people.',
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Case studies',
+                'content' => 'We are writing these up. Check back soon.',
                 'data' => ['alignment' => 'left'],
             ],
         ], [
-            'meta_title' => 'Careers — Lumen Studio',
+            'meta_title' => 'Case studies — Lumen Studio',
             'robots' => 'noindex, follow',
         ]);
 
-        return [$home, $about, $services, $webDesign, $contact, $careers];
+        return [$home, $about, $services, $webDesign, $brand, $contact, $privacy, $openDay, $caseStudies];
+    }
+
+    /** The site-wide details the header, footer, forms and schema draw on. */
+    private function seedSettings(): void
+    {
+        $settings = [
+            'site' => [
+                'site_name' => 'Lumen Studio',
+                'site_tagline' => 'Design and engineering for products that have to earn their keep.',
+                'site_description' => 'Lumen Studio designs and builds web apps, brand systems and marketing sites.',
+            ],
+            'contact' => [
+                'contact_email' => 'hello@lumenstudio.test',
+                'contact_phone' => '+44 20 7946 0000',
+                'contact_address' => '11 Ashby Mews, London SE4 1TT',
+            ],
+            'legal' => ['privacy_url' => '/privacy/'],
+        ];
+
+        foreach ($settings as $group => $values) {
+            foreach ($values as $key => $value) {
+                Setting::set($key, $value, $group);
+            }
+        }
+    }
+
+    /**
+     * One vacancy in each state: two open (one with a closing date), a draft
+     * and a closed one. Only the open ones are built into the careers pages.
+     *
+     * @return array<int, JobPost>
+     */
+    private function seedJobs(): array
+    {
+        $jobs = [
+            [
+                'slug' => 'senior-product-designer', 'title' => 'Senior product designer', 'status' => 'published',
+                'published_at' => now()->subDays(6), 'closes_at' => now()->addDays(24),
+                'location' => 'London', 'job_type' => 'Full-time', 'employment_type' => 'full-time',
+                'hours' => '37.5 a week', 'salary' => '£62,000 to £70,000',
+                'summary' => 'Lead design on two client products, from first research to launch.',
+                'description' => "You will own the design of two products at a time and sit beside the engineers building them.\n\nMost weeks include time with the people who use what we make.",
+                'responsibilities' => ['Run discovery with clients and their customers', 'Design, prototype and test flows', 'Keep the design system honest as products grow'],
+                'essential' => ['Five or more years designing shipped products', 'A portfolio that shows your thinking, not only the result'],
+                'desirable' => ['Comfort reading front-end code'],
+                'benefits' => ['Four-day week in August', 'A real training budget', 'Pension matched to 6%'],
+            ],
+            [
+                'slug' => 'full-stack-engineer', 'title' => 'Full-stack engineer', 'status' => 'published',
+                'published_at' => now()->subDays(2),
+                'location' => 'London or remote in the UK', 'job_type' => 'Full-time', 'employment_type' => 'full-time',
+                'hours' => '37.5 a week', 'salary' => '£58,000 to £68,000',
+                'summary' => 'Build and look after client products across the whole stack.',
+                'description' => 'You will join a pod of three and take features from a sketch to production.',
+                'responsibilities' => ['Ship features end to end', 'Review code with care', 'Keep products fast and observable'],
+                'essential' => ['Strong experience with a modern web stack', 'You write tests because you want to'],
+                'benefits' => ['Four-day week in August', 'Pension matched to 6%'],
+            ],
+            [
+                'slug' => 'studio-manager', 'title' => 'Studio manager', 'status' => 'draft',
+                'location' => 'London', 'job_type' => 'Part-time', 'employment_type' => 'part-time',
+                'summary' => 'Keep the studio, its diary and its suppliers running smoothly.',
+            ],
+            [
+                'slug' => 'design-intern', 'title' => 'Design intern', 'status' => 'closed',
+                'published_at' => now()->subMonths(3), 'closes_at' => now()->subMonths(2),
+                'location' => 'London', 'job_type' => 'Internship', 'employment_type' => 'intern',
+                'summary' => 'A paid twelve-week placement with the design team.',
+            ],
+        ];
+
+        return array_map(fn (array $job) => JobPost::updateOrCreate(
+            ['slug' => $job['slug']],
+            [...$job, 'author_id' => $this->author->id]
+        ), $jobs);
+    }
+
+    /**
+     * A believable inbox: delivered messages, one whose email failed, and one
+     * of each kind that the spam filter is holding with its reason, so the
+     * release button in the dashboard has something to act on.
+     *
+     * @param array<int, JobPost> $jobs
+     */
+    private function seedInbox(array $jobs): void
+    {
+        $enquiries = [
+            ['email' => 'hana.suzuki@fathom.test', 'type' => 'contact', 'name' => 'Hana Suzuki', 'organisation' => 'Fathom',
+                'phone' => '07700 900118', 'message' => 'We are rebuilding our booking flow this spring and would like to talk about a design sprint.',
+                'delivery_status' => 'sent', 'emailed_at' => now()->subHours(5)],
+            ['email' => 'joe@overlap.test', 'type' => 'contact', 'name' => 'Joe Adeyemi', 'organisation' => 'Overlap',
+                'message' => 'Could you audit our onboarding? Sign-ups drop sharply at the second step.',
+                'details' => ['budget' => '£15k to £25k', 'timeline' => 'Next quarter'],
+                'delivery_status' => 'sent', 'emailed_at' => now()->subDays(2)],
+            ['email' => 'mira@harbourline.test', 'type' => 'contact', 'name' => 'Mira Castellanos',
+                'message' => 'Do you take on small brand projects? We are a two-person bakery.',
+                'delivery_status' => 'failed'],
+            ['email' => 'growth@rank-rocket.test', 'type' => 'contact', 'name' => 'SEO Growth Team',
+                'message' => 'We can get your website to the first page of Google. Reply for our price list and a free audit of your site.',
+                'delivery_status' => 'spam', 'spam_reason' => 'Reads as a sales pitch'],
+        ];
+
+        foreach ($enquiries as $enquiry) {
+            Enquiry::updateOrCreate(['email' => $enquiry['email']], $enquiry);
+        }
+
+        $designer = $jobs[0];
+        $engineer = $jobs[1];
+        $applications = [
+            ['email' => 'ada.okonkwo@mail.test', 'job_post_id' => $designer->id, 'name' => 'Ada Okonkwo', 'phone' => '07700 900245',
+                'cover_letter' => 'I have led design on three shipped products and would love to do the same with your clients.',
+                'delivery_status' => 'sent', 'emailed_at' => now()->subDay()],
+            ['email' => 'tomas.lind@mail.test', 'job_post_id' => $engineer->id, 'name' => 'Tomas Lind',
+                'cover_letter' => 'Seven years across Laravel and React, most recently on a product with two million users.',
+                'delivery_status' => 'sent', 'emailed_at' => now()->subHours(9)],
+            ['email' => 'apply-now@bulk-cv.test', 'job_post_id' => $engineer->id, 'name' => 'Recruitment Partner',
+                'cover_letter' => 'We supply pre-vetted developers at competitive rates. Contact us for our full candidate list.',
+                'delivery_status' => 'spam', 'spam_reason' => 'Sent without opening the form page'],
+        ];
+
+        foreach ($applications as $application) {
+            // A stand-in CV, so the download button in the dashboard works.
+            $path = 'job-applications/demo/' . md5($application['email']) . '.pdf';
+            Storage::disk('local')->put($path, "%PDF-1.4\n% Demo CV for {$application['name']}\n%%EOF\n");
+
+            JobApplication::updateOrCreate(
+                ['email' => $application['email']],
+                [...$application, 'cv_path' => $path, 'cv_name' => str_replace(' ', '-', strtolower($application['name'])) . '-cv.pdf']
+            );
+        }
     }
 
     /**
