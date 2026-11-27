@@ -106,19 +106,20 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           .has-motion [data-reveal] { opacity: 1 !important; transform: none !important; }
           /* Everything that can be edited carries a resting dashed line, so the
              editable parts of the page are visible without hunting for them.
-             Hover firms it to a solid line, focus to a heavier one. */
-          [data-tuxcms-editable] { cursor: text; outline: 1px dashed rgba(17, 17, 17, .26); outline-offset: 5px; }
-          [data-tuxcms-editable]:hover { outline: 1px solid rgba(17, 17, 17, .38); }
-          [data-tuxcms-editable]:focus { outline: 2px solid #111; }
-          [data-tuxcms-image-editable] { cursor: pointer; outline: 1px dashed rgba(17, 17, 17, .26); outline-offset: 5px; }
-          [data-tuxcms-image-editable]:hover { outline: 2px solid #111; }
-          /* The same lines in white where they fall on a dark band. The resting
+             The line is blue because almost no site is, which keeps it easy
+             to spot on any theme. Hover firms it, focus makes it heavier. */
+          [data-tuxcms-editable] { cursor: text; outline: 1.5px dashed rgba(37, 99, 235, .7); outline-offset: 5px; }
+          [data-tuxcms-editable]:hover { outline: 1.5px solid rgb(37, 99, 235); }
+          [data-tuxcms-editable]:focus { outline: 2px solid rgb(37, 99, 235); }
+          [data-tuxcms-image-editable] { cursor: pointer; outline: 1.5px dashed rgba(37, 99, 235, .7); outline-offset: 5px; }
+          [data-tuxcms-image-editable]:hover { outline: 2px solid rgb(37, 99, 235); }
+          /* A lighter blue where the line falls on a dark band. The resting
              rule stands aside for hover and focus, which set their own colour. */
-          [data-tuxcms-on-dark][data-tuxcms-editable]:not(:hover):not(:focus) { outline-color: rgba(255, 255, 255, .34); }
-          [data-tuxcms-on-dark][data-tuxcms-image-editable]:not(:hover) { outline-color: rgba(255, 255, 255, .34); }
-          [data-tuxcms-on-dark][data-tuxcms-editable]:hover { outline-color: rgba(255, 255, 255, .55); }
-          [data-tuxcms-on-dark][data-tuxcms-editable]:focus { outline-color: #fff; }
-          [data-tuxcms-on-dark][data-tuxcms-image-editable]:hover { outline-color: #fff; }
+          [data-tuxcms-on-dark][data-tuxcms-editable]:not(:hover):not(:focus) { outline-color: rgba(125, 185, 255, .85); }
+          [data-tuxcms-on-dark][data-tuxcms-image-editable]:not(:hover) { outline-color: rgba(125, 185, 255, .85); }
+          [data-tuxcms-on-dark][data-tuxcms-editable]:hover { outline-color: rgb(160, 205, 255); }
+          [data-tuxcms-on-dark][data-tuxcms-editable]:focus { outline-color: rgb(160, 205, 255); }
+          [data-tuxcms-on-dark][data-tuxcms-image-editable]:hover { outline-color: rgb(160, 205, 255); }
           .tuxcms-photo-button { position: absolute; z-index: 2147483000; margin: 0; padding: 7px 12px; border: 0; border-radius: 6px; background: #111; color: #fff; font: 600 12px/1 system-ui, sans-serif; letter-spacing: 0; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
           .tuxcms-photo-button:hover, .tuxcms-photo-button:focus-visible { background: #fff; color: #111; outline: 2px solid #111; }
         `;
