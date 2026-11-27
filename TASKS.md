@@ -2,7 +2,7 @@
 
 ## Active
 
-- [ ] **Settle the Fine Flow theme** - `.env.example` defaults `SITE_THEME` to `fineflow`, but no fineflow views are committed. `Site::themes()` lists whatever directories exist under `resources/views/site/themes`, so a fresh clone has no such theme and the setting points at nothing. Either commit the theme or drop the default.
+- [ ] **Drop Crystal as the careers fallback** - `SiteBuilder::themeView` still falls back to the `crystal` client site for the careers views when `SITE_THEME` is unset. Set `SITE_THEME=crystal` on that client's server first, then remove the fallback so only Shopfront and the unthemed views remain.
 
 ## Waiting On
 
@@ -12,6 +12,7 @@
 
 ## Done
 
+- [x] ~~**Give the CMS a theme of its own** - Shopfront renders every section type, the careers pages and the 404, is the default in `.env.example`, and `bin/demo.sh` runs it on throwaway data~~ (2026-11-27)
 - [x] ~~**Replace the three stale documents** - rewrite `ARCHITECTURE.md` and `API_DOCUMENTATION.md` from the current code, and turn `SETUP_COMPLETE.md` into a working `SETUP.md`~~ (2026-11-27)
 - [x] ~~**Show which parts of the preview can be edited** - draw a resting outline on every editable region and judge each one against the colour behind it, so editable text and images are visible without hovering~~ (2026-11-27)
 - [x] ~~**Give section names the full row** - the four row actions held 182px of the 340px inspector open, leaving 67px for a name; they now sit over the row and appear on hover~~ (2026-11-27)

@@ -194,7 +194,21 @@ A theme is a directory of Blade views under
 `public/themes/<name>`. Adding the directory is all it takes for the name to be
 accepted as a page template and for its pages to be edited on the live preview.
 `SITE_THEME` picks the theme used for pages with no template-specific view, for
-the careers pages and for the 404.
+the careers pages and for the 404. Every page that theme renders is edited on
+the live preview.
+
+A view is resolved in order: the page's own template if it names a theme, then
+`SITE_THEME`, then the unthemed views in `resources/views/site`. The careers
+views still fall back to `crystal` before the unthemed ones, a leftover from
+when that client's site was the only complete set; it only applies when
+`SITE_THEME` is unset.
+
+Shopfront is the bundled theme and the default in `.env.example`. A theme's
+stylesheet lives at `public/themes/<name>/css/site.css` and is minified beside
+itself when the site is built. Because the live preview finds editable text by
+matching each field's value against one element's text, a theme should put
+each field in its own element and each paragraph of a multi-paragraph field in
+its own `<p>`.
 
 `php artisan media:import-theme` copies the photographs a theme's pages use
 into the media library once, so editors can reuse them without hunting through

@@ -77,9 +77,22 @@ held spam at 03:10.
 
 A theme is a directory of Blade views under
 `resources/views/site/themes/<name>` with its static assets in
-`public/themes/<name>`. Set `SITE_THEME` to choose one. Crystal is the theme in
-the repository. `php artisan media:import-theme` pulls the photographs a theme's
-pages use into the media library.
+`public/themes/<name>`. Set `SITE_THEME` to choose one.
+
+Shopfront is the theme a new install starts with: a dark painted fascia with
+its titles on sign boards, set in Le Murmure (SIL Open Font License, bundled).
+It renders every section type, the careers pages and the 404. The other
+directory, `crystal`, is a client's website built on the CMS, not a theme to
+reuse.
+
+To try the whole thing on throwaway data, without touching your database or the
+pages already built into `public/`:
+
+```bash
+bin/demo.sh
+```
+
+It serves the site, the dashboard at `/admin` and the API on one port, 8090.
 
 ## Tests
 

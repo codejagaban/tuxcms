@@ -33,10 +33,10 @@ removed, and an empty file at `database/database.sqlite`.
 absolute link the build writes.
 
 **The theme.** `SITE_THEME` must name a directory under
-`resources/views/site/themes`. Crystal is the theme in the repository, so use:
+`resources/views/site/themes`. `.env.example` already picks the bundled one:
 
 ```
-SITE_THEME=crystal
+SITE_THEME=shopfront
 ```
 
 Mail is set to `log` by default, so enquiries and applications are written to
@@ -58,16 +58,16 @@ password, so it is for local use only: make your own editor and do not run
 php artisan user:create
 ```
 
-For a site to look at straight away, load the Crystal content and its
-photographs:
+For a site to look at straight away, load the demo content, a small studio
+with six pages that uses every kind of section. It replaces any pages already
+in the database, so only run it on an empty one:
 
 ```bash
-php artisan db:seed --class=CrystalContentSeeder
+php artisan db:seed --class=DemoContentSeeder
 ```
 
-```bash
-php artisan crystal:import-media
-```
+Or skip all of this section and the next: `bin/demo.sh` seeds its own SQLite
+database, builds into its own directory and serves everything on port 8090.
 
 ## 4. Run it
 

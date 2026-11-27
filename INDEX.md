@@ -75,7 +75,7 @@ page sections, SEO, settings, media libraries, jobs, page revisions, job
 applications, enquiries and the spam reason column, plus the Spatie permission,
 media library and tag tables.
 
-Seeders cover demo content, the Crystal site content, a sample vacancy, roles
+Seeders cover demo content, one client's site content, a sample vacancy, roles
 and the default settings.
 
 ## Commands
@@ -85,7 +85,7 @@ and the default settings.
 | `site:build` | Regenerates the static site. `--quiet-progress` for cron. |
 | `user:create` | Makes an editor account. |
 | `media:import-theme` | Imports a theme's photographs into the library. |
-| `crystal:import-media` | The same for the Crystal theme's originals. |
+| `crystal:import-media` | The same for the Crystal client site's originals. |
 | `spam:prune` | Deletes held submissions older than 30 days. |
 
 `routes/console.php` schedules a build every fifteen minutes, a nightly rebuild
