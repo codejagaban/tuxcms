@@ -339,31 +339,23 @@ export default function PageEditor() {
 
   const sectionPreview = page.sections.map((section) => {
     const isSel = section._uid === selectedUid;
-    const crystal = liveCanvas;
     return (
       <div
         key={section._uid}
         onMouseDown={() => setSelectedUid(section._uid)}
-        className={crystal
-          ? `tux-section ${isSel ? 'is-selected' : ''} ${section.is_visible === false ? 'is-hidden' : ''}`
-          : `group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
+        className={`group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
       >
-        {!crystal && (
-          <div
-            aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
-              isSel ? 'ring-2 ring-inset ring-[var(--color-ink)]' : 'ring-0 ring-inset ring-[var(--color-ink)] group-hover:ring-1'
-            }`}
-          />
-        )}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
+            isSel ? 'ring-2 ring-inset ring-[var(--color-ink)]' : 'ring-0 ring-inset ring-[var(--color-ink)] group-hover:ring-1'
+          }`}
+        />
         {section.is_visible === false && (
-          crystal
-            ? <span className="editor-hidden-label">Hidden</span>
-            : <div className="absolute top-2 right-2 z-30"><Badge variant="warning">Hidden</Badge></div>
+          <div className="absolute top-2 right-2 z-30"><Badge variant="warning">Hidden</Badge></div>
         )}
         <SectionRenderer
           section={section}
-          template={page.template}
           update={(patch) => updateSection(section._uid, patch)}
           updateData={(data) => updateData(section._uid, data)}
         />
