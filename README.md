@@ -1,59 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TuxCMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A content management system for one business website. Editors work in a React
+dashboard, Laravel stores the content, and the site itself is published as plain
+static HTML that visitors read without ever starting PHP.
 
-## About Laravel
+## How it fits together
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Three parts share a single domain:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Part | Source | Serves |
+| --- | --- | --- |
+| Laravel API | `app/`, `routes/api.php` | `/api/v1/*` and `/up` |
+| Dashboard (React 19, Vite) | `dashboard/` | `/admin`, built into `public/admin` |
+| Generated site | `resources/views/site/` | every other path, as files under `public/` |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+`public/.htaccess` serves any request that matches a real file or directory
+straight off disk, so only `/api/*` and `/up` ever reach Laravel. Publishing
+runs `php artisan site:build`, which writes `index.html`, `about/index.html` and
+so on, alongside `sitemap.xml`, `robots.txt`, `llms.txt` and `404.html`.
 
-## Learning Laravel
+Pages are built from ordered sections (hero, features, stats, testimonials,
+team, FAQ, call to action, contact, contact form, map, free text). A page whose
+template is an installed theme is edited directly on the real rendered site in
+the dashboard's live preview.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Requirements
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+PHP 8.3 or newer, Composer, Node 20 or newer, and MySQL. SQLite is fine for
+local work and is what the test suite uses.
 
-## Laravel Sponsors
+## Getting started
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+npm install && npm --prefix dashboard install
+cp .env.example .env && php artisan key:generate
+php artisan migrate --seed
+php artisan user:create
+```
 
-### Premium Partners
+Three processes serve the three parts in development:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan serve --port=8000
+```
 
-## Contributing
+```bash
+npm --prefix dashboard run dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php -S 127.0.0.1:8080 -t public public/dev-router.php
+```
 
-## Code of Conduct
+The API answers on `:8000`, the dashboard on `:5173`, and the generated site on
+`:8080`. `.claude/launch.json` holds the same three as named configurations.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Publishing
 
-## Security Vulnerabilities
+```bash
+php artisan site:build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The dashboard's Publish button calls the same build through
+`POST /api/v1/site/publish`. Scheduled pages need cron, because nothing on a
+static site notices that a `published_at` has matured:
 
-## License
+```bash
+* * * * * cd /path/to/tuxcms && php artisan schedule:run >> /dev/null 2>&1
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+That runs a build every fifteen minutes, a nightly rebuild at 03:30, and prunes
+held spam at 03:10.
+
+## Themes
+
+A theme is a directory of Blade views under
+`resources/views/site/themes/<name>` with its static assets in
+`public/themes/<name>`. Set `SITE_THEME` to choose one. Crystal is the theme in
+the repository. `php artisan media:import-theme` pulls the photographs a theme's
+pages use into the media library.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+```bash
+npm --prefix dashboard run lint && npm --prefix dashboard run test:e2e
+```
+
+The PHP suite covers publishing, page revisions, reserved slugs, SEO output,
+navigation, spam filtering and media import. The dashboard's Playwright specs
+cover inline editing, image replacement, autosave and accessibility.
+
+## Documentation
+
+- [DEPLOYMENT.md](DEPLOYMENT.md) puts the whole thing on Spaceship shared hosting.
+- [INDEX.md](INDEX.md) maps the code: models, services, endpoints and commands.
+- [TASKS.md](TASKS.md) tracks what is being worked on.
+- [design.md](design.md) and [tokens.css](tokens.css) hold the dashboard's visual language.
+
+`ARCHITECTURE.md`, `API_DOCUMENTATION.md` and `SETUP_COMPLETE.md` still describe
+an earlier blog-shaped version of this CMS and are not accurate.
