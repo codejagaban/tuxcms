@@ -104,11 +104,18 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         style.textContent = `
           .wow { visibility: visible !important; animation: none !important; }
           .has-motion [data-reveal] { opacity: 1 !important; transform: none !important; }
-          [data-tuxcms-editable] { cursor: text; outline: 1px solid transparent; outline-offset: 5px; }
-          [data-tuxcms-editable]:hover { outline-color: rgba(17, 17, 17, .38); }
+          /* Everything that can be edited carries a resting dashed line, so the
+             editable parts of the page are visible without hunting for them.
+             Hover firms it to a solid line, focus to a heavier one. */
+          [data-tuxcms-editable] { cursor: text; outline: 1px dashed rgba(17, 17, 17, .26); outline-offset: 5px; }
+          [data-tuxcms-editable]:hover { outline: 1px solid rgba(17, 17, 17, .38); }
           [data-tuxcms-editable]:focus { outline: 2px solid #111; }
-          [data-tuxcms-image-editable] { cursor: pointer; outline: 1px solid transparent; outline-offset: 5px; }
+          [data-tuxcms-image-editable] { cursor: pointer; outline: 1px dashed rgba(17, 17, 17, .26); outline-offset: 5px; }
           [data-tuxcms-image-editable]:hover { outline: 2px solid #111; }
+          /* The same lines in white where they fall on a dark band. The resting
+             rule stands aside for hover and focus, which set their own colour. */
+          [data-tuxcms-on-dark][data-tuxcms-editable]:not(:hover):not(:focus) { outline-color: rgba(255, 255, 255, .34); }
+          [data-tuxcms-on-dark][data-tuxcms-image-editable]:not(:hover) { outline-color: rgba(255, 255, 255, .34); }
           [data-tuxcms-on-dark][data-tuxcms-editable]:hover { outline-color: rgba(255, 255, 255, .55); }
           [data-tuxcms-on-dark][data-tuxcms-editable]:focus { outline-color: #fff; }
           [data-tuxcms-on-dark][data-tuxcms-image-editable]:hover { outline-color: #fff; }
@@ -359,11 +366,28 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
           };
           doc.addEventListener('pointerover', judge);
           doc.addEventListener('focusin', judge);
+
+          // The resting lines are drawn before anything is hovered, so every
+          // editable region is judged up front as well as on arrival. It is
+          // kept on the preview window so each later pass can run it again,
+          // and repeated once the page's images and fonts have settled.
+          doc.defaultView.tuxcmsJudgeAll = () => {
+            doc.querySelectorAll('[data-tuxcms-editable], [data-tuxcms-image-editable]').forEach((element) => {
+              element.toggleAttribute('data-tuxcms-on-dark', onDark(element));
+            });
+          };
+          doc.defaultView.addEventListener('load', () => doc.defaultView.tuxcmsJudgeAll());
         }
 
-        installEditors();
+        // Mark the editable regions, then judge each one against what it sits
+        // on, in that order: the lines are only drawn once the marks exist.
+        const settle = () => {
+          installEditors();
+          doc.defaultView.tuxcmsJudgeAll?.();
+        };
+        settle();
         const view = frame.contentWindow;
-        view?.requestAnimationFrame(() => view.requestAnimationFrame(installEditors));
+        view?.requestAnimationFrame(() => view.requestAnimationFrame(settle));
       }
     } catch {
       // A custom cross-origin preview still works, without the editor override.
