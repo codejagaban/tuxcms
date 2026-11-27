@@ -11,7 +11,8 @@ import { animate, inView, scroll, stagger } from 'motion';
 
 const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Inside the dashboard's live preview the page is being edited: keep it still.
-const editing = new URLSearchParams(window.location.search).has('tuxcms_preview');
+const editing = new URLSearchParams(window.location.search).has('tuxcms_preview')
+  || document.documentElement.hasAttribute('data-tuxcms-preview');
 
 if (!calm && !editing) {
   const settle = { type: 'spring', stiffness: 120, damping: 20 };
