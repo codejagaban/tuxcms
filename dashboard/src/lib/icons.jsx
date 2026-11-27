@@ -1,6 +1,18 @@
 // The dashboard's icons: Phosphor, all drawn at the one regular weight so
 // thin, bold and filled marks never mix on a screen.
 import {
+  ArrowClockwise as PArrowClockwise,
+  LinkSimple as PLinkSimple,
+  ListBullets as PListBullets,
+  ListNumbers as PListNumbers,
+  Minus as PMinus,
+  Quotes as PQuotes,
+  TextB as PTextB,
+  TextHThree as PTextHThree,
+  TextHTwo as PTextHTwo,
+  TextItalic as PTextItalic,
+  TextStrikethrough as PTextStrikethrough,
+  TextUnderline as PTextUnderline,
   ArrowCounterClockwise as PArrowCounterClockwise,
   ArrowLeft as PArrowLeft,
   ArrowUpRight as PArrowUpRight,
@@ -66,6 +78,20 @@ const icon = (Glyph) => {
   const Icon = ({ weight, ...props }) => <Glyph weight="regular" aria-hidden="true" {...props} />;
   return Icon;
 };
+
+// The post editor's formatting marks.
+export const ArrowClockwise = icon(PArrowClockwise);
+export const LinkSimple = icon(PLinkSimple);
+export const ListBullets = icon(PListBullets);
+export const ListNumbers = icon(PListNumbers);
+export const Minus = icon(PMinus);
+export const Quotes = icon(PQuotes);
+export const TextB = icon(PTextB);
+export const TextHThree = icon(PTextHThree);
+export const TextHTwo = icon(PTextHTwo);
+export const TextItalic = icon(PTextItalic);
+export const TextStrikethrough = icon(PTextStrikethrough);
+export const TextUnderline = icon(PTextUnderline);
 
 export const ArrowCounterClockwise = icon(PArrowCounterClockwise);
 export const ArrowLeft = icon(PArrowLeft);
@@ -150,6 +176,15 @@ export const IconPages = drawn(
     <rect x="4" y="6" width="13" height="15" rx="2" />
     <path d="M8 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-1" />
     <path d="M7.5 10.5h4M7.5 14h6M7.5 17h4" />
+  </>
+);
+
+// A written post: a sheet with a picture at the top and lines beneath it.
+export const IconBlog = drawn(
+  <>
+    <rect x="4" y="3" width="16" height="18" rx="2.5" />
+    <rect x="7.5" y="6.5" width="9" height="4.5" rx="1" />
+    <path d="M7.5 14.5h9M7.5 17.5h5.5" />
   </>
 );
 

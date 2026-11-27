@@ -46,11 +46,53 @@
   .text-gradient { color: var(--color-ink); }
 }
 
+/* The post editor's top bar is one row, or two on a phone. Its height is
+   named so the formatting bar can stay pinned just beneath it. */
+.post-editor { --post-bar: 4rem; }
+.post-editor__bar { min-height: var(--post-bar); }
+@media (max-width: 39.99rem) { .post-editor { --post-bar: 6.75rem; } }
+
+/* The post title grows with what is typed, so a long title is never cut. */
+.post-title { field-sizing: content; overflow: hidden; }
+
+/* The post editor: a formatting bar that stays in reach, and a writing column
+   set the way the post will read. */
+.rich-text-shell { border: 1px solid var(--color-rule-2); border-radius: var(--radius-l); background: var(--color-paper); }
+.rich-text-bar { position: sticky; top: var(--post-bar, 0px); z-index: 5; display: flex; flex-wrap: wrap; gap: .25rem .5rem; padding: .5rem .625rem; border-bottom: 1px solid var(--color-rule-2); border-radius: var(--radius-l) var(--radius-l) 0 0; background: var(--color-paper); }
+.rich-text-group { display: flex; gap: .125rem; }
+.rich-text-group + .rich-text-group { padding-left: .5rem; border-left: 1px solid var(--color-rule-2); }
+.rich-text-button { display: grid; width: 2.125rem; height: 2.125rem; place-items: center; border-radius: var(--radius-m); color: var(--color-muted); transition: background-color 120ms ease, color 120ms ease; }
+.rich-text-button[aria-pressed="true"] { background: var(--color-paper-3); color: var(--color-ink); }
+.rich-text-button:disabled { opacity: .35; cursor: not-allowed; }
+.rich-text-link { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem .875rem; padding: .625rem .875rem; border-bottom: 1px solid var(--color-rule-2); background: var(--color-paper-2); }
+.rich-text-link-action { min-height: 2.25rem; padding-inline: .25rem; font-size: .8125rem; }
+.rich-text { min-height: 24rem; padding: 1.5rem clamp(1.125rem, 4vw, 2.25rem) 3rem; outline: none; font-size: 1.0625rem; line-height: 1.7; color: var(--color-ink-2); overflow-wrap: anywhere; }
+.rich-text > * + * { margin-top: 1.1em; }
+.rich-text h2, .rich-text h3 { color: var(--color-ink); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.rich-text h2 { font-size: 1.625rem; margin-top: 1.9em; }
+.rich-text h3 { font-size: 1.25rem; margin-top: 1.7em; }
+.rich-text > :first-child { margin-top: 0; }
+.rich-text strong { color: var(--color-ink); font-weight: 600; }
+.rich-text a { color: var(--color-blue-ink); text-decoration: underline; text-underline-offset: .2em; }
+.rich-text ul { list-style: disc; padding-left: 1.35rem; }
+.rich-text ol { list-style: decimal; padding-left: 1.35rem; }
+.rich-text li + li, .rich-text li > ul, .rich-text li > ol { margin-top: .4em; }
+.rich-text blockquote { padding: .875rem 1.125rem; border-radius: var(--radius-m); background: var(--color-paper-3); color: var(--color-ink); }
+.rich-text img { display: block; max-width: 100%; height: auto; border-radius: var(--radius-m); }
+.rich-text img.ProseMirror-selectednode { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.rich-text hr { border: 0; height: 1px; margin-block: 1.75em; background: var(--color-rule); }
+.rich-text code { padding: .1em .35em; border-radius: var(--radius-s); background: var(--color-paper-3); font: .9em var(--font-mono); }
+.rich-text pre { overflow-x: auto; padding: 1rem; border-radius: var(--radius-m); background: var(--color-paper-3); }
+.rich-text pre code { padding: 0; background: none; }
+.rich-text p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; color: var(--color-muted); pointer-events: none; }
+
 .tux-editable { outline: none; cursor: text; border-radius: 4px; transition: box-shadow 120ms ease, background-color 120ms ease; }
 .tux-editable:focus { box-shadow: 0 0 0 2px var(--color-focus); background-color: var(--color-paper-2); }
 .tux-editable[data-empty="true"]:not(:focus)::before { content: attr(data-placeholder); color: var(--color-muted); font-style: italic; }
 
 @media (hover: hover) and (pointer: fine) {
+  .rich-text-button:not(:disabled):hover { background: var(--color-paper-3); color: var(--color-ink); }
+  .rich-text-link-action:hover { text-decoration: underline; text-underline-offset: .2em; }
   .field-control:hover { background: var(--color-paper-2); }
   .icon-button:hover { background: var(--color-paper-3); color: var(--color-ink); }
   .tux-editable:hover { box-shadow: 0 0 0 1px var(--color-rule); }
