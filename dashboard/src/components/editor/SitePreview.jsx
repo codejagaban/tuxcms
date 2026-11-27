@@ -66,6 +66,39 @@ function editableImages(sections) {
 
 const fieldKey = (field) => `section:${field.sectionKey}:${field.field}${field.part != null ? `#${field.part}` : ''}`;
 
+// ── Field markers ─────────────────────────────────────────
+// A marked template says exactly which element shows which field:
+// data-tuxcms-field="12:data.items.0.question" is section 12's question in its
+// first item. Nothing is guessed from the text, so two sections with the same
+// words, or text a template reshapes, cannot be confused. Sections a theme has
+// not marked yet are still found by matching their text, further down.
+
+// "12:data.items.0.question" to ['12', 'data.items.0.question']. Only the
+// first colon divides them; the path may contain more.
+const parseMarker = (marker = '') => {
+  const at = marker.indexOf(':');
+  return at > 0 ? [marker.slice(0, at), marker.slice(at + 1)] : null;
+};
+
+// The value at a dotted path inside a section.
+const valueAt = (section, path) => path.split('.')
+  .reduce((value, key) => (value == null ? undefined : value[key]), section);
+
+// Text that may run to several lines and paragraphs: tidy the spaces but keep
+// the line breaks, and never more than one blank line in a row.
+const tidyLines = (value = '') => value
+  .replace(/\r\n?/g, '\n')
+  .replace(/[ \t\f\v\u00a0]+/g, ' ')
+  .replace(/ *\n */g, '\n')
+  .replace(/\n{3,}/g, '\n\n')
+  .trim();
+
+// A marked element is edited as several lines when it holds a field that
+// already has them, or when the theme wraps the field's paragraphs in it.
+const isMultiline = (element, value) => (typeof value === 'string' && value.includes('\n'))
+  || element.matches('div, blockquote, section, article')
+  || [...element.children].some((child) => child.matches('p, div, ul, ol, blockquote'));
+
 const imagePath = (url = '', base = 'http://localhost') => {
   try { return new URL(url, base).pathname; } catch { return url; }
 };
@@ -75,6 +108,10 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
+  // Markers name a section by its saved id.
+  const sectionsById = useMemo(() => new Map(sections
+    .filter((section) => section.id != null)
+    .map((section) => [String(section.id), section])), [sections]);
   const separator = path.includes('?') ? '&' : '?';
   const src = `${path}${separator}tuxcms_preview=${revision}`;
 
@@ -93,7 +130,18 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
       const node = nodes.find((element) => element.dataset.tuxcmsFieldKey === `override:${index}`);
       if (node && normalise(node.textContent) !== normalise(value)) node.textContent = value;
     });
-  }, [fields, overrides]);
+    doc.querySelectorAll('[data-tuxcms-field][data-tuxcms-editable]').forEach((node) => {
+      const marker = parseMarker(node.dataset.tuxcmsField);
+      const section = marker && sectionsById.get(marker[0]);
+      const value = section ? valueAt(section, marker[1]) : undefined;
+      if (typeof value !== 'string' || node === doc.activeElement) return;
+      if (node.dataset.tuxcmsMultiline) {
+        if (tidyLines(node.innerText) !== tidyLines(value)) node.innerText = value;
+      } else if (normalise(node.textContent) !== normalise(value)) {
+        node.textContent = value;
+      }
+    });
+  }, [fields, overrides, sectionsById]);
 
   // The load event carries the frame that fired it, so the preview is prepared
   // from that element rather than reached for through the ref.
@@ -128,6 +176,46 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
         `;
         if (!style.isConnected) doc.head.appendChild(style);
 
+        // Make one marked element edit the field it names.
+        const makeMarkedEditable = (element, section, path) => {
+          if (element.dataset.tuxcmsEditable === 'true') return;
+          const stored = valueAt(section, path);
+          const multiline = isMultiline(element, stored);
+          const read = () => (multiline ? tidyLines(element.innerText) : normalise(element.textContent));
+          const initial = read();
+
+          element.dataset.tuxcmsEditable = 'true';
+          element.dataset.tuxcmsFieldKey = `marker:${section.id}:${path}`;
+          if (multiline) element.dataset.tuxcmsMultiline = 'true';
+          // Plain text only, so pasting cannot carry styling into the site;
+          // the older value where a browser does not know it.
+          element.contentEditable = 'plaintext-only';
+          if (element.contentEditable !== 'plaintext-only') element.contentEditable = 'true';
+          element.setAttribute('role', 'textbox');
+          element.setAttribute('aria-label', `Edit ${element.tagName.toLowerCase()} text`);
+          element.setAttribute('aria-multiline', multiline ? 'true' : 'false');
+          element.spellcheck = true;
+
+          element.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            onSelect?.(section._uid);
+          });
+          element.addEventListener('keydown', (event) => {
+            // One line: Enter finishes. Several lines: Enter starts a new one.
+            if (event.key === 'Enter' && !multiline) {
+              event.preventDefault();
+              element.blur();
+            }
+          });
+          element.addEventListener('blur', () => {
+            const value = read();
+            if (!value || value === initial) return;
+            onEdit?.(section._uid, path, value);
+          });
+        };
+
         const installEditors = () => {
           // Some themes animate headings a character at a time, which adds a
           // visually-hidden text clone
@@ -145,11 +233,24 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
             element.textContent = normalise(element.textContent);
           });
 
+          // Marked fields first: each one is exactly the field it names.
+          const markedSections = new Set();
+          doc.querySelectorAll('[data-tuxcms-field]').forEach((element) => {
+            const marker = parseMarker(element.dataset.tuxcmsField);
+            const section = marker && sectionsById.get(marker[0]);
+            if (!section) return;
+            markedSections.add(marker[0]);
+            makeMarkedEditable(element, section, marker[1]);
+          });
+          const insideMarked = (element) => Boolean(element.closest('[data-tuxcms-field]')
+            || element.querySelector('[data-tuxcms-field]'));
+
           // Every kind of element a theme might reasonably put one field's
           // text in. Figures and their labels are often a definition list,
-          // and lists and captions are just as common as paragraphs.
+          // and lists and captions are just as common as paragraphs. Anything
+          // inside or around a marked element is already spoken for.
           const candidates = [...doc.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, blockquote, footer, div, dt, dd, li, figcaption, summary, td, th')]
-            .filter((element) => !element.closest('form'));
+            .filter((element) => !element.closest('form') && !insideMarked(element));
           const claimed = new Set();
 
           const makeTextEditable = (match, field, initialValue) => {
@@ -198,7 +299,7 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
             });
           };
 
-          fields.forEach((field) => {
+          fields.filter((field) => !markedSections.has(field.sectionKey)).forEach((field) => {
             const match = candidates
               .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
               .sort((a, b) => a.children.length - b.children.length)[0];
@@ -220,7 +321,7 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
             // headings often leave a text span inside the heading wrapper;
             // making both editable causes duplicated text and writes the edit
             // to a template override instead of the matching CMS field.
-            if (claimed.has(element) || overlapsClaimedField || normalise(element.textContent).length <= 1) return;
+            if (claimed.has(element) || overlapsClaimedField || insideMarked(element) || normalise(element.textContent).length <= 1) return;
             const value = normalise(overrides.text?.[index] || element.textContent);
             if (overrides.text?.[index]) element.textContent = value;
             makeTextEditable(element, { overrideKey: index }, value);
@@ -264,9 +365,47 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
         };
 
         const claimedImages = new Set();
-        images.forEach((image) => {
+
+        // Marked pictures first, as with text.
+        const imageMarkedSections = new Set();
+        doc.querySelectorAll('[data-tuxcms-image]').forEach((element) => {
+          const marker = parseMarker(element.dataset.tuxcmsImage);
+          const section = marker && sectionsById.get(marker[0]);
+          if (!section) return;
+          const [, path] = marker;
+          imageMarkedSections.add(section._uid);
+          // The description sits beside the picture: image and image_alt.
+          const parts = path.split('.');
+          const key = parts.pop();
+          const parentPath = parts.join('.');
+          const parent = parentPath ? valueAt(section, parentPath) : section;
+          const altKey = key === 'image' ? 'image_alt' : `${key}_alt`;
+          const image = {
+            sectionUid: section._uid,
+            field: path,
+            altField: parent && typeof parent === 'object' && Object.hasOwn(parent, altKey) ? `${parentPath}.${altKey}` : null,
+            url: valueAt(section, path) || element.getAttribute('src') || '',
+            alt: (parent && parent[altKey]) || element.getAttribute('alt') || '',
+          };
+          claimedImages.add(element);
+          element.dataset.tuxcmsImageEditable = 'true';
+          element.title = 'Click to replace image';
+          element.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            onSelect?.(section._uid);
+            onImageEdit?.(image, element);
+          });
+          addPhotoButton(element, () => {
+            onSelect?.(section._uid);
+            onImageEdit?.(image, element);
+          });
+        });
+
+        images.filter((image) => !imageMarkedSections.has(image.sectionUid)).forEach((image) => {
           const match = [...doc.images].find((element) => {
-            if (claimedImages.has(element)) return false;
+            if (claimedImages.has(element) || element.closest('[data-tuxcms-image]')) return false;
             return imagePath(element.src, doc.baseURI) === imagePath(image.url, doc.baseURI);
           });
           if (!match) return;
@@ -293,7 +432,7 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
         });
         templateImages.forEach((element, index) => {
           if (!allowOverrides) return;
-          if (claimedImages.has(element)) return;
+          if (claimedImages.has(element) || element.hasAttribute('data-tuxcms-image')) return;
           const replacement = overrides.images?.[index];
           if (replacement?.url) element.src = replacement.url;
           if (replacement?.alt) element.alt = replacement.alt;
@@ -410,7 +549,8 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
       ref={frameRef}
       key={`${src}:${pages.length}:${sections.length}:${html == null ? 'built' : 'rendered'}`}
       title="Website preview"
-      // A page with no built file is handed over as markup instead.
+      // The page as rendered for the editor, with its field markers. If that
+      // could not be fetched, the built page, edited by matching its text.
       {...(html == null ? { src } : { srcDoc: html })}
       onLoad={preparePreview}
       className="block w-full border-0 bg-white"

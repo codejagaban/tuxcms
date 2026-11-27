@@ -87,9 +87,11 @@ export default function PageEditor() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
-  // The preview shows the built page. A draft, a scheduled page or one never
-  // yet published has no built page, and the site would answer with its "not
-  // found" page instead, so ask the CMS to render it for the editor.
+  // The preview is the page as the CMS renders it for the editor, which
+  // carries the field markers that say exactly which element shows which
+  // field. It also exists for drafts and scheduled pages, which have no built
+  // page. Only if it cannot be fetched does the editor fall back to the built
+  // page, and to finding fields by their text.
   const previewId = page?.id;
   const previewLive = Boolean(page?.live_preview);
   const previewPath = !page ? null
@@ -97,8 +99,8 @@ export default function PageEditor() {
   useEffect(() => {
     if (!previewId || !previewLive || !previewPath) return undefined;
     let current = true;
-    fetch(`${previewPath}?tuxcms_preview=${previewRevision}`, { method: 'HEAD' })
-      .then((response) => (response.ok ? null : pageAPI.preview(previewId).then((res) => res.data)))
+    pageAPI.preview(previewId)
+      .then((res) => res.data)
       .catch(() => null)
       .then((html) => { if (current) setPreview({ id: previewId, html: typeof html === 'string' ? html : null }); });
     return () => { current = false; };

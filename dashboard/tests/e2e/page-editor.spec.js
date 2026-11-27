@@ -29,10 +29,35 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
   }],
 });
 
+// A page whose two sections carry the same heading. Its preview is marked
+// up, so the editor must tell them apart by section, not by their words.
+const twinRecord = () => ({
+  ...pageRecord(3, 'Twins', 'twins'),
+  marked: true,
+  sections: [31, 32].map((id, order) => ({
+    id, key: `text-${order}`, type: 'text', title: 'Same heading', content: '', data: {}, order, is_visible: true,
+  })),
+});
+
+// The page as the editor's preview endpoint renders it. Marked pages carry
+// field markers, as a marked-up theme does; the rest are found by their text.
+// The marked page shows its sections in the opposite order to the list, so
+// matching by text would pair each heading with the wrong section.
+const previewBody = (record) => {
+  if (record.marked) {
+    return `<!doctype html><html data-tuxcms-preview><head></head><body><main>${[...record.sections].reverse()
+      .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2></section>`)
+      .join('')}</main></body></html>`;
+  }
+  const section = record.sections[0];
+  return `<!doctype html><html><head></head><body><nav><a href="/">Home</a><a href="/about/">About</a></nav><main><h1><span class="visually-hidden">${section.title}</span><span data-splitting="chars" aria-hidden="true"><span>${section.title}</span></span></h1><p>${section.content}</p><img src="${section.data.image}" alt="${section.data.image_alt}"></main></body></html>`;
+};
+
 async function mockEditor(page) {
   const records = {
     1: pageRecord(1, 'Home', 'home', true),
     2: pageRecord(2, 'About', 'about'),
+    3: twinRecord(),
   };
   const saves = [];
 
@@ -59,6 +84,10 @@ async function mockEditor(page) {
         snapshot: { ...records[1], title: 'Earlier Home', sections: [{ ...records[1].sections[0], title: 'Earlier heading' }] },
       }] } });
     }
+    const previewMatch = path.match(/\/pages\/(\d+)\/preview$/);
+    if (previewMatch && request.method() === 'GET') {
+      return route.fulfill({ contentType: 'text/html', body: previewBody(records[previewMatch[1]]) });
+    }
     const pageMatch = path.match(/\/pages\/(\d+)$/);
     if (pageMatch && request.method() === 'GET') {
       return route.fulfill({ json: { data: records[pageMatch[1]] } });
@@ -84,13 +113,10 @@ async function mockEditor(page) {
   });
 
   await page.route(/\/(?:about\/)?\?tuxcms_preview=/, async (route) => {
+    // The built page, which the editor falls back to if the preview
+    // endpoint cannot be reached.
     const isAbout = new URL(route.request().url()).pathname.startsWith('/about');
-    const record = records[isAbout ? 2 : 1];
-    const section = record.sections[0];
-    await route.fulfill({
-      contentType: 'text/html',
-      body: `<!doctype html><html><head></head><body><nav><a href="/">Home</a><a href="/about/">About</a></nav><main><h1><span class="visually-hidden">${section.title}</span><span data-splitting="chars" aria-hidden="true"><span>${section.title}</span></span></h1><p>${section.content}</p><img src="${section.data.image}" alt="${section.data.image_alt}"></main></body></html>`,
-    });
+    await route.fulfill({ contentType: 'text/html', body: previewBody(records[isAbout ? 2 : 1]) });
   });
 
   return { records, saves };
@@ -211,4 +237,33 @@ test('editor shell has no serious automated accessibility violations', async ({ 
     .analyze();
   const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
   expect(serious).toEqual([]);
+});
+
+test('marked fields with the same text are edited in their own section', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/3/edit');
+
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  const first = preview.locator('[data-tuxcms-field="31:title"]');
+  const second = preview.locator('[data-tuxcms-field="32:title"]');
+  // Found by their markers, not by matching the text.
+  await expect(first).toHaveAttribute('data-tuxcms-field-key', 'marker:31:title');
+  await expect(second).toHaveAttribute('data-tuxcms-field-key', 'marker:32:title');
+
+  await second.fill('Second heading');
+  await second.press('Tab');
+  await page.getByRole('button', { name: 'Publish' }).click();
+
+  await expect.poll(() => saves.at(-1)?.sections.map((section) => section.title))
+    .toEqual(['Same heading', 'Second heading']);
+});
+
+test('the preview falls back to the built page when it cannot be rendered', async ({ page }) => {
+  await mockEditor(page);
+  await page.route('**/api/v1/pages/1/preview', (route) => route.fulfill({ status: 500, body: 'Render failed' }));
+  await page.goto('/dashboard/pages/1/edit');
+
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
+  await expect(heading).toHaveText('Home heading');
 });
