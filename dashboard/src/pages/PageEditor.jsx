@@ -313,7 +313,9 @@ export default function PageEditor() {
   // editor shows is what the site shows. Only Crystal stores text overrides.
   // The API says which templates are installed themes.
   const liveCanvas = Boolean(page.live_preview);
-  const crystalPath = page.is_homepage ? '/' : `/${page.slug}/`;
+  // The full path, so a nested page previews at /services/web-design/ and
+  // not at /web-design/.
+  const crystalPath = page.is_homepage ? '/' : `/${String(page.path || page.slug).replace(/^\/+|\/+$/g, '')}/`;
 
   const sectionPreview = page.sections.map((section) => {
     const isSel = section._uid === selectedUid;
