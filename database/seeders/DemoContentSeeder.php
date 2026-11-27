@@ -8,6 +8,8 @@ use App\Models\JobPost;
 use App\Models\MediaLibrary;
 use App\Models\Page;
 use App\Models\PageSection;
+use App\Models\Post;
+use App\Models\PostCategory;
 use App\Models\Seo;
 use App\Models\Setting;
 use App\Models\User;
@@ -19,8 +21,9 @@ use Illuminate\Support\Facades\Storage;
  * Seeds TuxCMS's own product website, which uses everything the CMS does:
  * pages built from every section type, photographs in the media library,
  * nested service pages, a draft and a scheduled page, SEO, site settings,
- * vacancies in each status, and an inbox
- * of enquiries and applications, including ones the spam filter is holding.
+ * vacancies in each status, a blog with published, scheduled and draft
+ * posts, and an inbox of enquiries and applications, including ones the spam
+ * filter is holding.
  *
  * Idempotent — re-running wipes the demo pages and rebuilds them, so it never
  * accumulates duplicates. It replaces every page in the database, so it is
@@ -48,8 +51,9 @@ class DemoContentSeeder extends Seeder
         $this->seedSettings();
         $jobs = $this->seedJobs();
         $this->seedInbox($jobs);
+        $posts = $this->seedPosts();
 
-        $this->command?->info('Demo content seeded: ' . count($pages) . ' pages, ' . count($jobs) . ' vacancies and a sample inbox.');
+        $this->command?->info('Demo content seeded: ' . count($pages) . ' pages, ' . count($jobs) . ' vacancies, ' . count($posts) . ' blog posts and a sample inbox.');
         $this->command?->info('Log in as admin@tuxcms.com to edit it.');
     }
 
@@ -1039,6 +1043,73 @@ class DemoContentSeeder extends Seeder
      *
      * @param array<int, JobPost> $jobs
      */
+    /**
+     * A blog in every state the dashboard shows: published posts in two
+     * categories, one scheduled for next week and one still a draft.
+     */
+    private function seedPosts(): array
+    {
+        $notes = PostCategory::updateOrCreate(['slug' => 'studio-notes'], ['name' => 'Studio notes']);
+        $work = PostCategory::updateOrCreate(['slug' => 'client-work'], ['name' => 'Client work']);
+
+        $posts = [
+            [
+                'slug' => 'what-a-booking-flow-taught-us', 'title' => 'What a booking flow taught us about patience',
+                'status' => 'published', 'published_at' => now()->subDays(3), 'post_category_id' => $work->id,
+                'cover_image' => $this->photos['laptop-and-notebook'], 'cover_image_alt' => 'A laptop and an open notebook on a desk',
+                'excerpt' => 'We spent four months on Fathom\'s booking flow. Most of what worked came from slowing down.',
+                'body' => '<p>When Fathom asked us to rebuild how people book a trip, the brief was one line long: fewer people should give up halfway. Four months later the number who finish a booking is up by a third.</p>'
+                    .'<h2>Watch before you draw</h2><p>We sat with twelve people while they planned a real trip. Nobody booked in one sitting. They compared dates, asked a partner, came back the next day. The old flow treated every pause as a failure and emptied the basket.</p>'
+                    .'<h2>What we changed</h2><ul><li>A booking now keeps itself for a week, with no account needed.</li><li>Prices are shown in full from the first screen.</li><li>The form asks for a name and an email, then stops asking.</li></ul>'
+                    .'<blockquote><p>I could finally leave it and come back. That was the whole thing for me.</p></blockquote>'
+                    .'<p>None of this is new. It took watching real people to see which of the obvious things mattered. If you are planning similar work, <a href="/contact/">tell us about it</a>.</p>',
+            ],
+            [
+                'slug' => 'a-brand-book-people-read', 'title' => 'A brand book people actually read',
+                'status' => 'published', 'published_at' => now()->subDays(12), 'post_category_id' => $work->id,
+                'cover_image' => $this->photos['printed-pages'], 'cover_image_alt' => 'Printed pages laid out on a table',
+                'excerpt' => 'Overlap\'s guidelines are twelve pages long. That was the hardest part.',
+                'body' => '<p>Most brand guidelines are written once and opened never. Overlap wanted theirs used by the people who make things every day, most of whom are not designers.</p>'
+                    .'<h2>Twelve pages, no more</h2><p>We set a limit before writing a word. Anything that did not help someone make a decision this week was cut.</p>'
+                    .'<ol><li>The logo, and the two ways it can go wrong.</li><li>Three colours and when each one is used.</li><li>One typeface, four sizes.</li></ol>'
+                    .'<p>The book has been printed twice since. <strong>People keep it on their desks</strong>, which is the only measure we care about.</p>',
+            ],
+            [
+                'slug' => 'how-we-run-a-first-week', 'title' => 'How we run the first week of a project',
+                'status' => 'published', 'published_at' => now()->subDays(20), 'post_category_id' => $notes->id,
+                'cover_image' => $this->photos['studio-table'], 'cover_image_alt' => 'People working around a studio table',
+                'excerpt' => 'Five days, one room, and a rule against slides.',
+                'body' => '<p>The first week decides how the rest of a project feels. We spend it in one room with the client, and we do not make slides.</p>'
+                    .'<h2>Monday to Wednesday</h2><p>We listen. Everyone who will live with the result gets an hour, from the founder to the person who answers the phone.</p>'
+                    .'<h2>Thursday and Friday</h2><p>We write down what we heard on one sheet of paper and read it back. If the room disagrees with the sheet, we have saved months.</p>',
+            ],
+            [
+                'slug' => 'eleven-years-in', 'title' => 'Eleven years in',
+                'status' => 'published', 'published_at' => now()->subDays(34), 'post_category_id' => $notes->id,
+                'excerpt' => 'A short note on staying small.',
+                'body' => '<p>Lumen Studio turned eleven this month. We are nine people, the same size we were at six.</p><p>Staying small was a choice. It means the person you meet first is the person who does the work, and that we say no more often than we would like.</p><p>Thank you to everyone who has trusted us with something they care about.</p>',
+            ],
+            [
+                'slug' => 'opening-our-doors-in-spring', 'title' => 'Opening our doors in spring',
+                'status' => 'published', 'published_at' => now()->addDays(7), 'post_category_id' => $notes->id,
+                'cover_image' => $this->photos['room-by-the-windows'], 'cover_image_alt' => 'A bright room with tall windows',
+                'excerpt' => 'We are holding an open studio day. This post is scheduled, so it is not on the site yet.',
+                'body' => '<p>For one day in spring the studio is open to anyone who wants to see how we work. Details will follow here.</p>',
+            ],
+            [
+                'slug' => 'notes-on-pricing', 'title' => 'Notes on pricing our work',
+                'status' => 'draft', 'published_at' => null, 'post_category_id' => null,
+                'excerpt' => 'An unfinished draft.',
+                'body' => '<p>A draft that is still being written. Drafts are never built into the site.</p>',
+            ],
+        ];
+
+        return array_map(fn (array $post) => Post::updateOrCreate(
+            ['slug' => $post['slug']],
+            [...$post, 'author_id' => $this->author->id],
+        ), $posts);
+    }
+
     private function seedInbox(array $jobs): void
     {
         $enquiries = [
