@@ -4,6 +4,19 @@ A content management system for one business website. Editors work in a React
 dashboard, Laravel stores the content, and the site itself is published as plain
 static HTML that visitors read without ever starting PHP.
 
+![The Shopfront theme's home page](docs/screenshots/theme-light.jpg)
+
+| | |
+| --- | --- |
+| ![Editing a page on the live preview](docs/screenshots/dashboard-editor.png) | ![The Overview screen](docs/screenshots/dashboard-overview.png) |
+| Every editable part of the real page is outlined and edited in place. | The Overview: recent pages, the inbox, vacancies and media. |
+| ![The Pages screen in gallery view](docs/screenshots/dashboard-pages.png) | ![A wall of work on the bundled theme](docs/screenshots/theme-work.jpg) |
+| Pages as a gallery of live thumbnails. | The bundled Shopfront theme, with photographs. |
+
+The theme follows the visitor's light or dark setting:
+
+![The Shopfront theme in dark mode](docs/screenshots/theme-dark.jpg)
+
 ## How it fits together
 
 Three parts share a single domain:
