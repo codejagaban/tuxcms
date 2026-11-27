@@ -15,6 +15,20 @@ $candidate = realpath($root . $path);
 // there and keep everything else, the dashboard, assets and API, here.
 $site = rtrim(getenv('SITE_OUTPUT_PATH') ?: $root, '/');
 
+// Uploads normally arrive through the public/storage link. When they are kept
+// somewhere else (PUBLIC_DISK_ROOT, as the demo does), serve them from there.
+$uploads = getenv('PUBLIC_DISK_ROOT');
+if ($uploads && str_starts_with($path, '/storage/')) {
+    $file = realpath($uploads . substr($path, strlen('/storage')));
+    if ($file && is_file($file) && str_starts_with($file, realpath($uploads) . DIRECTORY_SEPARATOR)) {
+        header('Content-Type: ' . (mime_content_type($file) ?: 'application/octet-stream'));
+        readfile($file);
+        return true;
+    }
+    http_response_code(404);
+    return true;
+}
+
 // Laravel owns only these, exactly as the .htaccess does.
 if (preg_match('#^/(api|up)(/|$)#', $path)) {
     return false;
