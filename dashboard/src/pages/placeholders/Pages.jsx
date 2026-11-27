@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Plus, PencilSimple, Trash, FileText } from '../../lib/icons';
+import { Plus, PencilSimple, Trash, FileText, List, SquaresFour } from '../../lib/icons';
 import { Link } from 'react-router-dom';
+import { motion as Motion } from 'motion/react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -10,6 +11,18 @@ import Modal, { ModalHeader, ModalTitle, ModalContent, ModalFooter } from '../..
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell, Pagination } from '../../components/ui/Table';
 import { pageAPI } from '../../lib/api';
+import PageThumb from '../../components/PageThumb';
+
+// Remembered between visits; a private window may refuse, and then it is
+// simply the list each time.
+const VIEW_KEY = 'tux_pages_view';
+const savedView = () => {
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'gallery' ? 'gallery' : 'list';
+  } catch {
+    return 'list';
+  }
+};
 
 const Pages = () => {
   const [pages, setPages] = useState([]);
@@ -19,6 +32,21 @@ const Pages = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, pageId: null, pageTitle: '' });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [view, setView] = useState(savedView);
+
+  const chooseView = (next) => {
+    setView(next);
+    try {
+      localStorage.setItem(VIEW_KEY, next);
+    } catch {
+      // Nothing to do: the choice lasts for this visit.
+    }
+  };
+
+  const pathOf = (page) => (page.is_homepage ? '/' : page.path || `/${page.slug}`);
+  const statusOf = (page) => (page.is_scheduled
+    ? <Badge variant="pending">Scheduled</Badge>
+    : <Badge variant={getStatusBadge(page.status)}>{page.status || 'draft'}</Badge>);
 
   const itemsPerPage = 10;
 
@@ -119,18 +147,45 @@ const Pages = () => {
         </Link>
       </div>
 
-      {/* Search Bar */}
-      <Input
-        type="text"
-        aria-label="Search pages"
-        placeholder="Search by title or path"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setCurrentPage(1);
-        }}
-        containerClassName="w-full"
-      />
+      {/* Search, and how to look at the results */}
+      <div className="flex items-center gap-3">
+        <Input
+          type="text"
+          aria-label="Search pages"
+          placeholder="Search by title or path"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+          containerClassName="w-full"
+        />
+        <div role="radiogroup" aria-label="View" className="flex shrink-0 gap-0.5 rounded-full bg-[var(--color-paper-3)] p-0.5">
+          {[['list', 'List', List], ['gallery', 'Gallery', SquaresFour]].map(([value, label, Icon]) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={view === value}
+              aria-label={`${label} view`}
+              title={`${label} view`}
+              onClick={() => chooseView(value)}
+              className={`relative grid h-10 w-11 place-items-center rounded-full transition-colors duration-200 ${
+                view === value ? 'text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
+              }`}
+            >
+              {view === value && (
+                <Motion.span
+                  layoutId="pages-view"
+                  className="absolute inset-0 rounded-full bg-[var(--color-paper)] shadow-[var(--glass-chip-edge)]"
+                  transition={{ type: 'spring', stiffness: 460, damping: 40 }}
+                />
+              )}
+              <Icon className="relative h-[18px] w-[18px]" />
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Loading State */}
       {isLoading && (
@@ -161,14 +216,55 @@ const Pages = () => {
         </Card>
       )}
 
+      {/* Gallery: each page as a small picture of itself */}
+      {!isLoading && pages.length > 0 && view === 'gallery' && (
+        <>
+          <ul className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(17rem,1fr))]">
+            {pages.map((page) => (
+              <li key={page.id} className="work-surface group overflow-hidden">
+                <Link to={`/dashboard/pages/${page.id}/edit`} aria-label={`Edit ${page.title}`} className="block">
+                  <PageThumb page={page} />
+                </Link>
+                <div className="flex items-start justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0">
+                    <Link to={`/dashboard/pages/${page.id}/edit`} className="block truncate font-medium text-[var(--color-ink)] hover:underline">
+                      {page.title}
+                    </Link>
+                    <div className="font-data mt-0.5 truncate text-xs text-[var(--color-muted)]">{pathOf(page)}</div>
+                    <div className="mt-2.5 flex items-center gap-2.5">
+                      {statusOf(page)}
+                      <span className="text-xs text-[var(--color-muted)]">{formatDate(page.updated_at)}</span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="iconDanger"
+                    size="icon"
+                    aria-label={`Delete ${page.title}`}
+                    title="Delete"
+                    onClick={() => handleDeleteClick(page)}
+                  >
+                    <Trash className="h-4 w-4" weight="bold" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {totalPages > 1 && (
+            <Card>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </Card>
+          )}
+        </>
+      )}
+
       {/* Pages Table */}
-      {!isLoading && pages.length > 0 && (
+      {!isLoading && pages.length > 0 && view === 'list' && (
         <Card>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHeadCell>Title</TableHeadCell>
-                <TableHeadCell>Slug</TableHeadCell>
+                <TableHeadCell>Path</TableHeadCell>
                 <TableHeadCell>Template</TableHeadCell>
                 <TableHeadCell>Status</TableHeadCell>
                 <TableHeadCell>Author</TableHeadCell>
@@ -187,13 +283,9 @@ const Pages = () => {
                       {page.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="font-data text-[var(--color-muted)]">/{page.slug}</TableCell>
+                  <TableCell className="font-data text-[var(--color-muted)]">{pathOf(page)}</TableCell>
                   <TableCell className="text-[var(--color-muted)] capitalize">{page.template || 'default'}</TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadge(page.status)}>
-                      {page.status || 'draft'}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{statusOf(page)}</TableCell>
                   <TableCell className="text-[var(--color-muted)]">{page.author?.name || '—'}</TableCell>
                   <TableCell className="text-[var(--color-muted)]">{formatDate(page.updated_at)}</TableCell>
                   <TableCell>
