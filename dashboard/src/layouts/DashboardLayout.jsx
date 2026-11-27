@@ -37,8 +37,8 @@ const DashboardLayout = () => {
   const [appearance, setAppearance] = useAppearance();
   const accountMenuRef = useRef(null);
 
-  // The account menu closes on a click or tap anywhere outside it, on
-  // Escape, and when the page changes.
+  // The account menu closes on a click or tap anywhere outside it, and on
+  // Escape.
   useEffect(() => {
     if (!userDropdownOpen) return undefined;
     const onPointerDown = (event) => {
@@ -55,9 +55,14 @@ const DashboardLayout = () => {
     };
   }, [userDropdownOpen]);
 
-  useEffect(() => {
+  // It also closes when the page changes. Reading the new path during the
+  // render that brings it in, rather than from an effect, closes the menu in
+  // that same render instead of leaving it open for one pass.
+  const [menuPath, setMenuPath] = useState(location.pathname);
+  if (menuPath !== location.pathname) {
+    setMenuPath(location.pathname);
     setUserDropdownOpen(false);
-  }, [location.pathname]);
+  }
 
   const isActive = (path) => location.pathname === path;
   const pageTitle = navItems.find((item) => isActive(item.path))?.label || 'Dashboard';
