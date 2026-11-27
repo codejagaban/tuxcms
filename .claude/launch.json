@@ -36,6 +36,14 @@
         "public/dev-router.php"
       ],
       "port": 8080
+    },
+    {
+      "name": "demo",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "bin/demo.sh"
+      ],
+      "port": 8090
     }
   ]
 }
