@@ -190,7 +190,7 @@ a:hover > .arrow, button:hover > .arrow { transform: translate(2px, -2px); }
 .fascia { padding: var(--step) 0 0; position: sticky; top: 0; z-index: 20; }
 /* The strip above the board is painted, so the page cannot show through it
    while it scrolls underneath. */
-.fascia::before { content: ""; position: absolute; inset: 0 0 auto; height: var(--step); background: var(--ground); }
+.fascia::before { content: ""; position: absolute; inset: 0 0 auto; height: var(--step); background: var(--grain), var(--ground); }
 .fascia__board {
   --notch: 0.6rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
