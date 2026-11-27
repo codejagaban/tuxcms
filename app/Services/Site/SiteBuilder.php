@@ -174,15 +174,15 @@ class SiteBuilder
 
     /**
      * Resolve a view through the theme chain: the page's own template, then
-     * the site theme, then Crystal (the only theme that ships every view),
-     * then the unthemed default.
+     * the site theme, then Shopfront (the bundled theme, which ships every
+     * view), then the unthemed default.
      */
     private function themeView(string $name, ?string $template = null): string
     {
         $themes = array_filter([
             $template ? str_replace('_', '-', $template) : null,
             config('site.theme'),
-            $name === 'page' || $name === '404' ? null : 'crystal',
+            $name === 'page' || $name === '404' ? null : 'shopfront',
         ]);
 
         foreach ($themes as $theme) {

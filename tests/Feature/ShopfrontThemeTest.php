@@ -132,6 +132,24 @@ class ShopfrontThemeTest extends TestCase
         $this->assertStringContainsString('name="form_token"', $this->contents('careers/bench-joiner/index.html'));
     }
 
+    public function test_careers_fall_back_to_the_theme_when_no_site_theme_is_set(): void
+    {
+        config(['site.theme' => null]);
+        Page::create(['title' => 'Home', 'status' => 'published', 'is_homepage' => true]);
+        JobPost::create([
+            'title' => 'Bench joiner', 'slug' => 'bench-joiner', 'summary' => 'Make fine things.',
+            'status' => 'published', 'published_at' => now()->subDay(),
+        ]);
+
+        app(SiteBuilder::class)->build();
+
+        foreach (['careers/index.html', 'careers/bench-joiner/index.html'] as $file) {
+            $html = $this->contents($file);
+            $this->assertStringContainsString('/themes/shopfront/css/site', $html, $file);
+            $this->assertStringNotContainsString('/themes/crystal/', $html, $file);
+        }
+    }
+
     public function test_pages_rendered_by_the_site_theme_are_edited_on_the_live_preview(): void
     {
         $page = Page::create(['title' => 'About', 'template' => 'landing', 'status' => 'published']);

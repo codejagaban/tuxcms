@@ -21,7 +21,7 @@ return [
      * careers listing, job pages and the 404. A theme is a directory of Blade
      * views under resources/views/site/themes/<name> and static assets under
      * public/themes/<name>. Unset keeps the stock behaviour: the page's own
-     * template decides, and careers pages use Crystal.
+     * template decides, and careers pages use Shopfront.
      */
     'theme' => env('SITE_THEME'),
 
