@@ -97,10 +97,10 @@ cover inline editing, image replacement, autosave and accessibility.
 
 ## Documentation
 
+- [SETUP.md](SETUP.md) takes a fresh clone to a published page.
 - [DEPLOYMENT.md](DEPLOYMENT.md) puts the whole thing on Spaceship shared hosting.
+- [ARCHITECTURE.md](ARCHITECTURE.md) explains how it works and why.
+- [API_DOCUMENTATION.md](API_DOCUMENTATION.md) is the endpoint reference.
 - [INDEX.md](INDEX.md) maps the code: models, services, endpoints and commands.
 - [TASKS.md](TASKS.md) tracks what is being worked on.
 - [design.md](design.md) and [tokens.css](tokens.css) hold the dashboard's visual language.
-
-`ARCHITECTURE.md`, `API_DOCUMENTATION.md` and `SETUP_COMPLETE.md` still describe
-an earlier blog-shaped version of this CMS and are not accurate.
