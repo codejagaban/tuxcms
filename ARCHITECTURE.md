@@ -159,7 +159,9 @@ and `LlmsTxtGenerator`.
 ## Forms and spam
 
 The careers form and the contact forms post to `/api/v1/job-applications` and
-`/api/v1/enquiries`, both throttled to five requests a minute.
+`/api/v1/enquiries`, both throttled to five requests a minute. Shopfront's
+contact form section uses the enquiries endpoint by default and hands over to
+Web3Forms only when an access key is set.
 
 Both forms carry a hidden `website` field that people never see; a request
 that fills it fails validation outright. Everything else goes to

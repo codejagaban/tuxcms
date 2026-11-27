@@ -79,9 +79,11 @@ A theme is a directory of Blade views under
 `resources/views/site/themes/<name>` with its static assets in
 `public/themes/<name>`. Set `SITE_THEME` to choose one.
 
-Shopfront is the theme a new install starts with: a dark painted fascia with
-its titles on sign boards, set in Le Murmure (SIL Open Font License, bundled).
-It renders every section type, the careers pages and the 404. The other
+Shopfront is the theme a new install starts with. Its colours are the
+dashboard's own paper and ink, light or dark to match the visitor's device, and
+its titles sit on sign boards set in Le Murmure (SIL Open Font License,
+bundled). It renders every section type, the careers pages and the 404, and its
+contact form delivers to the Enquiries inbox in the dashboard. The other
 directory, `crystal`, is a client's website built on the CMS, not a theme to
 reuse.
 
@@ -93,6 +95,9 @@ bin/demo.sh
 ```
 
 It serves the site, the dashboard at `/admin` and the API on one port, 8090.
+The demo content uses every part of the CMS: all the section types, nested
+service pages, a draft and a scheduled page, vacancies in each status, and an
+inbox with messages the spam filter is holding.
 
 ## Tests
 

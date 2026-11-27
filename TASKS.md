@@ -10,6 +10,8 @@
 
 ## Done
 
+- [x] ~~**Make the demo show the whole CMS** - Shopfront's contact form now delivers to the Enquiries inbox, and the demo content covers every section type, nested services, draft and scheduled pages, vacancies in each status and a sample inbox with held spam~~ (2026-11-27)
+- [x] ~~**Put Shopfront on the dashboard's colours** - the theme uses the CMS's paper and ink tokens and follows the visitor's light or dark setting~~ (2026-11-27)
 - [x] ~~**Drop Crystal as the careers fallback** - careers views now fall back to Shopfront; the Crystal client site needs `SITE_THEME=crystal` on its server to keep its own careers pages~~ (2026-11-27)
 - [x] ~~**Decide what happens to `feat/fine-flow-care`** - deleted; its hooks were superseded by the theme system~~ (2026-11-27)
 - [x] ~~**Give the CMS a theme of its own** - Shopfront renders every section type, the careers pages and the 404, is the default in `.env.example`, and `bin/demo.sh` runs it on throwaway data~~ (2026-11-27)
