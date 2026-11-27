@@ -205,9 +205,11 @@ class PageApiTest extends TestCase
     {
         Sanctum::actingAs($this->editor());
 
-        // Crystal ships with the CMS, so its folder is always there.
-        $this->postJson('/api/v1/pages', ['title' => 'Themed', 'template' => 'crystal'])
-            ->assertCreated()->assertJsonPath('data.live_preview', true);
+        // Shopfront ships with the CMS, so its folder is always there.
+        $this->postJson('/api/v1/pages', ['title' => 'Themed', 'template' => 'shopfront'])
+            ->assertCreated()->assertJsonPath('data.live_preview', true)
+            // Its pages are built from sections alone, so nothing to override.
+            ->assertJsonPath('data.supports_overrides', false);
 
         $this->postJson('/api/v1/pages', ['title' => 'Plain', 'template' => 'landing'])
             ->assertCreated()->assertJsonPath('data.live_preview', false);

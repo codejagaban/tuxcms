@@ -70,8 +70,8 @@ const imagePath = (url = '', base = 'http://localhost') => {
   try { return new URL(url, base).pathname; } catch { return url; }
 };
 
-/** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, html = null, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
+/** Show the real generated page and make it editable, so the editor cannot drift from the site. */
+export default function SitePreview({ path, revision = 0, html = null, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
@@ -129,7 +129,8 @@ export default function CrystalCanvas({ path, revision = 0, html = null, mobile 
         if (!style.isConnected) doc.head.appendChild(style);
 
         const installEditors = () => {
-          // Crystal's character animation adds a visually-hidden text clone
+          // Some themes animate headings a character at a time, which adds a
+          // visually-hidden text clone
           // beside the animated span. A parent heading therefore contains the
           // same words twice, which can be mistaken for the editable value.
           // The CMS preview does not animate text, so collapse that structure
@@ -163,7 +164,7 @@ export default function CrystalCanvas({ path, revision = 0, html = null, mobile 
             match.setAttribute('aria-multiline', 'false');
             match.spellcheck = true;
             match.addEventListener('pointerdown', () => {
-              // Crystal's heading animation wraps characters in spans. Remove
+              // A heading animation may wrap characters in spans. Remove
               // those wrappers before the browser places the caret so editing
               // behaves like a normal text field without duplicating content.
               if (match.children.length) match.textContent = initialValue;
@@ -210,11 +211,12 @@ export default function CrystalCanvas({ path, revision = 0, html = null, mobile 
           const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
             .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
           templateText.forEach((element, index) => {
-            // Only Crystal applies text overrides when it builds the page.
+            // Only a theme with hand-built pages applies text overrides when
+            // it builds the page; the API says which.
             if (!allowOverrides) return;
             const overlapsClaimedField = [...claimed].some((claimedElement) =>
               element.contains(claimedElement) || claimedElement.contains(element));
-            // Never install nested contentEditable nodes. Crystal's animated
+            // Never install nested contentEditable nodes. An animated
             // headings often leave a text span inside the heading wrapper;
             // making both editable causes duplicated text and writes the edit
             // to a template override instead of the matching CMS field.

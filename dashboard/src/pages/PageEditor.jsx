@@ -9,7 +9,7 @@ import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
 import SectionRenderer from '../components/editor/SectionRenderer';
 import Inspector from '../components/editor/Inspector';
-import CrystalCanvas from '../components/editor/CrystalCanvas';
+import SitePreview from '../components/editor/SitePreview';
 import MediaPicker from '../components/editor/MediaPicker';
 import RevisionHistory from '../components/editor/RevisionHistory';
 
@@ -39,22 +39,27 @@ const setNestedValue = (source, path, value) => {
 };
 
 
-const crystalOverrides = (content) => {
+// A theme with hand-built pages has text and pictures that belong to no
+// section. Edits to those are kept beside the page as overrides, which the
+// theme applies when it builds. `crystal_overrides` is the name the first
+// such site stored them under; it is still read, and rewritten on save.
+const templateOverrides = (content) => {
   try {
     const parsed = JSON.parse(content || '{}');
-    return parsed.crystal_overrides || {};
+    return parsed.template_overrides || parsed.crystal_overrides || {};
   } catch {
     return {};
   }
 };
 
-const withCrystalOverride = (content, kind, key, value) => {
+const withTemplateOverride = (content, kind, key, value) => {
   let parsed = {};
   try { parsed = JSON.parse(content || '{}'); } catch { parsed = {}; }
-  const overrides = parsed.crystal_overrides || {};
+  const { crystal_overrides: legacy, ...rest } = parsed;
+  const overrides = parsed.template_overrides || legacy || {};
   return JSON.stringify({
-    ...parsed,
-    crystal_overrides: {
+    ...rest,
+    template_overrides: {
       ...overrides,
       [kind]: { ...(overrides[kind] || {}), [key]: value },
     },
@@ -156,7 +161,7 @@ export default function PageEditor() {
   const updateData = (uid, data) =>
     mutate((p) => ({ ...p, sections: p.sections.map((s) => (s._uid === uid ? { ...s, data } : s)) }));
 
-  const updateCrystalField = (uid, field, value) => {
+  const updatePreviewField = (uid, field, value) => {
     if (field === 'title' || field === 'content') {
       updateSection(uid, { [field]: value });
       return;
@@ -330,12 +335,9 @@ export default function PageEditor() {
   const selected = page.sections.find((s) => s._uid === selectedUid) || null;
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
   // Themes that build real pages are edited on the page itself, so what the
-  // editor shows is what the site shows. Only Crystal stores text overrides.
+  // editor shows is what the site shows.
   // The API says which templates are installed themes.
   const liveCanvas = Boolean(page.live_preview);
-  // The full path, so a nested page previews at /services/web-design/ and
-  // not at /web-design/.
-  const crystalPath = page.is_homepage ? '/' : `/${String(page.path || page.slug).replace(/^\/+|\/+$/g, '')}/`;
 
   const sectionPreview = page.sections.map((section) => {
     const isSel = section._uid === selectedUid;
@@ -462,18 +464,18 @@ export default function PageEditor() {
                 // Not yet known whether this page has a built file to show.
                 ? <div className="flex h-full min-h-64 items-center justify-center"><Spinner /></div>
                 : liveCanvas
-                ? <CrystalCanvas
-                    path={crystalPath}
+                ? <SitePreview
+                    path={previewPath}
                     revision={previewRevision}
                     html={preview.html}
                     mobile={device === 'mobile'}
                     sections={page.sections}
                     pages={editablePages}
-                    overrides={crystalOverrides(page.content)}
-                    allowOverrides={page.template === 'crystal'}
-                    onEdit={updateCrystalField}
+                    overrides={templateOverrides(page.content)}
+                    allowOverrides={Boolean(page.supports_overrides)}
+                    onEdit={updatePreviewField}
                     onOverrideEdit={(kind, key, value) => {
-                      mutate((current) => ({ ...current, content: withCrystalOverride(current.content, kind, key, value) }));
+                      mutate((current) => ({ ...current, content: withTemplateOverride(current.content, kind, key, value) }));
                     }}
                     onSelect={setSelectedUid}
                     onImageEdit={(target, element) => setImageEdit({ target, element })}
@@ -518,11 +520,11 @@ export default function PageEditor() {
           if (target.overrideKey != null) {
             mutate((current) => ({
               ...current,
-              content: withCrystalOverride(current.content, 'images', target.overrideKey, { url, alt }),
+              content: withTemplateOverride(current.content, 'images', target.overrideKey, { url, alt }),
             }));
           } else {
-            updateCrystalField(target.sectionUid, target.field, url);
-            if (target.altField) updateCrystalField(target.sectionUid, target.altField, alt);
+            updatePreviewField(target.sectionUid, target.field, url);
+            if (target.altField) updatePreviewField(target.sectionUid, target.altField, alt);
           }
           if (imageEdit.element) {
             imageEdit.element.src = url;

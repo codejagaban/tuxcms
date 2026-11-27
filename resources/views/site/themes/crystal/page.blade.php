@@ -3,7 +3,11 @@
     $template = $page->is_homepage ? 'home' : $page->slug;
     $view = 'site.themes.crystal.original.'.$template;
     $storedContent = json_decode($page->content ?: '{}', true);
-    $crystalOverrides = is_array($storedContent) ? ($storedContent['crystal_overrides'] ?? []) : [];
+    // `crystal_overrides` is the name these were first stored under; the
+    // editor now saves them as `template_overrides`.
+    $crystalOverrides = is_array($storedContent)
+        ? ($storedContent['template_overrides'] ?? $storedContent['crystal_overrides'] ?? [])
+        : [];
 @endphp
 
 @if (view()->exists($view))

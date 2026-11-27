@@ -7,7 +7,7 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
   slug,
   path: isHomepage ? '/' : `/${slug}`,
   status: 'published',
-  template: 'crystal',
+  template: 'shopfront',
   // The editor shows the real site preview only for a page whose template is
   // an installed theme; PageResource reports that as `live_preview`.
   live_preview: true,
