@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  */
 class LlmsTxtGenerator
 {
-    public function generate(Collection $pages, Collection $jobs): string
+    public function generate(Collection $pages, Collection $jobs, ?Collection $posts = null): string
     {
         $lines = ['# ' . Site::name(), ''];
 
@@ -56,6 +56,17 @@ class LlmsTxtGenerator
 
             foreach ($jobs as $job) {
                 $lines[] = '- [' . $job->title . '](' . Site::url() . '/careers/' . $job->slug . '/)' . ($job->summary ? ': ' . $job->summary : '');
+            }
+        }
+
+        if ($posts?->isNotEmpty()) {
+            $lines[] = '';
+            $lines[] = '## Blog';
+            $lines[] = '';
+
+            foreach ($posts as $post) {
+                $summary = $post->meta_description ?: $post->summary();
+                $lines[] = '- [' . $post->title . '](' . Site::url() . $post->path() . ')' . ($summary ? ': ' . $summary : '');
             }
         }
 

@@ -4,12 +4,15 @@ namespace App\Services\Site;
 
 use App\Models\JobPost;
 use App\Models\Page;
+use App\Models\Post;
+use App\Services\Seo\FeedGenerator;
 use App\Services\Seo\LlmsTxtGenerator;
 use App\Services\Seo\RobotsGenerator;
 use App\Services\Seo\SitemapGenerator;
 use App\Support\Preview;
 use App\Support\Site;
 use App\Support\ThemeManifest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -38,6 +41,7 @@ class SiteBuilder
         private SitemapGenerator $sitemap,
         private RobotsGenerator $robots,
         private LlmsTxtGenerator $llms,
+        private FeedGenerator $feed,
     ) {}
 
     /** @return array{pages: int, files: int, pruned: int, output: string} */
@@ -64,7 +68,7 @@ class SiteBuilder
         }
 
         return [
-            'pages' => $this->publishedPages()->count() + JobPost::published()->count(),
+            'pages' => $this->publishedPages()->count() + JobPost::published()->count() + Post::published()->count(),
             'files' => count($written),
             'pruned' => $pruned,
             'output' => $output,
@@ -157,6 +161,9 @@ class SiteBuilder
             ])->render());
         }
 
+        $posts = $this->publishedPosts();
+        $written += $this->renderBlog($temp, $posts, $progress);
+
         $notFound = View::make($this->themeView('404'), [
             'page' => $this->placeholderPage('Page not found'),
             'navigation' => $navigation,
@@ -166,9 +173,84 @@ class SiteBuilder
         $written['404.html'] = $this->write($temp, '404.html', $notFound);
         $written['sitemap.xml'] = $this->write($temp, 'sitemap.xml', $this->sitemap->generate());
         $written['robots.txt'] = $this->write($temp, 'robots.txt', $this->robots->generate());
-        $written['llms.txt'] = $this->write($temp, 'llms.txt', $this->llms->generate($pages, $jobs));
+        $written['llms.txt'] = $this->write($temp, 'llms.txt', $this->llms->generate($pages, $jobs, $posts));
 
         return $written;
+    }
+
+    /**
+     * The blog: a paged listing, a page per post, a paged listing per category
+     * and the RSS feed. A site with no published posts has no blog at all, so
+     * nothing is written and the menu shows no link to it.
+     *
+     * @return array<string, string> relative path => sha1 of contents
+     */
+    private function renderBlog(string $temp, Collection $posts, ?callable $progress): array
+    {
+        if ($posts->isEmpty()) {
+            return [];
+        }
+
+        $written = [];
+        $navigation = $this->navigation->build(currentPath: '/blog/');
+        $shared = ['navigation' => $navigation, 'buildYear' => date('Y')];
+
+        // Only categories with something to read are offered to visitors.
+        $categories = $posts->pluck('category')->filter()->unique('id')->sortBy('name')->values();
+
+        $listings = [['base' => '/blog/', 'posts' => $posts, 'category' => null]];
+        foreach ($categories as $category) {
+            $listings[] = [
+                'base' => '/blog/category/'.$category->slug.'/',
+                'posts' => $posts->where('post_category_id', $category->id)->values(),
+                'category' => $category,
+            ];
+        }
+
+        foreach ($listings as $listing) {
+            $chunks = $listing['posts']->chunk(Post::PER_PAGE)->values();
+            $last = $chunks->count();
+
+            foreach ($chunks as $index => $chunk) {
+                $number = $index + 1;
+                $address = fn (int $n) => $n === 1 ? $listing['base'] : $listing['base'].'page/'.$n.'/';
+                $relative = ltrim($address($number), '/').'index.html';
+
+                $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.index'), $shared + [
+                    'posts' => $chunk->values(),
+                    'category' => $listing['category'],
+                    'categories' => $categories,
+                    'path' => $address($number),
+                    'pageNumber' => $number,
+                    'lastPage' => $last,
+                    'newerUrl' => $number > 1 ? $address($number - 1) : null,
+                    'olderUrl' => $number < $last ? $address($number + 1) : null,
+                ])->render());
+            }
+        }
+
+        foreach ($posts as $index => $post) {
+            $relative = 'blog/'.$post->slug.'/index.html';
+            $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.show'), $shared + [
+                'post' => $post,
+                // The list is newest first, so the next one down is older.
+                'newer' => $posts->get($index - 1),
+                'older' => $posts->get($index + 1),
+            ])->render());
+
+            $progress && $progress($post->title, $relative);
+        }
+
+        $written['blog/feed.xml'] = $this->write($temp, 'blog/feed.xml', $this->feed->generate($posts));
+
+        return $written;
+    }
+
+    /** Published posts, newest first. */
+    private function publishedPosts(): Collection
+    {
+        return Post::published()->with(['category', 'author'])
+            ->orderByDesc('published_at')->orderByDesc('id')->get();
     }
 
     /**

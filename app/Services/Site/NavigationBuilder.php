@@ -3,6 +3,7 @@
 namespace App\Services\Site;
 
 use App\Models\Page;
+use App\Models\Post;
 use App\Support\Site;
 
 /**
@@ -31,6 +32,16 @@ class NavigationBuilder
             ->map(fn (Page $page) => $this->item($page, $byParent, $currentPath))
             ->values()
             ->all();
+
+        // The blog joins the menu once there is something to read.
+        if (Post::published()->exists()) {
+            $items[] = [
+                'label' => 'Blog',
+                'url' => '/blog/',
+                'active' => $currentPath !== null && str_starts_with($currentPath, '/blog/'),
+                'children' => [],
+            ];
+        }
 
         $items[] = [
             'label' => 'Careers',

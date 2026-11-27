@@ -4,6 +4,7 @@ namespace App\Services\Seo;
 
 use App\Models\JobPost;
 use App\Models\Page;
+use App\Models\Post;
 use App\Support\Site;
 
 class SitemapGenerator
@@ -40,6 +41,17 @@ class SitemapGenerator
             $lines[] = $this->url('/careers/', $jobs->max('updated_at'));
             foreach ($jobs as $job) {
                 $lines[] = $this->url('/careers/'.$job->slug.'/', $job->updated_at);
+            }
+        }
+
+        $posts = Post::published()->with('category')->orderByDesc('published_at')->get();
+        if ($posts->isNotEmpty()) {
+            $lines[] = $this->url('/blog/', $posts->max('updated_at'));
+            foreach ($posts as $post) {
+                $lines[] = $this->url($post->path(), $post->updated_at);
+            }
+            foreach ($posts->groupBy(fn (Post $post) => $post->category?->slug)->forget('') as $slug => $inCategory) {
+                $lines[] = $this->url('/blog/category/'.$slug.'/', $inCategory->max('updated_at'));
             }
         }
 
