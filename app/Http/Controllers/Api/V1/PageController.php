@@ -8,9 +8,11 @@ use App\Http\Requests\UpdatePageRequest;
 use App\Http\Resources\PageResource;
 use App\Models\Page;
 use App\Services\Content\PageRevisionService;
+use App\Services\Site\SiteBuilder;
 use App\Support\PublishState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -282,6 +284,21 @@ class PageController extends Controller
             'data' => new PageResource($page),
             'message' => 'Page updated successfully.',
         ]);
+    }
+
+    /**
+     * The page as its theme renders it, for the editor's preview of a page
+     * that is not on the built site yet. Marked so the theme can tell it is
+     * being edited, and never indexed.
+     */
+    public function preview(Page $page, SiteBuilder $builder): Response
+    {
+        $html = preg_replace('/<html\b/', '<html data-tuxcms-preview', $builder->renderPage($page), 1);
+
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('X-Robots-Tag', 'noindex, nofollow')
+            ->header('Cache-Control', 'no-store');
     }
 
     /** Recent recoverable states, newest first. */

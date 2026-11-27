@@ -22,6 +22,8 @@ class PageResource extends JsonResource
             'live_preview' => in_array($this->template, \App\Support\Site::themes(), true)
                 || in_array(config('site.theme'), \App\Support\Site::themes(), true),
             'status' => $this->status,
+            // Published, but dated in the future: not on the site until then.
+            'is_scheduled' => $this->status === 'published' && $this->published_at?->isFuture() === true,
             'order' => $this->order,
             'is_homepage' => $this->is_homepage,
             'show_in_nav' => $this->show_in_nav,

@@ -69,6 +69,27 @@ class SiteBuilder
     }
 
     /**
+     * Render one page exactly as a build would, without writing anything.
+     *
+     * The dashboard edits pages on the real rendered site, but a draft, a
+     * scheduled page or one that has never been published has no built file
+     * to show. This is what the editor looks at instead.
+     */
+    public function renderPage(Page $page): string
+    {
+        URL::forceRootUrl(Site::url());
+        config(['app.asset_url' => '']);
+
+        $page->load(['sections' => fn ($q) => $q->visible()->orderBy('order'), 'seo', 'media', 'parent']);
+
+        return View::make($this->themeView('page', $page->template), [
+            'page' => $page,
+            'navigation' => $this->navigation->build($page),
+            'buildYear' => date('Y'),
+        ])->render();
+    }
+
+    /**
      * Render every page plus sitemap/robots/404 into the temp directory.
      *
      * @return array<string, string> relative path => sha1 of contents

@@ -212,4 +212,24 @@ class PageApiTest extends TestCase
         $this->postJson('/api/v1/pages', ['title' => 'Plain', 'template' => 'landing'])
             ->assertCreated()->assertJsonPath('data.live_preview', false);
     }
+
+    public function test_an_editor_can_preview_a_page_that_is_not_on_the_site_yet(): void
+    {
+        $page = Page::create([
+            'title' => 'Open day', 'status' => 'published', 'published_at' => now()->addWeek(),
+        ]);
+        $page->sections()->create(['key' => 'hero', 'type' => 'hero', 'title' => 'Doors open at ten', 'order' => 0, 'is_visible' => true]);
+
+        $this->getJson("/api/v1/pages/{$page->id}/preview")->assertUnauthorized();
+
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user, 'sanctum')->get("/api/v1/pages/{$page->id}/preview");
+
+        $response->assertOk()->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        $this->assertStringContainsString('Doors open at ten', $response->getContent());
+        $this->assertStringContainsString('<html data-tuxcms-preview', $response->getContent());
+
+        $this->actingAs($user, 'sanctum')->getJson("/api/v1/pages/{$page->id}")
+            ->assertJsonPath('data.is_scheduled', true);
+    }
 }
