@@ -244,17 +244,17 @@
           <div class="container position-relative pt-10 pt-sm-40 text-center">
             <div class="row">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($hero, 'data.subheading')>
                   {{ $hero?->data['subheading'] ?? 'Crystal Salon & Hairdressing' }}
                 </h2>
 
                 <h1 class="hs-title-10 mb-10">
-                  <span class="wow charsAnimIn" data-splitting="chars">
+                  <span class="wow charsAnimIn" data-splitting="chars" @field($hero, 'title')>
                     {{ $hero?->title ?? 'Beautiful hair made with care' }}
                   </span>
                 </h1>
 
-                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
+                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s" @field($hero, 'content')>
                   {{ $hero?->content ?? 'From protective styles to fresh treatments, our salon offers expert hairdressing for every look.' }}
                 </p>
               </div>
@@ -273,12 +273,13 @@
                 <h2 class="section-caption-fancy mb-20 mb-xs-10">
                   Salon &amp; Hairdressing
                 </h2>
-                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp">
+                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp" @field($salonServices, 'title')>
                   {{ $salonServices?->title ?? 'Our hairdressing services' }}
                 </h3>
                 <p
                   class="section-descr mb-0 wow fadeInUp"
                   data-wow-delay="0.06s"
+                  @field($salonServices, 'content')
                 >
                   {{ $salonServices?->content ?? 'Alongside our cleaning services, we now offer professional hairdressing.' }}
                 </p>

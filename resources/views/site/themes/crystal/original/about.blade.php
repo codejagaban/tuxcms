@@ -120,12 +120,12 @@
             <div class="row">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
-                  <span class="wow charsAnimIn" data-splitting="chars">
+                  <span class="wow charsAnimIn" data-splitting="chars" @field($hero, 'title')>
                     {{ $hero?->title ?? 'About us' }}
                   </span>
                 </h1>
 
-                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
+                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s" @field($hero, 'content')>
                   {{ $hero?->content ?? "Learn about us, our commitment to quality, and why we're the best choice for your cleaning and hairdressing needs" }}
                 </p>
               </div>
@@ -144,6 +144,7 @@
                 <p
                   class="section-descr mb-40 mb-sm-20 wow fadeInUp"
                   data-wow-offset="0"
+                  @field($story, 'content')
                 >
                   {!! nl2br(e($story?->content ?? 'At Crystal Service Limited, we believe that a clean environment leads to a better quality of life.')) !!}
                 </p>

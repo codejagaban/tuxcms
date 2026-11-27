@@ -146,12 +146,12 @@
             <div class="row">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
-                  <span class="wow charsAnimIn" data-splitting="chars">
+                  <span class="wow charsAnimIn" data-splitting="chars" @field($hero, 'title')>
                     {{ $hero?->title ?? 'Contact Us' }}
                   </span>
                 </h1>
 
-                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
+                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s" @field($hero, 'content')>
                   {{ $hero?->content ?? 'We’re here to help with all your cleaning needs.' }}
                 </p>
               </div>
@@ -171,9 +171,9 @@
               <div
                 class="col-lg-4 mb-md-50 mb-sm-30 position-relative z-index-1"
               >
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">{{ $details?->data['eyebrow'] ?? "Let's Talk" }}</h2>
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($details, 'data.eyebrow')>{{ $details?->data['eyebrow'] ?? "Let's Talk" }}</h2>
 
-                <h3 class="section-title mb-50 mb-sm-30">
+                <h3 class="section-title mb-50 mb-sm-30" @field($details, 'title')>
                   {{ $details?->title ?? 'We’re open to talk to good people.' }}
                 </h3>
 

@@ -266,12 +266,12 @@
             <div class="row">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 <h1 class="hs-title-10 mb-10">
-                  <span class="wow charsAnimIn" data-splitting="chars">
+                  <span class="wow charsAnimIn" data-splitting="chars" @field($hero, 'title')>
                     {{ $hero?->title ?? 'Our Services' }}
                   </span>
                 </h1>
 
-                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s">
+                <p class="section-descr mb-0 wow fadeIn" data-wow-delay="0.2s" @field($hero, 'content')>
                   {{ $hero?->content ?? 'We provide a wide range of professional cleaning services tailored to your needs.' }}
                 </p>
               </div>

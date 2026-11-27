@@ -151,28 +151,28 @@
                 <div
                   class="col-md-10 offset-md-1 col-lg-6 offset-lg-0 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-30">
                   <div class="w-100 text-center text-lg-start">
-                    <h2 class="section-caption-fancy mb-30 mb-xs-20 wow fadeInUp" data-wow-duration="1.2s">
+                    <h2 class="section-caption-fancy mb-30 mb-xs-20 wow fadeInUp" data-wow-duration="1.2s" @field($hero, 'data.subheading')>
                       {{ $hero?->data['subheading'] ?? 'Your Trusted Cleaning Partner' }}
                     </h2>
 
                     <h1 class="hs-title-10 mb-30">
-                      <span class="wow charsAnimIn" data-splitting="chars">
+                      <span class="wow charsAnimIn" data-splitting="chars" @field($hero, 'title')>
                         {!! $decorateHero($hero?->title ?? 'A crystal cleaning you can trust') !!}
                       </span>
                     </h1>
 
                     <p class="section-descr mb-40 wow fadeInUp" data-wow-delay="0.6s" data-wow-duration="1.2s"
-                      data-wow-offset="0">
+                      data-wow-offset="0" @field($hero, 'content')>
                       {{ $hero?->content ?? "We proudly provide unparalleled cleaning services across the UK. Our mission is to consistently exceed our clients' expectations with reliable, high-quality cleaning solutions." }}
                     </p>
 
                     <div class="local-scroll wow fadeInUp wch-unset" data-wow-delay="0.7s" data-wow-duration="1.2s">
                       <a href="{{ $hero?->data['primary_cta']['url'] ?? '/services/' }}"
                         class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mb-xs-10">
-                        <span>{{ $hero?->data['primary_cta']['label'] ?? 'View Services' }}</span>
+                        <span @field($hero, 'data.primary_cta.label')>{{ $hero?->data['primary_cta']['label'] ?? 'View Services' }}</span>
                       </a>
 
-                      <a href="{{ $hero?->data['secondary_cta']['url'] ?? '/contact/' }}" class="btn btn-mod btn-border-c btn-large btn-round mb-xs-10">
+                      <a href="{{ $hero?->data['secondary_cta']['url'] ?? '/contact/' }}" class="btn btn-mod btn-border-c btn-large btn-round mb-xs-10" @field($hero, 'data.secondary_cta.label')>
                         {{ $hero?->data['secondary_cta']['label'] ?? 'Book a cleaning' }}
                       </a>
                     </div>
@@ -184,7 +184,7 @@
                 <div class="col-lg-6 col-xl-7 d-flex align-items-center">
                   <div class="w-100 wow fadeInLeft" data-wow-delay="0.7s">
                     <div class="position-relative mt-40 mb-20">
-                      <img src="{{ $hero?->data['image'] ?? '/themes/crystal/images/intro/hero.png' }}" alt="{{ $hero?->data['image_alt'] ?? 'Professional cleaner from Crystal Services Limited' }}" class="w-100" />
+                      <img src="{{ $hero?->data['image'] ?? '/themes/crystal/images/intro/hero.png' }}" alt="{{ $hero?->data['image_alt'] ?? 'Professional cleaner from Crystal Services Limited' }}" class="w-100" @image($hero, 'data.image') />
 
                       <!-- Decorative Waves -->
                       <div class="decoration-5 d-none d-sm-block" data-rellax-y data-rellax-speed="-0.7"
@@ -221,13 +221,13 @@
           <div class="container position-relative">
             <div class="row mb-xs-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">{{ $about?->data['eyebrow'] ?? 'About Us' }}</h2>
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($about, 'data.eyebrow')>{{ $about?->data['eyebrow'] ?? 'About Us' }}</h2>
 
-                <h3 class="section-title-strong mb-30 mb-xs-20 wow fadeInUp">
+                <h3 class="section-title-strong mb-30 mb-xs-20 wow fadeInUp" @field($about, 'title')>
                   {{ $about?->title ?? 'Your trusted partner for sparkling clean homes and offices.' }}
                 </h3>
 
-                <p class="section-descr mb-40 mb-sm-20 wow fadeInUp" data-wow-delay="0.06s">
+                <p class="section-descr mb-40 mb-sm-20 wow fadeInUp" data-wow-delay="0.06s" @field($about, 'content')>
                   {{ $about?->content ?? 'At Crystal Service Limited, we believe that a clean environment leads to a better quality of life.' }}
                 </p>
 
@@ -313,10 +313,10 @@
           <div class="container position-relative">
             <div class="row mb-60 mb-sm-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($services, 'data.eyebrow')>
                   {{ $services?->data['eyebrow'] ?? 'Our Services' }}
                 </h2>
-                <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp">
+                <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp" @field($services, 'title')>
                   {{ $services?->title ?? 'We provide a wide range of professional cleaning services tailored to meet your needs' }}
                 </h3>
               </div>
@@ -326,9 +326,9 @@
               @foreach (array_slice($services?->data['items'] ?? [], 0, 3) as $index => $item)
               <div class="col-md-4 mb-sm-30 text-center wow fadeInUp">
                 <img src="{{ $item['image'] ?? '' }}" alt="{{ $item['title'] ?? '' }}" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">{{ $item['title'] ?? '' }}</h4>
-                <p class="services-5-text mb-0">{{ $item['description'] ?? '' }}</p>
+                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" @image($services, "data.items.{$index}.image") />
+                <h4 class="services-5-title mb-10" @field($services, "data.items.{$index}.title")>{{ $item['title'] ?? '' }}</h4>
+                <p class="services-5-text mb-0" @field($services, "data.items.{$index}.description")>{{ $item['description'] ?? '' }}</p>
               </div>
               @endforeach
             </div>
@@ -348,10 +348,10 @@
           <div class="container position-relative">
             <div class="row mb-60 mb-sm-40">
               <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($salon, 'data.eyebrow')>
                   {{ $salon?->data['eyebrow'] ?? 'Salon & Hairdressing' }}
                 </h2>
-                <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp">
+                <h3 class="section-title mb-0 mb-sm-20 wow fadeInUp" @field($salon, 'title')>
                   {{ $salon?->title ?? 'Now offering professional hairdressing' }}
                 </h3>
               </div>
@@ -361,9 +361,9 @@
               @foreach (array_slice($salon?->data['items'] ?? [], 0, 3) as $index => $item)
               <div class="col-md-4 mb-sm-30 text-center wow fadeInUp">
                 <img src="{{ $item['image'] ?? '' }}" alt="{{ $item['title'] ?? '' }}" class="w-100 mb-20"
-                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" />
-                <h4 class="services-5-title mb-10">{{ $item['title'] ?? '' }}</h4>
-                <p class="services-5-text mb-0">{{ $item['description'] ?? '' }}</p>
+                  style="height: 240px; object-fit: cover; border-radius: 20px;" loading="lazy" @image($salon, "data.items.{$index}.image") />
+                <h4 class="services-5-title mb-10" @field($salon, "data.items.{$index}.title")>{{ $item['title'] ?? '' }}</h4>
+                <p class="services-5-text mb-0" @field($salon, "data.items.{$index}.description")>{{ $item['description'] ?? '' }}</p>
               </div>
               @endforeach
             </div>
