@@ -92,9 +92,12 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
     });
   }, [fields, overrides]);
 
-  const preparePreview = () => {
+  // The load event carries the frame that fired it, so the preview is prepared
+  // from that element rather than reached for through the ref.
+  const preparePreview = (event) => {
+    const frame = event.currentTarget;
     try {
-      const doc = frameRef.current?.contentDocument;
+      const doc = frame.contentDocument;
       if (doc?.body) {
         const style = doc.querySelector('style[data-tuxcms-preview]') || doc.createElement('style');
         style.dataset.tuxcmsPreview = 'true';
@@ -359,7 +362,7 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         }
 
         installEditors();
-        const view = frameRef.current?.contentWindow;
+        const view = frame.contentWindow;
         view?.requestAnimationFrame(() => view.requestAnimationFrame(installEditors));
       }
     } catch {
