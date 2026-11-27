@@ -39,5 +39,11 @@
                 </div>
             </div>
         @endif
+
+        @if (filled(data_get($d, 'image')))
+            <figure class="frame frame--banner">
+                <img src="{{ data_get($d, 'image') }}" alt="{{ data_get($d, 'image_alt', '') }}">
+            </figure>
+        @endif
     </div>
 </section>
