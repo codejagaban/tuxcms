@@ -66,6 +66,7 @@ export const pageAPI = {
   update: (pageId, data) => api.put(`/pages/${pageId}`, data),
   delete: (pageId) => api.delete(`/pages/${pageId}`),
   revisions: (pageId) => api.get(`/pages/${pageId}/revisions`),
+  preview: (pageId) => api.get(`/pages/${pageId}/preview`, { responseType: 'text' }),
 };
 
 export const jobAPI = {

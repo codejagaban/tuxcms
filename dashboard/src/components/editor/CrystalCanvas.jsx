@@ -71,7 +71,7 @@ const imagePath = (url = '', base = 'http://localhost') => {
 };
 
 /** Render the generated Crystal page itself so the editor cannot drift. */
-export default function CrystalCanvas({ path, revision = 0, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
+export default function CrystalCanvas({ path, revision = 0, html = null, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   const fields = useMemo(() => editableFields(sections), [sections]);
   const images = useMemo(() => editableImages(sections), [sections]);
@@ -318,7 +318,9 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
         }));
         doc.querySelectorAll('a[href]').forEach((link) => {
           const url = new URL(link.href, doc.baseURI);
-          if (url.origin !== doc.location.origin) return;
+          // A page rendered into the frame has no address of its own, so
+          // compare against the address its links resolve from.
+          if (url.origin !== new URL(doc.baseURI).origin) return;
           const route = url.pathname === '/' ? '/' : `${url.pathname.replace(/\/+$/g, '')}/`;
           const destination = editableRoutes.get(route);
           if (!destination) return;
@@ -404,9 +406,10 @@ export default function CrystalCanvas({ path, revision = 0, mobile = false, sect
   return (
     <iframe
       ref={frameRef}
-      key={`${src}:${pages.length}:${sections.length}`}
+      key={`${src}:${pages.length}:${sections.length}:${html == null ? 'built' : 'rendered'}`}
       title="Website preview"
-      src={src}
+      // A page with no built file is handed over as markup instead.
+      {...(html == null ? { src } : { srcDoc: html })}
       onLoad={preparePreview}
       className="block w-full border-0 bg-white"
       style={{ height: '100%', minWidth: mobile ? 390 : 960 }}

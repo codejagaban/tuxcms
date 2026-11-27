@@ -74,10 +74,30 @@ export default function PageEditor() {
   const [device, setDevice] = useState(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
   const [publishing, setPublishing] = useState(false);
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
+  // Which page the answer below is for, and the markup to show when that
+  // page has no built file (null when it has one).
+  const [preview, setPreview] = useState({ id: null, html: null });
   const [imageEdit, setImageEdit] = useState(null);
   const [editablePages, setEditablePages] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState(null);
+
+  // The preview shows the built page. A draft, a scheduled page or one never
+  // yet published has no built page, and the site would answer with its "not
+  // found" page instead, so ask the CMS to render it for the editor.
+  const previewId = page?.id;
+  const previewLive = Boolean(page?.live_preview);
+  const previewPath = !page ? null
+    : page.is_homepage ? '/' : `/${String(page.path || page.slug || '').replace(/^\/+|\/+$/g, '')}/`;
+  useEffect(() => {
+    if (!previewId || !previewLive || !previewPath) return undefined;
+    let current = true;
+    fetch(`${previewPath}?tuxcms_preview=${previewRevision}`, { method: 'HEAD' })
+      .then((response) => (response.ok ? null : pageAPI.preview(previewId).then((res) => res.data)))
+      .catch(() => null)
+      .then((html) => { if (current) setPreview({ id: previewId, html: typeof html === 'string' ? html : null }); });
+    return () => { current = false; };
+  }, [previewId, previewLive, previewPath, previewRevision]);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -370,7 +390,9 @@ export default function PageEditor() {
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-[var(--color-ink)] truncate">{page.title || 'Untitled'}</span>
-            <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>
+            {page.is_scheduled
+              ? <Badge variant="pending">Scheduled</Badge>
+              : <Badge variant={page.status === 'published' ? 'published' : 'draft'}>{page.status || 'draft'}</Badge>}
             {dirty && <span className="h-2 w-2 rounded-full bg-[var(--color-warn)]" title="Unsaved changes" />}
           </div>
           <div className="text-xs text-[var(--color-muted)] truncate">
@@ -444,10 +466,14 @@ export default function PageEditor() {
                   <p className="text-sm">Use <span className="font-medium text-[var(--color-muted)]">Add</span> in the Page panel to start building.</p>
                 </div>
               )}
-              {liveCanvas
+              {liveCanvas && preview.id !== page.id
+                // Not yet known whether this page has a built file to show.
+                ? <div className="flex h-full min-h-64 items-center justify-center"><Spinner /></div>
+                : liveCanvas
                 ? <CrystalCanvas
                     path={crystalPath}
                     revision={previewRevision}
+                    html={preview.html}
                     mobile={device === 'mobile'}
                     sections={page.sections}
                     pages={editablePages}
