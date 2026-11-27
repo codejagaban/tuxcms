@@ -8,6 +8,9 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
   path: isHomepage ? '/' : `/${slug}`,
   status: 'published',
   template: 'crystal',
+  // The editor shows the real site preview only for a page whose template is
+  // an installed theme; PageResource reports that as `live_preview`.
+  live_preview: true,
   is_homepage: isHomepage,
   show_in_nav: true,
   nav_label: title,
@@ -97,7 +100,7 @@ test('inline heading remains single and editable after publishing', async ({ pag
   const { saves } = await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
 
-  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const preview = page.frameLocator('iframe[title="Website preview"]');
   const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
   await expect(heading).toHaveText('Home heading');
   await expect(heading).toHaveAttribute('contenteditable', 'true');
@@ -120,7 +123,7 @@ test('image replacement uses the media library and persists accessible text', as
   const { saves } = await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
 
-  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const preview = page.frameLocator('iframe[title="Website preview"]');
   await preview.locator('img[alt="Old image"]').click();
 
   const dialog = page.getByRole('dialog');
@@ -138,7 +141,7 @@ test('preview navigation opens the destination in the editor', async ({ page }) 
   await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
 
-  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const preview = page.frameLocator('iframe[title="Website preview"]');
   await preview.getByRole('link', { name: 'About' }).click();
 
   await expect(page).toHaveURL(/\/dashboard\/pages\/2\/edit$/);
@@ -155,7 +158,7 @@ test('revision history restores an earlier state into the editable preview', asy
   await expect(dialog).toContainText('Earlier Home');
   await dialog.getByRole('button', { name: 'Restore' }).click();
 
-  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const preview = page.frameLocator('iframe[title="Website preview"]');
   await expect(preview.locator('[data-tuxcms-editable]').filter({ hasText: 'Earlier heading' })).toHaveCount(1);
   await expect(page.locator('[title="Unsaved changes"]')).toBeVisible();
 });
@@ -177,7 +180,7 @@ test('editor starts with a mobile-sized preview on narrow screens', async ({ pag
   await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
 
-  const frame = page.locator('iframe[title="Exact Crystal website preview"]');
+  const frame = page.locator('iframe[title="Website preview"]');
   await expect(frame).toBeVisible();
   const box = await frame.boundingBox();
   expect(box.width).toBeLessThanOrEqual(390);
@@ -188,7 +191,7 @@ test('dirty edits autosave without publishing', async ({ page }) => {
   const { saves } = await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
 
-  const preview = page.frameLocator('iframe[title="Exact Crystal website preview"]');
+  const preview = page.frameLocator('iframe[title="Website preview"]');
   const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
   await heading.fill('Autosaved heading');
   await heading.press('Tab');
@@ -201,7 +204,7 @@ test('dirty edits autosave without publishing', async ({ page }) => {
 test('editor shell has no serious automated accessibility violations', async ({ page }) => {
   await mockEditor(page);
   await page.goto('/dashboard/pages/1/edit');
-  await expect(page.frameLocator('iframe[title="Exact Crystal website preview"]').locator('main')).toBeVisible();
+  await expect(page.frameLocator('iframe[title="Website preview"]').locator('main')).toBeVisible();
 
   const results = await new AxeBuilder({ page })
     .exclude('iframe')
