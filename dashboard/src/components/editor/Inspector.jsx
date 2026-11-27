@@ -181,7 +181,7 @@ function PageTab({
             return (
               <li
                 key={s._uid}
-                className={`group flex items-center gap-2 rounded-lg border px-2.5 py-2 cursor-pointer ${
+                className={`group relative flex items-center rounded-lg border px-2.5 py-2 cursor-pointer ${
                   isSel ? 'border-[var(--color-ink)] bg-[var(--color-paper-3)]' : 'border-[var(--color-rule-2)] hover:border-[var(--color-rule)]'
                 }`}
               >
@@ -193,13 +193,23 @@ function PageTab({
                 >
                   <span className="w-5 shrink-0 text-center text-xs font-medium text-[var(--color-muted)]">{i + 1}</span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-[var(--color-ink)]">
+                    <div className="truncate text-sm font-medium text-[var(--color-ink)]" title={s.title || sectionLabel(s.type)}>
                       {s.title || sectionLabel(s.type)}
                     </div>
                     <div className="text-xs text-[var(--color-muted)]">{sectionLabel(s.type)}</div>
                   </div>
                 </button>
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                {/* The row actions are hidden until the row is hovered or focused, so
+                    they are laid over its right edge rather than holding 182px of a
+                    340px panel open. The name then gets the whole row to itself. */}
+                <div
+                  className="pointer-events-none absolute inset-y-px right-px flex items-center gap-0.5 rounded-r-lg pl-8 pr-2 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+                  style={{
+                    backgroundImage: `linear-gradient(to right, transparent, ${
+                      isSel ? 'var(--color-paper-3)' : 'var(--color-paper)'
+                    } 2rem)`,
+                  }}
+                >
                   <IconBtn title={s.is_visible ? 'Hide' : 'Show'} onClick={(e) => { e.stopPropagation(); updateSection(s._uid, { is_visible: !s.is_visible }); }}>
                     {s.is_visible ? <Eye className="h-4 w-4" /> : <EyeSlash className="h-4 w-4 text-[var(--color-muted)]" />}
                   </IconBtn>
