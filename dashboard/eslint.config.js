@@ -35,4 +35,16 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    // Every icon is built by `icon()` or `drawn()`, factories the linter cannot
+    // see through, so it reads each export as a plain value. Name the two
+    // factories instead of switching the rule off for the file.
+    files: ['src/lib/icons.jsx'],
+    rules: {
+      'react-refresh/only-export-components': ['error', {
+        allowConstantExport: true,
+        extraHOCs: ['icon', 'drawn'],
+      }],
+    },
+  },
 ])
