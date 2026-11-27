@@ -1,630 +1,449 @@
-# TuxCMS API Documentation
+# TuxCMS API
 
-A headless Laravel CMS with full SEO support. All endpoints are available under `/api/v1/`.
+Everything lives under `/api/v1`. Responses are always JSON, whatever the
+request's `Accept` header says.
 
-## Table of Contents
-
+- [Conventions](#conventions)
 - [Authentication](#authentication)
-- [Public Endpoints](#public-endpoints)
-- [Protected Endpoints](#protected-endpoints)
-- [Response Format](#response-format)
-- [Error Handling](#error-handling)
-- [Pagination](#pagination)
+- [Pages](#pages)
+- [Per-page SEO](#per-page-seo)
+- [Search](#search)
+- [Public forms](#public-forms)
+- [Jobs](#jobs)
+- [Applications and enquiries](#applications-and-enquiries)
+- [Settings](#settings)
+- [Media](#media)
+- [Publishing](#publishing)
+
+## Conventions
+
+**Envelope.** Successful responses put the payload in `data`. Writes usually add
+a `message`. Lists add `meta` with `current_page`, `last_page` and `total`
+(most also include `per_page`).
+
+**Auth.** Endpoints marked *token* need `Authorization: Bearer <token>`. Without
+one they answer `401` with `{"message": "Unauthenticated."}`.
+
+**Errors.** Validation failures answer `422`:
+
+```json
+{
+  "message": "The title field is required.",
+  "errors": { "title": ["The title field is required."] }
+}
+```
+
+A missing record is `404`. Throttled endpoints answer `429` when the limit is
+passed.
+
+**Dates** are ISO 8601 strings.
 
 ## Authentication
 
-TuxCMS uses Laravel Sanctum for API authentication. All protected endpoints require a Bearer token.
+There is no registration endpoint. Accounts are made on the server with
+`php artisan user:create`.
 
-### Register
+### POST /auth/login
 
-```
-POST /api/v1/auth/register
-Content-Type: application/json
+Throttled to 5 a minute.
 
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "password_confirmation": "password123"
-}
-
-Response: 201 Created
-{
-  "data": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    ...
-  },
-  "token": "TOKEN_HERE",
-  "message": "User registered successfully"
-}
+```json
+{ "email": "editor@example.com", "password": "secret-password" }
 ```
 
-### Login
-
-```
-POST /api/v1/auth/login
-Content-Type: application/json
-
+```json
 {
-  "email": "john@example.com",
-  "password": "password123"
-}
-
-Response: 200 OK
-{
-  "data": {...},
-  "token": "TOKEN_HERE",
+  "data": { "id": 1, "name": "Editor", "email": "editor@example.com" },
+  "token": "1|abc...",
   "message": "Login successful"
 }
 ```
 
-### Logout
+Wrong credentials answer `401` with `{"message": "Invalid credentials"}`.
 
-```
-POST /api/v1/auth/logout
-Authorization: Bearer TOKEN_HERE
+### POST /auth/logout *(token)*
 
-Response: 200 OK
-{
-  "message": "Logged out successfully"
-}
-```
+Revokes the token the request was made with.
 
-### Get Current User
+### GET /auth/me *(token)*
 
-```
-GET /api/v1/auth/me
-Authorization: Bearer TOKEN_HERE
+The signed-in user.
 
-Response: 200 OK
-{
-  "data": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    ...
-  }
-}
-```
+## Pages
 
-## Public Endpoints
+The read endpoints are open, so the public site and the builder need no token.
+They behave differently with one: a visitor sees only published pages and
+visible sections, an editor sees drafts and hidden sections too. A page counts
+as published when its status is `published` and `published_at` is empty or in
+the past.
 
-### Posts
-
-#### List Posts
-
-```
-GET /api/v1/posts
-Query Parameters:
-  - page=1 (pagination)
-  - per_page=15
-  - published=true (only published posts)
-  - status=published|draft|scheduled|archived
-  - type=post|page|custom
-  - category=slug
-  - tag=name
-  - author_id=1
-  - search=keyword
-  - include=author,categories,tags,seo
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "Post Title",
-      "slug": "post-title",
-      "content": "...",
-      "excerpt": "...",
-      "featured_image": "url",
-      "status": "published",
-      "type": "post",
-      "published_at": "2024-03-13T00:00:00Z",
-      "author": {...},
-      "categories": [...],
-      "tags": ["tag1", "tag2"],
-      "seo": {...},
-      "meta_tags": {...},
-      "og_tags": {...},
-      "twitter_tags": {...},
-      "canonical_url": "https://example.com/post-title",
-      "created_at": "2024-03-13T00:00:00Z",
-      "updated_at": "2024-03-13T00:00:00Z"
-    }
-  ],
-  "meta": {
-    "total": 50,
-    "per_page": 15,
-    "current_page": 1,
-    "last_page": 4
-  },
-  "links": {
-    "first": "http://example.com/api/v1/posts?page=1",
-    "last": "http://example.com/api/v1/posts?page=4",
-    "prev": null,
-    "next": "http://example.com/api/v1/posts?page=2"
-  }
-}
-```
-
-#### Get Single Post
-
-```
-GET /api/v1/posts/{slug-or-id}
-Query Parameters:
-  - include=author,categories,tags,seo
-
-Response: 200 OK
-{
-  "data": {...}
-}
-```
-
-### Categories
-
-#### List Categories
-
-```
-GET /api/v1/categories
-Query Parameters:
-  - parent_id=1
-  - search=keyword
-  - include=parent,children,seo
-  - sort=name|order|created_at
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Category Name",
-      "slug": "category-name",
-      "description": "...",
-      "order": 0,
-      "parent_id": null,
-      "parent": null,
-      "children": [...],
-      "seo": {...},
-      "meta_tags": {...},
-      "canonical_url": "https://example.com/category-name",
-      "created_at": "2024-03-13T00:00:00Z",
-      "updated_at": "2024-03-13T00:00:00Z"
-    }
-  ]
-}
-```
-
-#### Get Category Tree
-
-```
-GET /api/v1/categories/tree
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Parent Category",
-      "children": [
-        {
-          "id": 2,
-          "name": "Child Category",
-          "children": [...]
-        }
-      ]
-    }
-  ]
-}
-```
-
-#### Get Single Category
-
-```
-GET /api/v1/categories/{slug-or-id}
-```
-
-### Comments
-
-#### List Comments for a Post
-
-```
-GET /api/v1/posts/{post_id}/comments
-Query Parameters:
-  - limit=20 (alternative to pagination)
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "body": "Great post!",
-      "author_name": "John",
-      "author_email": "john@example.com",
-      "status": "approved",
-      "post_id": 1,
-      "parent_id": null,
-      "user": null,
-      "replies": [...],
-      "created_at": "2024-03-13T00:00:00Z",
-      "updated_at": "2024-03-13T00:00:00Z"
-    }
-  ]
-}
-```
-
-#### Create Comment
-
-```
-POST /api/v1/comments
-Content-Type: application/json
-
-{
-  "body": "Great post!",
-  "author_name": "John Doe",
-  "author_email": "john@example.com",
-  "post_id": 1,
-  "parent_id": null
-}
-
-Response: 201 Created
-{
-  "data": {...},
-  "message": "Comment submitted. It will be visible once approved."
-}
-```
-
-### Menus
-
-#### List Menus
-
-```
-GET /api/v1/menus
-Include: items
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Main Menu",
-      "slug": "main-menu",
-      "location": "header",
-      "items": [
-        {
-          "id": 1,
-          "title": "Home",
-          "url": "https://example.com",
-          "target": "_self",
-          "order": 0,
-          "type": "custom",
-          "children": [...]
-        }
-      ]
-    }
-  ]
-}
-```
-
-#### Get Single Menu
-
-```
-GET /api/v1/menus/{slug-or-id}
-```
-
-### Settings
-
-#### List Settings
-
-```
-GET /api/v1/settings
-Query Parameters:
-  - group=site|seo|social|email
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "key": "site_name",
-      "value": "TuxCMS",
-      "group": "site"
-    }
-  ]
-}
-```
-
-#### Get Grouped Settings
-
-```
-GET /api/v1/settings/grouped
-
-Response: 200 OK
-{
-  "data": {
-    "site": {
-      "site_name": "TuxCMS",
-      "site_description": "...",
-      ...
-    },
-    "seo": {...},
-    "social": {...}
-  }
-}
-```
-
-#### Get Single Setting
-
-```
-GET /api/v1/settings/{key}
-```
-
-### SEO
-
-#### Get Meta Tags
-
-```
-GET /api/v1/seo/meta-tags
-Query Parameters:
-  - slug=post-slug (required)
-  - type=post|category (required)
-
-Response: 200 OK
-{
-  "meta_tags": {
-    "title": "Post Title",
-    "description": "Meta description...",
-    "keywords": "keyword1, keyword2",
-    "canonical": "https://example.com/post-title",
-    "robots": "index, follow"
-  },
-  "og_tags": {
-    "og:title": "Post Title",
-    "og:description": "...",
-    "og:image": "https://example.com/image.jpg",
-    "og:type": "article",
-    "og:url": "https://example.com/post-title"
-  },
-  "twitter_tags": {
-    "twitter:card": "summary_large_image",
-    "twitter:title": "Post Title",
-    "twitter:description": "...",
-    "twitter:image": "https://example.com/image.jpg"
-  },
-  "schema_markup": {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Post Title",
-    ...
-  }
-}
-```
-
-### Search
-
-#### Search Posts
-
-```
-GET /api/v1/search
-Query Parameters:
-  - q=search-term (required)
-  - limit=20 (optional)
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "Matching Post",
-      ...
-    }
-  ],
-  "meta": {...},
-  "links": {...}
-}
-```
-
-### Sitemap
-
-#### Get XML Sitemap
-
-```
-GET /api/v1/sitemap.xml
-
-Response: 200 OK (Content-Type: application/xml)
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://example.com/api/v1/posts</loc>
-    <lastmod>2024-03-13T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  ...
-</urlset>
-```
-
-### Media
-
-#### List Media
-
-```
-GET /api/v1/media
-Query Parameters:
-  - page=1
-  - per_page=15
-  - collection=featured_image|gallery
-  - search=filename
-
-Response: 200 OK
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "image",
-      "file_name": "image.jpg",
-      "mime_type": "image/jpeg",
-      "size": 25600,
-      "custom_properties": {
-        "alt_text": "Image alt text",
-        "caption": "Image caption"
-      },
-      "url": "https://example.com/storage/posts/1/image.jpg",
-      "collection_name": "featured_image",
-      "created_at": "2024-03-13T00:00:00Z"
-    }
-  ],
-  "meta": {...}
-}
-```
-
-#### Get Single Media
-
-```
-GET /api/v1/media/{id}
-```
-
-## Protected Endpoints
-
-All protected endpoints require Bearer token authentication:
-
-```
-Authorization: Bearer YOUR_TOKEN_HERE
-```
-
-### Posts (CRUD)
-
-```
-POST /api/v1/posts
-PUT /api/v1/posts/{id}
-DELETE /api/v1/posts/{id}
-```
-
-### Categories (CRUD)
-
-```
-POST /api/v1/categories
-PUT /api/v1/categories/{id}
-DELETE /api/v1/categories/{id}
-```
-
-### Comments (Manage)
-
-```
-GET /api/v1/comments/{id}
-PUT /api/v1/comments/{id}
-DELETE /api/v1/comments/{id}
-```
-
-### Menus (CRUD)
-
-```
-POST /api/v1/menus
-PUT /api/v1/menus/{id}
-DELETE /api/v1/menus/{id}
-```
-
-### Settings (Write)
-
-```
-POST /api/v1/settings
-PUT /api/v1/settings/{key}
-DELETE /api/v1/settings/{key}
-```
-
-### SEO (Write)
-
-```
-GET /api/v1/seo
-PUT /api/v1/seo
-```
-
-### Media (Upload/Delete)
-
-```
-POST /api/v1/media (upload file)
-DELETE /api/v1/media/{id}
-```
-
-## Response Format
-
-All responses are in JSON format with consistent structure:
-
-### Success Response
+### The page object
 
 ```json
 {
-  "data": {...},
-  "message": "Success message (optional)"
+  "id": 4,
+  "title": "Web design",
+  "slug": "web-design",
+  "path": "/services/web-design",
+  "full_path": "/services/web-design",
+  "content": null,
+  "excerpt": "Sites that load fast.",
+  "template": "crystal",
+  "live_preview": true,
+  "status": "published",
+  "order": 2,
+  "is_homepage": false,
+  "show_in_nav": true,
+  "nav_label": null,
+  "custom_fields": null,
+  "published_at": "2026-11-11T09:00:00+00:00",
+  "created_at": "2026-11-10T14:02:11+00:00",
+  "updated_at": "2026-11-24T16:40:03+00:00"
 }
 ```
 
-### Error Response
+`live_preview` is true when the template is an installed theme; the dashboard
+then edits the page on the real site preview. `author`, `parent`, `children`,
+`sections`, `seo`, `featured_image` and `gallery` appear when the endpoint
+loads them.
+
+A section:
 
 ```json
 {
-  "message": "Error message",
-  "errors": {
-    "field_name": ["Error detail 1", "Error detail 2"]
+  "id": 40,
+  "key": "hero",
+  "type": "hero",
+  "title": "Sites that load fast",
+  "content": "Built to be read.",
+  "data": { "image": "/storage/12/office.jpg", "image_alt": "The studio" },
+  "order": 0,
+  "is_visible": true
+}
+```
+
+`type` is one of `hero`, `text`, `features`, `stats`, `testimonials`, `team`,
+`faq`, `cta`, `contact`, `contact_form`, `map`.
+
+### GET /pages
+
+Paginated, sorted by `order` unless told otherwise.
+
+| Parameter | Meaning |
+| --- | --- |
+| `filter[status]`, `filter[template]`, `filter[parent_id]`, `filter[is_homepage]` | Exact match |
+| `filter[title]` | Partial match |
+| `search` | Partial match on title or slug |
+| `sort` | `title`, `order`, `created_at`, `updated_at`, `published_at`; prefix `-` to reverse |
+| `include` | Any of `sections`, `seo`, `author`, `children`, `parent`, `media`, comma separated |
+| `per_page` | 1 to 100, default 15 |
+
+### GET /pages/tree
+
+Every page nested under its parent through `children`, ordered by `order` then
+title.
+
+### GET /pages/homepage
+
+The published homepage with its visible sections, SEO and media.
+
+### GET /pages/resolve?path=/services/web-design
+
+Finds a page by its full path, walking the tree one segment at a time. An empty
+path or `/` returns the homepage. Use this for nested pages: slugs are only
+unique among siblings.
+
+### GET /pages/{slugOrId}
+
+One page with sections, SEO, author, children and media. A slug that exists
+under more than one parent matches the first found, so prefer `resolve` or the
+id.
+
+### POST /pages *(token)*
+
+Only `title` is required. `201` on success.
+
+| Field | Rule |
+| --- | --- |
+| `title` | Required, up to 255 |
+| `slug` | Optional; generated from the title when omitted |
+| `content`, `excerpt` | Optional; excerpt up to 1000 |
+| `template` | A built-in layout (`default`, `landing`, `contact`, `about`, `services`, `blank`) or an installed theme |
+| `status` | `draft`, `published` or `archived` |
+| `parent_id` | An existing page id |
+| `order` | Integer, 0 or more |
+| `is_homepage`, `show_in_nav` | Boolean. Setting a homepage unsets the previous one |
+| `nav_label` | Up to 255 |
+| `custom_fields` | Object |
+| `published_at` | Date. A future date schedules the page |
+| `sections` | Array of section objects; `type` is required on each |
+| `seo` | Object, the same fields as [per-page SEO](#per-page-seo) |
+
+A top-level slug of `admin`, `api`, `build`, `storage` or `up` is refused with
+a `422`, because each is a real directory in the document root.
+
+### PUT /pages/{page} *(token)*
+
+`{page}` is the id or the slug. Send only what changes.
+
+`sections`, when present, replaces the page's whole list: a section with an
+`id` belonging to this page is updated in place, one without is created, and
+any stored section missing from the list is deleted along with its media. Leave
+`sections` out to keep them untouched.
+
+A change is snapshotted, so the previous state can be restored.
+
+### GET /pages/{page}/revisions *(token)*
+
+The 30 most recent earlier states, newest first.
+
+```json
+{
+  "data": [
+    {
+      "id": 91,
+      "created_at": "2026-11-24T16:40:03+00:00",
+      "author": "Editor",
+      "snapshot": { "title": "Web design", "sections": [] }
+    }
+  ]
+}
+```
+
+To restore one, `PUT` its `snapshot` back to the page.
+
+### DELETE /pages/{page} *(token)*
+
+A soft delete.
+
+## Per-page SEO
+
+### GET /pages/{page}/seo *(token)*
+### PUT /pages/{page}/seo *(token)*
+
+All fields optional:
+
+`meta_title`, `og_title`, `twitter_title` (up to 255); `meta_description`,
+`meta_keywords`, `og_description`, `twitter_description`, `og_image`,
+`twitter_image` (up to 500); `og_type`, `twitter_card` (up to 50);
+`canonical_url` (a URL); `robots` (up to 100); `schema_markup` (object);
+`custom_head` (up to 5000).
+
+## Search
+
+### GET /search?q=design
+
+Published pages whose title, content or excerpt contains `q` (2 to 200
+characters), most recently updated first. `limit` sets the page size, 1 to 100,
+default 15. `meta` echoes the `query`.
+
+## Public forms
+
+Both forms are throttled to 5 a minute and share two anti-spam fields:
+
+- `website` must be absent or empty. It is a hidden field people never see.
+- `form_token` should carry a token from `GET /form-token`, fetched when the
+  form page opens. Submissions without one, or sent within three seconds of
+  it, are treated as automated.
+
+A submission the filter judges to be spam still answers `201` with the usual
+thank you. It is stored and shown in the dashboard but not emailed.
+
+### GET /form-token
+
+Throttled to 30 a minute, never cached.
+
+```json
+{ "token": "1795000000.4f2c..." }
+```
+
+### POST /enquiries
+
+| Field | Rule |
+| --- | --- |
+| `type` | Required: `staff_request`, `registration` or `contact` |
+| `name` | Required, up to 255 |
+| `email` | Required |
+| `organisation`, `phone` | Optional |
+| `message` | Optional, up to 10000 |
+| `consent` | Must be accepted |
+| `details` | Optional object of up to 20 extra answers: short values or flat lists |
+
+```json
+{
+  "message": "Thank you. We have your details and will be in touch shortly.",
+  "reference": 57
+}
+```
+
+The enquiry is emailed to the `enquiry_email_<type>` setting, falling back to
+`enquiry_email`, then `contact_email`.
+
+### POST /job-applications
+
+Multipart, because of the CV.
+
+| Field | Rule |
+| --- | --- |
+| `job` | Required: the slug of a published vacancy |
+| `name`, `email` | Required |
+| `phone` | Optional |
+| `cover_letter` | Required, up to 10000 |
+| `cv` | Required file: pdf, doc or docx, up to 5 MB |
+
+Answers `201` with a `message` and a `reference`. The application is emailed to
+the vacancy's `application_email`, falling back to the `contact_email` setting.
+
+## Jobs
+
+All *token*. Vacancies reach the public through the generated careers pages,
+not through the API.
+
+### GET /jobs
+
+Newest update first. `search` matches title or location; `per_page` is 1 to 50,
+default 10.
+
+### GET /jobs/{id}
+### POST /jobs
+### PUT /jobs/{id}
+
+| Field | Rule |
+| --- | --- |
+| `title`, `slug`, `summary` | Required. The slug is unique and uses letters, numbers, dashes and underscores |
+| `status` | Required: `draft`, `published` or `closed` |
+| `location`, `job_type`, `hours`, `salary`, `employment_type`, `description` | Optional text |
+| `responsibilities`, `essential`, `desirable`, `benefits` | Optional lists of strings |
+| `application_email` | Optional; where applications for this vacancy go |
+| `published_at`, `closes_at` | Optional dates |
+
+Publishing a vacancy with no `published_at` stamps it with the current time.
+Create answers `201`.
+
+### DELETE /jobs/{id}
+
+Answers `204`.
+
+## Applications and enquiries
+
+All *token*.
+
+### GET /job-applications
+### GET /enquiries
+
+Newest first; `per_page` is 1 to 100, default 20. `held=1` lists only what the
+spam filter is holding, and `meta.held` always carries the held count.
+Enquiries also filter by `type`.
+
+Each row includes `delivery_status` (`sent`, `failed` or `spam`) and, where the
+filter flagged it, a `spam_reason`.
+
+### GET /job-applications/{id}/cv
+
+Downloads the CV under its original file name.
+
+### POST /enquiries/{id}/release
+### POST /job-applications/{id}/release
+
+Sends a held submission on to the inbox after all. `422` if it is not being
+held.
+
+```json
+{ "delivery_status": "sent", "message": "Sent to the inbox." }
+```
+
+## Settings
+
+All *token*. A setting is a `key`, a `value` and a `group`.
+
+| Endpoint | Does |
+| --- | --- |
+| `GET /settings` | Every setting; `?group=` narrows it |
+| `GET /settings/grouped` | `{ group: { key: value } }` |
+| `GET /settings/{key}` | One setting |
+| `PUT /settings` | Bulk save: `{ "settings": { "site_name": "Acme", "contact_email": "hi@acme.test" } }`. One transaction; answers the full key and value map |
+| `POST /settings` | Create: `key` (unique), `value`, optional `group` |
+| `PUT /settings/{key}` | Update `value` and optionally `group` |
+| `DELETE /settings/{key}` | Answers `204` |
+
+The dashboard saves through the bulk endpoint.
+
+## Media
+
+All *token*.
+
+### GET /media
+
+`collection` and `search` (on name) filter; `per_page` is 1 to 100, default 15.
+
+```json
+{
+  "id": 12,
+  "name": "office",
+  "file_name": "office.jpg",
+  "mime_type": "image/jpeg",
+  "size": 482113,
+  "custom_properties": { "alt_text": "The studio", "caption": null },
+  "url": "https://example.com/storage/12/office.jpg",
+  "collection_name": "library"
+}
+```
+
+### GET /media/{id}
+
+### POST /media
+
+Multipart.
+
+| Field | Rule |
+| --- | --- |
+| `file` | Required: jpg, jpeg, png, gif, pdf, doc or docx, up to 10 MB |
+| `model_type` | Optional: `Page` or `PageSection` |
+| `model_id` | Required with `model_type` |
+| `collection` | Optional |
+| `alt_text`, `caption` | Optional |
+
+With a model, the file attaches to that page or section. Without one, it goes
+to the site-wide library, which is what the Media screen uses. Answers `201`.
+
+### DELETE /media/{id}
+
+Answers `204`.
+
+## Publishing
+
+### GET /site/status *(token)*
+
+```json
+{
+  "data": {
+    "last_published_at": "2026-11-24T16:41:10+00:00",
+    "pending_changes": 3,
+    "has_output": true
   }
 }
 ```
 
-## Error Handling
+### POST /site/publish *(token)*
 
-Common HTTP Status Codes:
+Rebuilds the static site and waits for it. Throttled to 10 a minute.
 
-- `200 OK` - Success
-- `201 Created` - Resource created
-- `204 No Content` - Deleted successfully
-- `400 Bad Request` - Invalid input
-- `401 Unauthorized` - Authentication required
-- `403 Forbidden` - Permission denied
-- `404 Not Found` - Resource not found
-- `422 Unprocessable Entity` - Validation error
-- `500 Internal Server Error` - Server error
-
-## Pagination
-
-List endpoints support pagination:
-
-Query Parameters:
-- `page` - Page number (default: 1)
-- `per_page` - Items per page (default: 15, max: 100)
-
-Response includes:
-- `meta.total` - Total items
-- `meta.per_page` - Items per page
-- `meta.current_page` - Current page
-- `meta.last_page` - Last page number
-- `links.first` - Link to first page
-- `links.last` - Link to last page
-- `links.prev` - Link to previous page
-- `links.next` - Link to next page
-
-## Filtering & Sorting
-
-Posts endpoint supports advanced filtering:
-
-```
-GET /api/v1/posts?filter[status]=published&filter[author_id]=1&sort=-created_at
+```json
+{
+  "data": {
+    "pages": 9,
+    "files": 14,
+    "pruned": 1,
+    "last_published_at": "2026-11-24T16:41:10+00:00"
+  },
+  "message": "Site published."
+}
 ```
 
-Available filters:
-- `status` - post status
-- `type` - post type
-- `author_id` - author ID
-- `category` - category slug
-- `tag` - tag name
-- `search` - search term
+`409` if a build is already running, `500` with the reason if the build fails.
+A failed build leaves the live site as it was.
 
-Available sorts:
-- `title`, `published_at`, `created_at`, `-published_at`, `-created_at`
+## Health
 
-## Includes
-
-Use `include` parameter to load relationships:
-
-```
-GET /api/v1/posts?include=author,categories,tags,seo
-```
+`GET /health` answers `{"status": "ok", "version": "1.0.0"}`. Laravel's own
+check is at `/up`, outside `/api/v1`.
