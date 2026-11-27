@@ -10,6 +10,10 @@
 
 ## Done
 
+- [x] ~~**Fill out the Overview** - recent pages as a gallery, an inbox of the latest messages and applications, vacancies and the newest media~~ (2026-11-27)
+- [x] ~~**Add a gallery view to Pages** - each page as a small live picture of itself, with the choice remembered~~ (2026-11-27)
+- [x] ~~**Give the dashboard motion** - a highlight that slides between items, screens and dialogs that rise out of a blur, sections that slide when reordered; written with Motion~~ (2026-11-27)
+- [x] ~~**Preview pages that are not on the site yet** - drafts and scheduled pages are rendered for the editor instead of showing the 404 page, and scheduled pages are labelled as such~~ (2026-11-27)
 - [x] ~~**Give Shopfront photographs and motion** - photo layouts for the hero, text and features sections, seven demo photographs seeded into the media library, and motion written with Motion; the demo keeps its uploads apart from the real media library~~ (2026-11-27)
 - [x] ~~**Make the editable outlines easier to spot** - blue rather than grey, lighter on dark bands~~ (2026-11-27)
 - [x] ~~**Make the demo show the whole CMS** - Shopfront's contact form now delivers to the Enquiries inbox, and the demo content covers every section type, nested services, draft and scheduled pages, vacancies in each status and a sample inbox with held spam~~ (2026-11-27)
