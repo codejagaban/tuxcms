@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion as Motion } from 'motion/react';
 import {
   IconOverview,
   IconPages,
@@ -36,6 +37,8 @@ const DashboardLayout = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [appearance, setAppearance] = useAppearance();
   const accountMenuRef = useRef(null);
+  // The item under the pointer, so a soft highlight can follow it down the rail.
+  const [hoveredPath, setHoveredPath] = useState(null);
 
   // The account menu closes on a click or tap anywhere outside it, and on
   // Escape.
@@ -98,7 +101,7 @@ const DashboardLayout = () => {
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-2" aria-label="Dashboard navigation">
+        <nav className="flex-1 px-3 py-2" aria-label="Dashboard navigation" onMouseLeave={() => setHoveredPath(null)}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -107,12 +110,36 @@ const DashboardLayout = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`mb-0.5 flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
-                  active ? 'glass-chip font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:bg-[var(--color-wash)] hover:text-[var(--color-ink)]'
+                onMouseEnter={() => setHoveredPath(item.path)}
+                onFocus={() => setHoveredPath(item.path)}
+                onBlur={() => setHoveredPath(null)}
+                className={`relative mb-0.5 flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors duration-200 ${
+                  active ? 'font-medium text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
                 }`}
               >
-                <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[var(--color-blue)]' : ''}`} />
-                <span>{item.label}</span>
+                {/* One chip for the whole rail: it travels to whichever item
+                    is current instead of each item drawing its own. */}
+                {active && (
+                  <Motion.span
+                    layoutId="rail-current"
+                    className="glass-chip absolute inset-0 rounded-lg"
+                    transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+                  />
+                )}
+                <AnimatePresence>
+                  {hoveredPath === item.path && !active && (
+                    <Motion.span
+                      layoutId="rail-hover"
+                      className="absolute inset-0 rounded-lg bg-[var(--color-wash)]"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 520, damping: 40 }}
+                    />
+                  )}
+                </AnimatePresence>
+                <Icon className={`relative h-[18px] w-[18px] shrink-0 transition-colors duration-200 ${active ? 'text-[var(--color-blue)]' : ''}`} />
+                <span className="relative">{item.label}</span>
               </Link>
             );
           })}
@@ -161,7 +188,7 @@ const DashboardLayout = () => {
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="glass-panel absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
+                  <div className="glass-panel enter-drop absolute right-0 mt-2 w-64 rounded-xl border border-[var(--color-rule-2)] p-2 shadow-[0_8px_18px_oklch(18%_0.01_95_/_0.08)]">
                     <div className="px-3 py-3">
                       <div className="text-sm font-semibold">{user?.name || 'User'}</div>
                       <div className="mt-1 truncate text-xs text-[var(--color-muted)]">{user?.email}</div>
@@ -203,7 +230,10 @@ const DashboardLayout = () => {
         </header>
 
         <main className="mx-auto min-h-[calc(100dvh-3.5rem)] max-w-[96rem] px-5 py-6 sm:px-8 lg:px-10 lg:py-7">
-          <Outlet />
+          {/* Each screen arrives with a short rise out of a blur. */}
+          <div key={location.pathname} className="enter-up">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

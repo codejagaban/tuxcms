@@ -44,7 +44,7 @@ const Modal = forwardRef(
     return (
       <div className="fixed inset-0 z-50 grid place-items-center p-4">
         <div
-          className="glass-veil fixed inset-0 transition-opacity"
+          className="glass-veil enter-fade fixed inset-0"
           onClick={onClose}
         />
         <div
@@ -56,7 +56,7 @@ const Modal = forwardRef(
           role="dialog"
           aria-modal="true"
           aria-label={props['aria-label'] || 'Dialog'}
-          className={`relative z-50 max-h-[90dvh] overflow-y-auto rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_12px_28px_oklch(18%_0.01_95_/_0.14)] ${className}`}
+          className={`enter-up relative z-50 max-h-[90dvh] overflow-y-auto rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-[0_12px_28px_oklch(18%_0.01_95_/_0.14)] ${className}`}
           {...props}
         >
           {children}

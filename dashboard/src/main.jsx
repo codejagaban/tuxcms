@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { MotionConfig } from 'motion/react'
 import { AuthProvider } from './lib/auth'
 import './index.css'
 import './lib/theme'
@@ -16,7 +17,10 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter basename={basename}>
       <AuthProvider>
-        <App />
+        {/* Movement stands down for anyone who asks their device for less. */}
+        <MotionConfig reducedMotion="user">
+          <App />
+        </MotionConfig>
         <Toaster
           position="top-right"
           reverseOrder={false}

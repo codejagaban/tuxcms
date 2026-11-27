@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion as Motion } from 'motion/react';
 import {
   Plus, Trash, CaretUp, CaretDown, Eye, EyeSlash, X,
 } from '../../lib/icons';
@@ -36,13 +37,19 @@ export default function Inspector({
       onClick={() => setTab(id)}
       role="tab"
       aria-selected={tab === id}
-      className={`flex-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-        tab === id
-          ? 'border-[var(--color-ink)] text-[var(--color-ink)]'
-          : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-ink-2)]'
+      className={`relative flex-1 px-3 py-2.5 text-sm font-medium border-b-2 border-transparent transition-colors duration-200 ${
+        tab === id ? 'text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:text-[var(--color-ink-2)]'
       }`}
     >
       {text}
+      {/* One underline, which slides to the chosen tab. */}
+      {tab === id && (
+        <Motion.span
+          layoutId="inspector-tab"
+          className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-[var(--color-ink)]"
+          transition={{ type: 'spring', stiffness: 460, damping: 40 }}
+        />
+      )}
     </button>
   );
 
@@ -179,8 +186,11 @@ function PageTab({
           {(page.sections || []).map((s, i) => {
             const isSel = selected && s._uid === selected._uid;
             return (
-              <li
+              <Motion.li
                 key={s._uid}
+                // Moving a section up or down slides it to its new place.
+                layout="position"
+                transition={{ type: 'spring', stiffness: 480, damping: 42 }}
                 className={`group relative flex items-center rounded-lg border px-2.5 py-2 cursor-pointer ${
                   isSel ? 'border-[var(--color-ink)] bg-[var(--color-paper-3)]' : 'border-[var(--color-rule-2)] hover:border-[var(--color-rule)]'
                 }`}
@@ -223,7 +233,7 @@ function PageTab({
                     <Trash className="h-4 w-4 text-[var(--color-ink)]" weight="bold" />
                   </IconBtn>
                 </div>
-              </li>
+              </Motion.li>
             );
           })}
         </ul>

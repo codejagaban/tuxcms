@@ -64,6 +64,17 @@
 .skeleton { background: linear-gradient(90deg, var(--color-paper-3) 25%, var(--color-paper-2) 45%, var(--color-paper-3) 65%); background-size: 300% 100%; animation: skeleton-sweep 1.4s ease-in-out infinite; }
 @keyframes skeleton-sweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
 
+/* Arrivals. A screen or dialog rises a few pixels out of a blur; a menu drops
+   in from just above. These are plain CSS so they always finish: nothing waits
+   on a script to become visible. They end on `none` so that a finished
+   arrival leaves no filter or transform behind to trap fixed children. */
+@keyframes enter-up { from { opacity: 0; filter: blur(8px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
+@keyframes enter-drop { from { opacity: 0; filter: blur(6px); transform: translateY(-6px) scale(.985); } to { opacity: 1; filter: none; transform: none; } }
+@keyframes enter-fade { from { opacity: 0; } to { opacity: 1; } }
+.enter-up { animation: enter-up .42s cubic-bezier(.2, .8, .2, 1) both; }
+.enter-drop { transform-origin: top right; animation: enter-drop .2s cubic-bezier(.2, .8, .2, 1) both; }
+.enter-fade { animation: enter-fade .2s ease-out both; }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 @layer utilities {
