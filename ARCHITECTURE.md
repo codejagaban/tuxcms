@@ -78,6 +78,24 @@ are typed (`hero`, `features`, `stats`, `testimonials`, `team`, `faq`, `cta`,
 for the fields its type needs. Rendering a page means rendering its sections in
 order through the matching Blade view.
 
+### The blog
+
+A post is a row in `posts`, optionally filed under one row of
+`post_categories`. Its body is HTML written in the dashboard's Tiptap editor
+and cleaned by `App\Support\RichText` as it is saved, so what is stored is
+safe to print into a page as it is.
+
+`SiteBuilder` writes the blog only when at least one post is published and
+its date has passed: `/blog/` and its further pages (`/blog/page/2/`, nine
+posts to a page), `/blog/<slug>/` for each post, `/blog/category/<slug>/` for
+each category that has a published post, and the RSS feed at
+`/blog/feed.xml`. With no published posts none of these exist and the menu
+carries no Blog link. Posts are also listed in the sitemap and `llms.txt`,
+and each post page carries `BlogPosting` structured data.
+
+A post dated in the future is scheduled. It goes live at the next build after
+that date, which the scheduled build takes care of (see Scheduled publishing).
+
 ### The page tree and the path column
 
 Pages nest through `parent_id`. The full path is kept in a materialized `path`
@@ -234,13 +252,14 @@ A theme is a directory of Blade views under
 `public/themes/<name>`. Adding the directory is all it takes for the name to be
 accepted as a page template and for its pages to be edited on the live preview.
 `SITE_THEME` picks the theme used for pages with no template-specific view, for
-the careers pages and for the 404. Every page that theme renders is edited on
+the careers and blog pages and for the 404. Every page that theme renders is edited on
 the live preview.
 
 A view is resolved in order: the page's own template if it names a theme, then
 `SITE_THEME`, then the unthemed views in `resources/views/site`. There are no
-unthemed careers views, so those fall back to Shopfront when `SITE_THEME` is
-unset.
+unthemed careers or blog views, so those fall back to Shopfront when
+`SITE_THEME` is unset or the theme has none of its own. A theme supplies its
+own blog with `blog/index.blade.php` and `blog/show.blade.php`.
 
 Shopfront is the bundled theme and the default in `.env.example`. A theme's
 stylesheet lives at `public/themes/<name>/css/site.css` and is minified beside

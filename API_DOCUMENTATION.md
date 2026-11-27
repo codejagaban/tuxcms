@@ -10,6 +10,7 @@ request's `Accept` header says.
 - [Search](#search)
 - [Public forms](#public-forms)
 - [Jobs](#jobs)
+- [Blog](#blog)
 - [Applications and enquiries](#applications-and-enquiries)
 - [Settings](#settings)
 - [Media](#media)
@@ -361,6 +362,55 @@ Create answers `201`.
 ### DELETE /jobs/{id}
 
 Answers `204`.
+
+## Blog
+
+All *token*. Posts reach the public through the generated blog pages, not
+through the API.
+
+### GET /posts
+
+Newest first, by publish date, or by last edit for drafts. `search` matches the
+title or excerpt; `status` is `draft`, `published` or `scheduled`; `category`
+is a category id; `per_page` is 1 to 50, default 10.
+
+### GET /posts/{id}
+### POST /posts
+### PUT /posts/{id}
+
+| Field | Rule |
+| --- | --- |
+| `title`, `slug` | Required. The slug is unique, uses letters, numbers, dashes and underscores, and cannot be `page`, `category` or `feed` |
+| `status` | Required: `draft` or `published` |
+| `body` | Optional HTML. It is cleaned before it is stored: only headings, paragraphs, lists, quotes, links, images and inline emphasis survive |
+| `excerpt` | Optional, up to 500 characters. Listings fall back to the start of the body |
+| `cover_image`, `cover_image_alt` | Optional image address and its description |
+| `post_category_id` | Optional id of an existing category |
+| `published_at` | Optional date. One in the future schedules the post |
+| `meta_title`, `meta_description` | Optional; what search engines are shown |
+
+Publishing a post with no `published_at` stamps it with the current time. A
+post is on the site once it is `published`, its date has passed and the site
+has been built. Create answers `201`. The answer includes `is_scheduled` and
+the post's public `path`.
+
+### DELETE /posts/{id}
+
+Answers `204`.
+
+### GET /post-categories
+
+Every category by name, each with its `posts_count`.
+
+### POST /post-categories
+### PUT /post-categories/{id}
+
+`name` is required. The `slug` is made from the name unless one is sent, and
+must be unique. Create answers `201`.
+
+### DELETE /post-categories/{id}
+
+Answers `204`. Posts in the category are kept, without a category.
 
 ## Applications and enquiries
 
