@@ -6,7 +6,7 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\Site\SiteBuilder;
-use Database\Seeders\CrystalContentSeeder;
+use Database\Seeders\Clients\Crystal\CrystalContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;

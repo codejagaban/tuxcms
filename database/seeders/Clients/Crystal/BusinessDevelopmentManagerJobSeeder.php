@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Clients\Crystal;
 
 use App\Models\JobPost;
 use Illuminate\Database\Seeder;

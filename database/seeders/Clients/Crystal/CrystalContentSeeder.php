@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Clients\Crystal;
 
 use App\Models\Page;
 use App\Models\PageSection;
@@ -10,7 +10,12 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 
-/** Import the Crystal Services website into the Crystal TuxCMS theme. */
+/**
+ * The content of one client's website, Crystal Services. It is not part of
+ * the CMS: it lives here so that site can be rebuilt from an empty database.
+ *
+ *   php artisan db:seed --class='Database\Seeders\Clients\Crystal\CrystalContentSeeder'
+ */
 class CrystalContentSeeder extends Seeder
 {
     private User $author;
