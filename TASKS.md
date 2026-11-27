@@ -3,7 +3,6 @@
 ## Active
 
 - [ ] **Settle the Fine Flow theme** - `.env.example` defaults `SITE_THEME` to `fineflow`, but no fineflow views are committed. `Site::themes()` lists whatever directories exist under `resources/views/site/themes`, so a fresh clone has no such theme and the setting points at nothing. Either commit the theme or drop the default.
-- [ ] **Replace or remove the three stale documents** - `ARCHITECTURE.md`, `API_DOCUMENTATION.md` and `SETUP_COMPLETE.md` all describe the earlier Post, Category, Comment and Menu architecture. `API_DOCUMENTATION.md` documents a `POST /api/v1/auth/register` endpoint that deliberately does not exist.
 
 ## Waiting On
 
@@ -13,6 +12,7 @@
 
 ## Done
 
+- [x] ~~**Replace the three stale documents** - rewrite `ARCHITECTURE.md` and `API_DOCUMENTATION.md` from the current code, and turn `SETUP_COMPLETE.md` into a working `SETUP.md`~~ (2026-11-27)
 - [x] ~~**Show which parts of the preview can be edited** - draw a resting outline on every editable region and judge each one against the colour behind it, so editable text and images are visible without hovering~~ (2026-11-27)
 - [x] ~~**Give section names the full row** - the four row actions held 182px of the 340px inspector open, leaving 67px for a name; they now sit over the row and appear on hover~~ (2026-11-27)
 - [x] ~~**Repair the dashboard end-to-end suite** - the specs had looked for an iframe title that changed on 2026-11-11 and never set the `live_preview` flag the editor now reads~~ (2026-11-27)
