@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EnquiryController;
 use App\Http\Controllers\Api\V1\JobPostController;
+use App\Http\Controllers\Api\V1\PostCategoryController;
+use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\Api\V1\PageController;
@@ -71,6 +73,17 @@ Route::prefix('v1')->group(function () {
         // Held by the spam filter by mistake: send it on.
         Route::post('enquiries/{enquiry}/release', [EnquiryController::class, 'release']);
         Route::post('job-applications/{application}/release', [JobApplicationController::class, 'release']);
+
+        // Blog
+        Route::get('posts', [PostController::class, 'index']);
+        Route::get('posts/{post}', [PostController::class, 'show']);
+        Route::post('posts', [PostController::class, 'store']);
+        Route::put('posts/{post}', [PostController::class, 'update']);
+        Route::delete('posts/{post}', [PostController::class, 'destroy']);
+        Route::get('post-categories', [PostCategoryController::class, 'index']);
+        Route::post('post-categories', [PostCategoryController::class, 'store']);
+        Route::put('post-categories/{category}', [PostCategoryController::class, 'update']);
+        Route::delete('post-categories/{category}', [PostCategoryController::class, 'destroy']);
 
         // Per-page SEO
         Route::get('pages/{page}/seo', [SeoController::class, 'show']);
