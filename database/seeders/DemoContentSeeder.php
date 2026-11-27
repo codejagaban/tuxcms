@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Enquiry;
 use App\Models\JobApplication;
 use App\Models\JobPost;
+use App\Models\MediaLibrary;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Seo;
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Seeds a realistic business website that uses everything the CMS does:
- * pages built from every section type, nested service pages, a draft and a
- * scheduled page, SEO, site settings, vacancies in each status, and an inbox
+ * pages built from every section type, photographs in the media library,
+ * nested service pages, a draft and a scheduled page, SEO, site settings,
+ * vacancies in each status, and an inbox
  * of enquiries and applications, including ones the spam filter is holding.
  *
  * Idempotent — re-running wipes the demo pages and rebuilds them, so it never
@@ -30,6 +32,9 @@ class DemoContentSeeder extends Seeder
 {
     private User $author;
 
+    /** @var array<string, string> photograph name => its address in the media library */
+    private array $photos = [];
+
     public function run(): void
     {
         $this->author = User::firstOrCreate(
@@ -38,6 +43,7 @@ class DemoContentSeeder extends Seeder
         );
 
         $this->wipeExistingPages();
+        $this->seedPhotographs();
         $pages = $this->seedPages();
         $this->seedSettings();
         $jobs = $this->seedJobs();
@@ -77,7 +83,7 @@ class DemoContentSeeder extends Seeder
                     'subheading' => 'A product studio for founders and growing teams',
                     'primary_cta' => ['label' => 'Start a project', 'url' => '/contact/'],
                     'secondary_cta' => ['label' => 'See our work', 'url' => '/services/'],
-                    'background_image' => '',
+                    'background_image' => $this->photos['desk-from-above'],
                     'alignment' => 'center',
                 ],
             ],
@@ -90,6 +96,20 @@ class DemoContentSeeder extends Seeder
                         ['icon' => 'compass', 'title' => 'Product design', 'description' => 'Research, UX and interface design that turns fuzzy ideas into shippable flows.'],
                         ['icon' => 'code', 'title' => 'Engineering', 'description' => 'Reliable front-end and full-stack builds with a bias for performance and maintainability.'],
                         ['icon' => 'sparkles', 'title' => 'Brand & identity', 'description' => 'Logos, systems and guidelines that make a product feel like a company.'],
+                    ],
+                ],
+            ],
+            [
+                // Features with photographs: the theme hangs them as a wall of work.
+                'key' => 'work', 'type' => 'features', 'title' => 'Selected work',
+                'content' => 'A few of the products and brands we have helped into the world.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'compass', 'title' => 'Fathom bookings', 'description' => 'A booking flow rebuilt around how people actually plan a trip.', 'image' => $this->photos['laptop-and-notebook'], 'url' => '/services/web-design/', 'link_label' => 'How we build'],
+                        ['icon' => 'pen-tool', 'title' => 'Overlap brand book', 'description' => 'Guidelines short enough that the whole company read them.', 'image' => $this->photos['printed-pages'], 'url' => '/services/brand-identity/', 'link_label' => 'How we brand'],
+                        ['icon' => 'sparkles', 'title' => 'Symbol identity', 'description' => 'A name, a mark and a launch in eight weeks.', 'image' => $this->photos['identity-on-a-desk'], 'url' => '', 'link_label' => ''],
+                        ['icon' => 'layers', 'title' => 'Field kit', 'description' => 'One design system across an app, a site and a shelf of hardware.', 'image' => $this->photos['kit-laid-out'], 'url' => '', 'link_label' => ''],
                     ],
                 ],
             ],
@@ -141,10 +161,11 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'hero', 'type' => 'hero', 'title' => 'Small team, senior work',
                 'content' => 'No account managers, no handoffs to juniors. You work directly with the people doing the work.',
-                'data' => ['alignment' => 'left', 'background_image' => ''],
+                'data' => ['alignment' => 'left', 'background_image' => '', 'image' => $this->photos['room-by-the-windows'], 'image_alt' => 'People working at long tables beside tall windows'],
             ],
             [
                 'key' => 'story', 'type' => 'text', 'title' => 'Our story',
+                'data' => ['image' => $this->photos['studio-table'], 'image_alt' => 'A long shared table in the studio'],
                 'content' => "Lumen Studio began in 2014 as two designers and an engineer sharing a desk. Eleven years on we're a team of nine, but the model hasn't changed: small pods, senior people, and a direct line to whoever is building your product.\n\nWe work in tight loops — design and engineering in the same room — so decisions get made quickly and nothing gets lost in translation.",
             ],
             [
@@ -374,6 +395,37 @@ class DemoContentSeeder extends Seeder
         ]);
 
         return [$home, $about, $services, $webDesign, $brand, $contact, $privacy, $openDay, $caseStudies];
+    }
+
+    /**
+     * Put the demo photographs in the media library, where the Media screen
+     * lists them and an editor can pick them for any section.
+     */
+    private function seedPhotographs(): void
+    {
+        $library = MediaLibrary::singleton();
+        $captions = [
+            'desk-from-above' => 'A desk seen from above',
+            'laptop-and-notebook' => 'A laptop and an open notebook',
+            'printed-pages' => 'Printed pages and magazines laid out',
+            'identity-on-a-desk' => 'A laptop and a book on a white desk',
+            'kit-laid-out' => 'Tools and devices laid out in rows',
+            'studio-table' => 'A long shared table in the studio',
+            'room-by-the-windows' => 'People working beside tall windows',
+        ];
+
+        foreach ($captions as $name => $alt) {
+            $media = $library->getMedia('library')->firstWhere('file_name', $name . '.jpg')
+                ?? $library->addMedia(database_path("seeders/demo-media/{$name}.jpg"))
+                    ->preservingOriginal()
+                    ->usingName($alt)
+                    ->withCustomProperties(['alt_text' => $alt])
+                    ->toMediaCollection('library');
+
+            // Root-relative, so the pages do not carry this machine's address.
+            $this->photos[$name] = parse_url($media->getUrl(), PHP_URL_PATH);
+            $library->unsetRelation('media');
+        }
     }
 
     /** The site-wide details the header, footer, forms and schema draw on. */

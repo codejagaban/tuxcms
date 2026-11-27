@@ -156,6 +156,7 @@ class ShopfrontThemeTest extends TestCase
     public function test_the_demo_content_uses_every_part_of_the_cms(): void
     {
         \Illuminate\Support\Facades\Storage::fake('local');
+        \Illuminate\Support\Facades\Storage::fake('public');
         $this->seed(\Database\Seeders\DemoContentSeeder::class);
 
         $this->assertSame(
@@ -171,7 +172,14 @@ class ShopfrontThemeTest extends TestCase
         $every = collect(config('tuxcms.pages.section_types'))->sort()->values()->all();
         $this->assertSame($every, $used);
 
+        $this->assertSame(7, \App\Models\MediaLibrary::singleton()->getMedia('library')->count());
+
         app(SiteBuilder::class)->build();
+
+        // The photographs reach the page: behind the sign and on the wall of work.
+        $home = $this->contents('index.html');
+        $this->assertStringContainsString('desk-from-above.jpg', $home);
+        $this->assertStringContainsString('class="works"', $home);
 
         $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');
         $this->assertFileDoesNotExist($this->output . '/careers/studio-manager/index.html');
