@@ -124,8 +124,10 @@ site rather than on a mock-up of it. `PageResource` reports this as
 `live_preview`; `App\Support\Site::themes()` is the source of truth, and it is
 just the directories under `resources/views/site/themes`.
 
-The dashboard loads that page in an iframe with `?tuxcms_preview=<revision>`
-and `dashboard/src/components/editor/SitePreview.jsx` prepares it:
+The dashboard asks `GET /api/v1/pages/{page}/preview` for the page as the CMS
+renders it, which works for drafts and scheduled pages too, and shows that in
+an iframe. Only if the request fails does it fall back to the built page.
+`dashboard/src/components/editor/SitePreview.jsx` prepares it:
 
 - It collapses the theme's split-character heading animation back to one plain
   text node, so a heading does not appear to contain its own text twice.
@@ -160,8 +162,9 @@ field, with three Blade directives from `App\Support\Preview`:
 They print `data-tuxcms-field="{section id}:{path}"` and its siblings only
 while `PageController::preview()` renders a page, inside `Preview::during()`.
 The static build never switches them on, so the published site carries none;
-where a marker was, a tag keeps a single space. The themes are being marked up
-and the editor taught to read the markers; until then it still matches text.
+where a marker was, a tag keeps a single space. The editor makes each marked element edit
+exactly the field it names. A section with no markers is still found by
+matching its text, until every theme is marked up.
 
 ## SEO
 
