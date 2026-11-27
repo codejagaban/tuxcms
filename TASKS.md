@@ -2,6 +2,7 @@
 
 ## Active
 
+- [ ] **Move the Crystal client site out of this repository** - its templates and 52 MB of assets (`resources/views/site/themes/crystal`, `public/themes/crystal`), its seeders (`database/seeders/Clients/Crystal`) and its test are a client's website, in a public repository. They need a home of their own and a way to be installed onto that client's server.
 
 ## Waiting On
 
@@ -10,6 +11,7 @@
 
 ## Done
 
+- [x] ~~**Stop the core naming one client** - the editor's preview is `SitePreview`, overrides are offered to any theme with hand-built pages, the client's media importer is an option on the theme importer, footer link lists follow each site's settings, and the client's seeders are fenced off~~ (2026-11-27)
 - [x] ~~**Fill out the Overview** - recent pages as a gallery, an inbox of the latest messages and applications, vacancies and the newest media~~ (2026-11-27)
 - [x] ~~**Add a gallery view to Pages** - each page as a small live picture of itself, with the choice remembered~~ (2026-11-27)
 - [x] ~~**Give the dashboard motion** - a highlight that slides between items, screens and dialogs that rise out of a blur, sections that slide when reordered; written with Motion~~ (2026-11-27)

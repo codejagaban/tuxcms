@@ -125,7 +125,7 @@ site rather than on a mock-up of it. `PageResource` reports this as
 just the directories under `resources/views/site/themes`.
 
 The dashboard loads that page in an iframe with `?tuxcms_preview=<revision>`
-and `dashboard/src/components/editor/CrystalCanvas.jsx` prepares it:
+and `dashboard/src/components/editor/SitePreview.jsx` prepares it:
 
 - It collapses the theme's split-character heading animation back to one plain
   text node, so a heading does not appear to contain its own text twice.

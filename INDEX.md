@@ -29,7 +29,7 @@ server.
 - `Site/NavigationBuilder` builds the site navigation from pages and settings.
 - `Seo/SitemapGenerator`, `RobotsGenerator`, `SchemaGenerator`, `LlmsTxtGenerator` produce `sitemap.xml`, `robots.txt`, JSON-LD and `llms.txt`.
 - `Content/PageRevisionService` records and restores page revisions.
-- `Media/ThemeMediaImporter` and `Media/CrystalMediaImporter` pull a theme's photographs into the library.
+- `Media/ThemeMediaImporter` pulls a theme's photographs into the library.
 
 `app/Support`
 
@@ -61,7 +61,7 @@ a plain field editor for the rest.
 `dashboard/src`
 
 - `pages/` one screen each: Dashboard, Pages, PageEditor, Jobs, Applications, Enquiries, Media, SEO, Settings, Login.
-- `components/editor/CrystalCanvas.jsx` makes the live site preview editable in place: it marks the editable text and images, outlines them, judges each outline against the colour behind it, and wires photo replacement and preview navigation.
+- `components/editor/SitePreview.jsx` makes the live site preview editable in place: it marks the editable text and images, outlines them, judges each outline against the colour behind it, and wires photo replacement and preview navigation.
 - `components/editor/Inspector.jsx` is the right-hand panel: page fields, the section list, per-section fields and SEO.
 - `lib/icons.jsx` every icon, Phosphor at one weight plus the marks drawn for this dashboard.
 - `lib/theme.js` the light, dark and system appearance choice.
@@ -75,8 +75,9 @@ page sections, SEO, settings, media libraries, jobs, page revisions, job
 applications, enquiries and the spam reason column, plus the Spatie permission,
 media library and tag tables.
 
-Seeders cover demo content, one client's site content, a sample vacancy, roles
-and the default settings.
+Seeders cover the demo content, roles and the default settings. One client's
+site content is kept apart in `database/seeders/Clients`; it is not part of
+the CMS.
 
 ## Commands
 
@@ -84,8 +85,7 @@ and the default settings.
 | --- | --- |
 | `site:build` | Regenerates the static site. `--quiet-progress` for cron. |
 | `user:create` | Makes an editor account. |
-| `media:import-theme` | Imports a theme's photographs into the library. |
-| `crystal:import-media` | The same for the Crystal client site's originals. |
+| `media:import-theme` | Imports a theme's photographs into the library. `--hand-built` also gathers those in a theme's hand-built pages. |
 | `spam:prune` | Deletes held submissions older than 30 days. |
 
 `routes/console.php` schedules a build every fifteen minutes, a nightly rebuild
