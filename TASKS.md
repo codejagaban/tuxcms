@@ -10,6 +10,8 @@
 
 ## Done
 
+- [x] ~~**Give Shopfront photographs and motion** - photo layouts for the hero, text and features sections, seven demo photographs seeded into the media library, and motion written with Motion; the demo keeps its uploads apart from the real media library~~ (2026-11-27)
+- [x] ~~**Make the editable outlines easier to spot** - blue rather than grey, lighter on dark bands~~ (2026-11-27)
 - [x] ~~**Make the demo show the whole CMS** - Shopfront's contact form now delivers to the Enquiries inbox, and the demo content covers every section type, nested services, draft and scheduled pages, vacancies in each status and a sample inbox with held spam~~ (2026-11-27)
 - [x] ~~**Put Shopfront on the dashboard's colours** - the theme uses the CMS's paper and ink tokens and follows the visitor's light or dark setting~~ (2026-11-27)
 - [x] ~~**Drop Crystal as the careers fallback** - careers views now fall back to Shopfront; the Crystal client site needs `SITE_THEME=crystal` on its server to keep its own careers pages~~ (2026-11-27)

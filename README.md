@@ -83,7 +83,15 @@ Shopfront is the theme a new install starts with. Its colours are the
 dashboard's own paper and ink, light or dark to match the visitor's device, and
 its titles sit on sign boards set in Le Murmure (SIL Open Font License,
 bundled). It renders every section type, the careers pages and the 404, and its
-contact form delivers to the Enquiries inbox in the dashboard. The other
+contact form delivers to the Enquiries inbox in the dashboard. Photographs are
+shown in black and white, and features that carry photographs become a wall of
+work.
+
+Its motion is written with [Motion](https://motion.dev) in
+`resources/js/themes/shopfront.js` and bundled into the theme with
+`npm run build:theme`. Nothing starts hidden, so the pages read the same with
+the script switched off, and it stands down for visitors who ask for reduced
+motion. The other
 directory, `crystal`, is a client's website built on the CMS, not a theme to
 reuse.
 
@@ -96,8 +104,9 @@ bin/demo.sh
 
 It serves the site, the dashboard at `/admin` and the API on one port, 8090.
 The demo content uses every part of the CMS: all the section types, nested
-service pages, a draft and a scheduled page, vacancies in each status, and an
-inbox with messages the spam filter is holding.
+service pages, photographs in the media library, a draft and a scheduled page,
+vacancies in each status, and an inbox with messages the spam filter is
+holding. Its uploads go to a directory of their own as well.
 
 ## Tests
 
