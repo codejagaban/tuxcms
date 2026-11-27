@@ -12,6 +12,7 @@ import {
   List,
   X,
   IconJobs,
+  IconBlog,
   IconApplications,
   IconEnquiries,
 } from '../lib/icons';
@@ -22,6 +23,7 @@ import PublishButton from '../components/PublishButton';
 const navItems = [
   { path: '/dashboard', label: 'Overview', icon: IconOverview },
   { path: '/dashboard/pages', label: 'Pages', icon: IconPages },
+  { path: '/dashboard/blog', label: 'Blog', icon: IconBlog },
   { path: '/dashboard/jobs', label: 'Jobs', icon: IconJobs },
   { path: '/dashboard/enquiries', label: 'Enquiries', icon: IconEnquiries },
   { path: '/dashboard/applications', label: 'Applications', icon: IconApplications },

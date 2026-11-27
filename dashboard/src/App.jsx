@@ -12,6 +12,8 @@ const Media = lazy(() => import('./pages/placeholders/Media'));
 const Settings = lazy(() => import('./pages/placeholders/Settings'));
 const SEO = lazy(() => import('./pages/placeholders/SEO'));
 const Jobs = lazy(() => import('./pages/Jobs'));
+const Blog = lazy(() => import('./pages/Blog'));
+const PostEditor = lazy(() => import('./pages/PostEditor'));
 const Applications = lazy(() => import('./pages/Applications'));
 const Enquiries = lazy(() => import('./pages/Enquiries'));
 
@@ -41,6 +43,16 @@ function App() {
           element={<ProtectedRoute><Deferred><PageEditor /></Deferred></ProtectedRoute>}
         />
 
+        {/* Full-screen post editor, like the page editor */}
+        <Route
+          path="/dashboard/blog/create"
+          element={<ProtectedRoute><Deferred><PostEditor /></Deferred></ProtectedRoute>}
+        />
+        <Route
+          path="/dashboard/blog/:id/edit"
+          element={<ProtectedRoute><Deferred><PostEditor /></Deferred></ProtectedRoute>}
+        />
+
         {/* Protected Dashboard Routes */}
         <Route
           path="/dashboard"
@@ -52,6 +64,7 @@ function App() {
         >
           <Route index element={<Deferred><Dashboard /></Deferred>} />
           <Route path="pages" element={<Deferred><Pages /></Deferred>} />
+          <Route path="blog" element={<Deferred><Blog /></Deferred>} />
           <Route path="jobs" element={<Deferred><Jobs /></Deferred>} />
           <Route path="applications" element={<Deferred><Applications /></Deferred>} />
           <Route path="enquiries" element={<Deferred><Enquiries /></Deferred>} />

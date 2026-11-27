@@ -83,6 +83,21 @@ export const jobAPI = {
   delete: (id) => api.delete(`/jobs/${id}`),
 };
 
+export const postAPI = {
+  list: (params = {}) => api.get('/posts', { params }),
+  get: (id) => api.get(`/posts/${id}`),
+  create: (data) => api.post('/posts', data),
+  update: (id, data) => api.put(`/posts/${id}`, data),
+  delete: (id) => api.delete(`/posts/${id}`),
+};
+
+export const postCategoryAPI = {
+  list: () => api.get('/post-categories'),
+  create: (data) => api.post('/post-categories', data),
+  update: (id, data) => api.put(`/post-categories/${id}`, data),
+  delete: (id) => api.delete(`/post-categories/${id}`),
+};
+
 export const jobApplicationAPI = {
   list: (params = {}) => api.get('/job-applications', { params }),
   downloadCV: (id) => api.get(`/job-applications/${id}/cv`, { responseType: 'blob' }),
