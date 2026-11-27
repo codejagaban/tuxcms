@@ -16,9 +16,11 @@ class PageResource extends JsonResource
             'content' => $this->content,
             'excerpt' => $this->excerpt,
             'template' => $this->template,
-            // A page whose template is an installed theme is edited on the
-            // real site preview, not on the dashboard's own mock-up.
-            'live_preview' => in_array($this->template, \App\Support\Site::themes(), true),
+            // A page a theme renders is edited on the real site preview, not on
+            // the dashboard's own mock-up: either its template is an installed
+            // theme, or the site theme renders every page.
+            'live_preview' => in_array($this->template, \App\Support\Site::themes(), true)
+                || in_array(config('site.theme'), \App\Support\Site::themes(), true),
             'status' => $this->status,
             'order' => $this->order,
             'is_homepage' => $this->is_homepage,
