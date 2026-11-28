@@ -918,6 +918,49 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
   .plans__pick { position: static; }
 }
 
+/* ── Integrations (Automation SaaS) ────────────────────────
+   A great ring centred above the words; its lower arc carries the marks
+   round beneath them. The ring turns, each mark counter-turns so it
+   stays upright. */
+.orbit { --ring: min(calc(100vw - 1.5rem), 1100px); position: relative; overflow: hidden; padding-bottom: 260px; }
+.orbit__in { position: relative; z-index: 1; display: grid; justify-items: center; }
+.orbit__in .row-head { margin-bottom: 32px; }
+.orbit__frame {
+  position: absolute; inset: 0; pointer-events: none;
+  /* The arc fades out as it climbs toward the section's top; the frame
+     holds still while the ring turns inside it. */
+  mask-image: linear-gradient(to top, #000 0%, #000 40%, rgb(0 0 0 / .85) 48%, rgb(0 0 0 / .55) 56%, rgb(0 0 0 / .25) 63%, rgb(0 0 0 / .08) 69%, transparent 74%);
+}
+.orbit__ring {
+  position: absolute; left: calc(50% - var(--ring) / 2); bottom: 72px; width: var(--ring); height: var(--ring);
+  border: 2px solid var(--rule); border-radius: 999px;
+  animation: orbit-turn 160s linear infinite;
+}
+.orbit__ring a { pointer-events: auto; }
+.orbit__stop {
+  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  rotate: calc(var(--at) * 360deg / var(--stops));
+}
+.orbit__mark {
+  position: absolute; left: -32px; top: calc(var(--ring) / 2 - 32px);
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 999px;
+  background: var(--paper); box-shadow: 0 0 0 1px color-mix(in oklch, var(--paper) 80%, var(--ink) 8%), 0 1px 2px oklch(0% 0 0 / .05);
+  rotate: calc(var(--at) * -360deg / var(--stops));
+  animation: orbit-turn 160s linear infinite reverse;
+}
+.orbit__mark img { width: 28px; height: 28px; object-fit: contain; }
+.orbit__initial { font: 500 22px/1 var(--display); color: var(--ink); }
+@keyframes orbit-turn { to { transform: rotate(360deg); } }
+@media (prefers-color-scheme: dark) { .orbit__mark img { filter: invert(1); } }
+@media (max-width: 46rem) {
+  .orbit { --ring: 760px; padding-bottom: 210px; }
+  .orbit__ring { bottom: 56px; }
+  .orbit__mark { width: 52px; height: 52px; left: -26px; top: calc(var(--ring) / 2 - 26px); }
+  .orbit__mark img { width: 24px; height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .orbit__ring, .orbit__mark { animation: none; } }
+html[data-tuxcms-preview] .orbit__ring, html[data-tuxcms-preview] .orbit__mark { animation: none; }
+
 /* ── Careers ───────────────────────────────────────────────
    A role's page: the career details of the Time Tracking template. The
    facts in an overview card that holds its place on the left as the page

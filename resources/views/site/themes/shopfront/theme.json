@@ -4,69 +4,52 @@
       "label": "Pricing",
       "blurb": "Plans to pick between, each with its price and what it includes.",
       "fields": {
-        "title": {
-          "type": "text",
-          "label": "Heading"
-        },
-        "content": {
-          "type": "textarea",
-          "label": "Intro"
-        },
-        "data.promises": {
-          "type": "list",
-          "label": "Promise under the plans",
-          "item": "text"
-        },
+        "title": { "type": "text", "label": "Heading" },
+        "content": { "type": "textarea", "label": "Intro" },
+        "data.promises": { "type": "list", "label": "Promise under the plans", "item": "text" },
         "data.plans": {
           "type": "list",
           "label": "Plan",
           "item": {
-            "name": {
-              "type": "text",
-              "label": "Name",
-              "required": true
-            },
-            "summary": {
-              "type": "text",
-              "label": "Who it is for"
-            },
-            "price": {
-              "type": "text",
-              "label": "Price",
-              "required": true
-            },
-            "period": {
-              "type": "text",
-              "label": "Per",
-              "placeholder": "/month"
-            },
-            "description": {
-              "type": "textarea",
-              "label": "Description"
-            },
-            "features": {
-              "type": "list",
-              "label": "Included",
-              "item": "text"
-            },
-            "cta_label": {
-              "type": "text",
-              "label": "Button label"
-            },
-            "url": {
-              "type": "url",
-              "label": "Button link"
-            }
+            "name": { "type": "text", "label": "Name", "required": true },
+            "summary": { "type": "text", "label": "Who it is for" },
+            "price": { "type": "text", "label": "Price", "required": true },
+            "period": { "type": "text", "label": "Per", "placeholder": "/month" },
+            "description": { "type": "textarea", "label": "Description" },
+            "features": { "type": "list", "label": "Included", "item": "text" },
+            "cta_label": { "type": "text", "label": "Button label" },
+            "url": { "type": "url", "label": "Button link" }
           }
         }
       },
       "defaults": {
         "title": "Simple pricing",
         "content": "",
-        "data": {
-          "promises": [],
-          "plans": []
+        "data": { "promises": [], "plans": [] }
+      }
+    },
+    "integrations": {
+      "label": "Integrations",
+      "blurb": "The services the site works with, set around a ring.",
+      "fields": {
+        "title": { "type": "text", "label": "Heading" },
+        "content": { "type": "textarea", "label": "Intro" },
+        "data.cta_label": { "type": "text", "label": "Button label" },
+        "data.url": { "type": "url", "label": "Button link" },
+        "data.items": {
+          "type": "list",
+          "label": "Service",
+          "item": {
+            "name": { "type": "text", "label": "Name", "required": true },
+            "logo": { "type": "image", "label": "Logo" },
+            "url": { "type": "url", "label": "Link" }
+          }
         }
+      },
+      "defaults": {
+        "title": "Works with what you have",
+        "content": "",
+        "data": { "cta_label": "", "url": "", "items": [] }
       }
     }
   }
