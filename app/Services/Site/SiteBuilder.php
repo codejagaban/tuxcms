@@ -200,10 +200,18 @@ class SiteBuilder
      */
     private function themeView(string $name, ?string $template = null): string
     {
+        // Which theme draws the page also decides which section types the
+        // page may hold, so that choice is made in one place.
+        if ($name === 'page') {
+            $theme = Site::pageTheme($template);
+
+            return $theme ? "site.themes.{$theme}.page" : 'site.page';
+        }
+
         $themes = array_filter([
             $template ? str_replace('_', '-', $template) : null,
             config('site.theme'),
-            $name === 'page' || $name === '404' ? null : 'shopfront',
+            $name === '404' ? null : 'shopfront',
         ]);
 
         foreach ($themes as $theme) {

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\ChecksReservedSlugs;
+use App\Http\Requests\Concerns\ValidatesSectionTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Validator;
 class StorePageRequest extends FormRequest
 {
     use ChecksReservedSlugs;
+    use ValidatesSectionTypes;
 
     public function authorize(): bool
     {
@@ -37,7 +39,6 @@ class StorePageRequest extends FormRequest
             'sections' => 'nullable|array',
             'sections.*.id' => 'nullable|integer',
             'sections.*.key' => 'nullable|string|max:100',
-            'sections.*.type' => ['required_with:sections', 'string', Rule::in(config('tuxcms.pages.section_types'))],
             'sections.*.title' => 'nullable|string|max:255',
             'sections.*.content' => 'nullable|string',
             'sections.*.data' => 'nullable|array',
@@ -61,7 +62,16 @@ class StorePageRequest extends FormRequest
             'seo.robots' => 'nullable|string|max:100',
             'seo.schema_markup' => 'nullable|array',
             'seo.custom_head' => 'nullable|string|max:5000',
+
+            // Each section's type, and the fields of a theme's own types.
+            ...$this->sectionRules(),
         ];
+    }
+
+    /** A new page is drawn by the theme its template names, else the site theme. */
+    protected function targetTemplate(): ?string
+    {
+        return $this->input('template');
     }
 
     public function after(): array

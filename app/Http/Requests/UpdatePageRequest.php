@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\ChecksReservedSlugs;
+use App\Http\Requests\Concerns\ValidatesSectionTypes;
 use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,7 @@ use Illuminate\Validation\Validator;
 class UpdatePageRequest extends FormRequest
 {
     use ChecksReservedSlugs;
+    use ValidatesSectionTypes;
 
     public function authorize(): bool
     {
@@ -37,7 +39,6 @@ class UpdatePageRequest extends FormRequest
             'sections' => 'nullable|array',
             'sections.*.id' => 'nullable|integer',
             'sections.*.key' => 'nullable|string|max:100',
-            'sections.*.type' => ['required_with:sections', 'string', Rule::in(config('tuxcms.pages.section_types'))],
             'sections.*.title' => 'nullable|string|max:255',
             'sections.*.content' => 'nullable|string',
             'sections.*.data' => 'nullable|array',
@@ -60,7 +61,16 @@ class UpdatePageRequest extends FormRequest
             'seo.robots' => 'nullable|string|max:100',
             'seo.schema_markup' => 'nullable|array',
             'seo.custom_head' => 'nullable|string|max:5000',
+
+            // Each section's type, and the fields of a theme's own types.
+            ...$this->sectionRules(),
         ];
+    }
+
+    /** The template sent, or the page's own when the request leaves it alone. */
+    protected function targetTemplate(): ?string
+    {
+        return $this->has('template') ? $this->input('template') : $this->route('page')?->template;
     }
 
     public function after(): array
@@ -77,6 +87,7 @@ class UpdatePageRequest extends FormRequest
                     ? (int) $this->input('parent_id')
                     : $this->route('page')?->parent_id,
             ),
+            fn (Validator $validator) => $this->failOnStrandedSections($validator, $this->route('page')),
             function (Validator $validator) {
                 if (! $this->has('parent_id') || ! $this->input('parent_id')) {
                     return;

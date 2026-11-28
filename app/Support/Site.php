@@ -36,6 +36,27 @@ class Site
         return array_values(array_unique($themes));
     }
 
+    /**
+     * The theme that renders a page with this template: the template's own
+     * theme when it has a page view, else the site theme (SITE_THEME) when it
+     * has one, else none, and the page is drawn by the base views.
+     */
+    public static function pageTheme(?string $template): ?string
+    {
+        $candidates = array_filter([
+            $template ? str_replace('_', '-', $template) : null,
+            config('site.theme'),
+        ]);
+
+        foreach ($candidates as $theme) {
+            if (View::exists("site.themes.{$theme}.page")) {
+                return $theme;
+            }
+        }
+
+        return null;
+    }
+
     /** Every template a page may use: the built-in layouts plus the themes. */
     public static function templates(): array
     {
