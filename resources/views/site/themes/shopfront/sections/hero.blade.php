@@ -1,45 +1,56 @@
 @php
     $front = $page->is_homepage ?? false;
-    $left = data_get($d, 'alignment') === 'left';
+    $centred = ! $front && data_get($d, 'alignment') === 'center';
     $photo = data_get($d, 'background_image');
     $primary = data_get($d, 'primary_cta');
     $secondary = data_get($d, 'secondary_cta');
-    // A sign painter sizes the lettering to the board: the longer the line,
-    // the smaller it is set, so a title holds to one or two lines.
+    // The longer the title, the smaller it is set, so it holds to two lines.
     $length = mb_strlen(trim((string) $section->title));
-    $scale = $length <= 16 ? 'short' : ($length <= 34 ? 'medium' : 'long');
-    $hasFooting = filled($section->content) || filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label'));
+    $scale = $length <= 16 ? 'short' : ($length <= 36 ? 'medium' : 'long');
+    $hasAside = filled(data_get($d, 'subheading')) || filled($section->content) || filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label'));
 @endphp
-<section @class(['sign', 'sign--front' => $front, 'sign--page' => ! $front, 'sign--left' => $left]) @tuxsection($section)>
-    @if (filled($photo))
-        <div class="sign__photo" style="background-image:url('{{ e($photo) }}')" role="presentation" @image($section, 'data.background_image')></div>
-    @endif
+<section @class(['hero', 'hero--front' => $front, 'hero--page' => ! $front, 'hero--centred' => $centred]) @tuxsection($section)>
     <div class="wrap">
-        <div @class(['board', 'sign__board', 'board--lit' => $front])>
+        <div class="hero__grid">
             @if (filled($section->title))
-                <h1 class="display sign__title sign__title--{{ $scale }}" @field($section, 'title')>{{ $section->title }}</h1>
+                <h1 class="display hero__title hero__title--{{ $scale }}" @field($section, 'title')>{{ $section->title }}</h1>
             @endif
-            @if (filled(data_get($d, 'subheading')))
-                <p class="sign__trade" @field($section, 'data.subheading')>{{ data_get($d, 'subheading') }}</p>
+
+            @if ($hasAside)
+                <div class="hero__aside">
+                    @if (filled(data_get($d, 'subheading')))
+                        <p class="hero__sub" @field($section, 'data.subheading')>{{ data_get($d, 'subheading') }}</p>
+                    @endif
+                    @if (filled($section->content))
+                        <div class="hero__say prose" @field($section, 'content')>
+                            @include('site.themes.shopfront.partials.paragraphs', ['text' => $section->content])
+                        </div>
+                    @endif
+                    @if (filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label')))
+                        <div class="hero__do">
+                            @if (filled(data_get($primary, 'label')))
+                                <a href="{{ data_get($primary, 'url', '#') }}" class="button"><span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                            @endif
+                            @if (filled(data_get($secondary, 'label')))
+                                <a href="{{ data_get($secondary, 'url', '#') }}" class="link"><span @field($section, 'data.secondary_cta.label')>{{ data_get($secondary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             @endif
         </div>
 
-        @if ($hasFooting)
-            <div class="sign__footing">
-                <div class="sign__say prose" @field($section, 'content')>
-                    @include('site.themes.shopfront.partials.paragraphs', ['text' => $section->content])
-                </div>
-                <div class="sign__do">
-                    @if (filled(data_get($primary, 'label')))
-                        <a href="{{ data_get($primary, 'url', '#') }}" class="plate"><span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
-                    @endif
-                    @if (filled(data_get($secondary, 'label')))
-                        <a href="{{ data_get($secondary, 'url', '#') }}" class="quiet"><span @field($section, 'data.secondary_cta.label')>{{ data_get($secondary, 'label') }}</span></a>
-                    @endif
-                </div>
-            </div>
+        @if ($front)
+            {{-- The front page shows the product itself: a working copy of the
+                 editor, holding this very page. --}}
+            @include('site.themes.shopfront.partials.studio', ['hero' => $section, 'sections' => $sections ?? collect([$section])])
         @endif
 
+        @if (filled($photo))
+            <figure class="frame frame--banner">
+                <img src="{{ $photo }}" alt="" @image($section, 'data.background_image')>
+            </figure>
+        @endif
         @if (filled(data_get($d, 'image')))
             <figure class="frame frame--banner">
                 <img src="{{ data_get($d, 'image') }}" alt="{{ data_get($d, 'image_alt', '') }}" @image($section, 'data.image')>
