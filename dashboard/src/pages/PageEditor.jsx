@@ -7,7 +7,6 @@ import { makeUid, createSection } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
-import SectionRenderer from '../components/editor/SectionRenderer';
 import Inspector from '../components/editor/Inspector';
 import SitePreview from '../components/editor/SitePreview';
 import MediaPicker from '../components/editor/MediaPicker';
@@ -30,6 +29,13 @@ const keepUids = (previous = [], fresh = []) => withUids(fresh).map((section, in
   const same = before && (before.id == null || String(before.id) === String(section.id));
   return same ? { ...section, _uid: before._uid } : section;
 });
+
+// What the preview has to be rendered again for: which sections there are,
+// in what order, of what type, and whether each is shown. Edits to their
+// words are made on the preview itself and need no new render.
+const shapeOf = (sections = []) => sections
+  .map((section) => `${section.id ?? 'new'}:${section.type}:${section.is_visible !== false}`)
+  .join('|');
 
 const setNestedValue = (source, path, value) => {
   const keys = path.split('.');
@@ -98,24 +104,25 @@ export default function PageEditor() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
-  // The preview is the page as the CMS renders it for the editor, which
-  // carries the field markers that say exactly which element shows which
-  // field. It also exists for drafts and scheduled pages, which have no built
-  // page. Only if it cannot be fetched does the editor fall back to the built
-  // page, and to finding fields by their text.
+  // Every page is edited on the page itself, as the CMS renders it for the
+  // editor. That render carries the field markers that say exactly which
+  // element shows which field, and it exists for drafts and scheduled pages,
+  // which have no built page. Only if it cannot be fetched does the editor
+  // fall back to the built page, and to finding fields by their text.
   const previewId = page?.id;
-  const previewLive = Boolean(page?.live_preview);
   const previewPath = !page ? null
     : page.is_homepage ? '/' : `/${String(page.path || page.slug || '').replace(/^\/+|\/+$/g, '')}/`;
+  // The section shape the preview was last rendered from.
+  const renderedShape = useRef('');
   useEffect(() => {
-    if (!previewId || !previewLive || !previewPath) return undefined;
+    if (!previewId || !previewPath) return undefined;
     let current = true;
     pageAPI.preview(previewId)
       .then((res) => res.data)
       .catch(() => null)
       .then((html) => { if (current) setPreview({ id: previewId, html: typeof html === 'string' ? html : null }); });
     return () => { current = false; };
-  }, [previewId, previewLive, previewPath, previewRevision]);
+  }, [previewId, previewPath, previewRevision]);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -135,6 +142,7 @@ export default function PageEditor() {
           const data = res.data.data;
           if (active) {
             const sections = withUids(data.sections);
+            renderedShape.current = shapeOf(sections);
             setPage({ ...data, seo: data.seo || {}, sections });
             setSelectedUid(sections[0]?._uid || null);
           }
@@ -275,6 +283,12 @@ export default function PageEditor() {
         const res = await pageAPI.update(id, payload);
         const data = res.data.data;
         const sections = keepUids(page.sections, data.sections);
+        // A section added, removed, moved, hidden or shown only appears once
+        // the preview is rendered again from what was just saved.
+        if (shapeOf(sections) !== renderedShape.current) {
+          renderedShape.current = shapeOf(sections);
+          setPreviewRevision(Date.now());
+        }
         // Preserve which section was selected across the reload by position.
         const prevIdx = page.sections.findIndex((s) => s._uid === selectedUid);
         setPage({ ...data, seo: data.seo || {}, sections });
@@ -347,37 +361,6 @@ export default function PageEditor() {
 
   const selected = page.sections.find((s) => s._uid === selectedUid) || null;
   const canvasWidth = device === 'mobile' ? 'max-w-[420px]' : 'max-w-[1100px]';
-  // Themes that build real pages are edited on the page itself, so what the
-  // editor shows is what the site shows.
-  // The API says which templates are installed themes.
-  const liveCanvas = Boolean(page.live_preview);
-
-  const sectionPreview = page.sections.map((section) => {
-    const isSel = section._uid === selectedUid;
-    return (
-      <div
-        key={section._uid}
-        onMouseDown={() => setSelectedUid(section._uid)}
-        className={`group relative ${section.is_visible === false ? 'opacity-40' : ''}`}
-      >
-        <div
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 z-20 transition-colors ${
-            isSel ? 'ring-2 ring-inset ring-[var(--color-ink)]' : 'ring-0 ring-inset ring-[var(--color-ink)] group-hover:ring-1'
-          }`}
-        />
-        {section.is_visible === false && (
-          <div className="absolute top-2 right-2 z-30"><Badge variant="warning">Hidden</Badge></div>
-        )}
-        <SectionRenderer
-          section={section}
-          update={(patch) => updateSection(section._uid, patch)}
-          updateData={(data) => updateData(section._uid, data)}
-        />
-      </div>
-    );
-  });
-
   return (
     <div className="flex h-dvh flex-col bg-[var(--color-paper)]">
       {/* Top bar */}
@@ -462,22 +445,27 @@ export default function PageEditor() {
 
       {/* Body: preview + inspector */}
       <div className="flex min-h-0 flex-1">
-        <main className={`flex-1 p-3 sm:p-4 ${liveCanvas ? 'overflow-hidden' : 'overflow-y-auto pb-[48dvh] sm:pb-[48dvh] md:pb-6'}`}>
-          <div className={`mx-auto ${canvasWidth} ${liveCanvas ? 'h-full' : ''} transition-[max-width] duration-200`}>
-            {/* The built-in preview draws a light website, so it keeps the
-                light colours whatever the dashboard is set to. */}
-            <div data-theme={liveCanvas ? undefined : 'light'} className={`overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)] ${liveCanvas ? 'h-full' : ''}`}>
+        <main className="flex-1 overflow-hidden p-3 sm:p-4">
+          <div className={`mx-auto h-full ${canvasWidth} transition-[max-width] duration-200`}>
+            <div className="h-full overflow-hidden rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[0_4px_12px_oklch(18%_0.01_95_/_0.06)]">
               {page.sections.length === 0 && (
                 <div className="py-24 text-center text-[var(--color-muted)]">
                   <p className="mb-3">This page has no sections yet.</p>
                   <p className="text-sm">Use <span className="font-medium text-[var(--color-muted)]">Add</span> in the Page panel to start building.</p>
                 </div>
               )}
-              {liveCanvas && preview.id !== page.id
-                // Not yet known whether this page has a built file to show.
+              {isNew ? (
+                // A page is rendered from what is saved, so a new one has
+                // nothing to show until its first save.
+                <div className="flex h-full min-h-64 flex-col items-center justify-center gap-3 p-8 text-center">
+                  <p className="font-medium text-[var(--color-ink)]">The page appears here once it is saved.</p>
+                  <p className="max-w-sm text-sm text-[var(--color-muted)]">Give it a title in the panel, then save it to start editing it on the site.</p>
+                  <Button variant="primary" onClick={() => saveRef.current()} isLoading={saving}>Save page</Button>
+                </div>
+              ) : preview.id !== page.id
+                // Still fetching this page's render.
                 ? <div className="flex h-full min-h-64 items-center justify-center"><Spinner /></div>
-                : liveCanvas
-                ? <SitePreview
+                : <SitePreview
                     path={previewPath}
                     revision={previewRevision}
                     html={preview.html}
@@ -497,14 +485,8 @@ export default function PageEditor() {
                       if (dirty && !window.confirm('Discard unsaved changes?')) return;
                       navigate(`/dashboard/pages/${pageId}/edit`);
                     }}
-                  />
-                : sectionPreview}
+                  />}
             </div>
-            {!liveCanvas && (
-              <p className="text-center text-xs text-[var(--color-muted)] mt-4">
-                Click any text above to edit it inline. Use the panel to manage structure.
-              </p>
-            )}
           </div>
         </main>
 

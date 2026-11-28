@@ -16,11 +16,6 @@ class PageResource extends JsonResource
             'content' => $this->content,
             'excerpt' => $this->excerpt,
             'template' => $this->template,
-            // A page a theme renders is edited on the real site preview, not on
-            // the dashboard's own mock-up: either its template is an installed
-            // theme, or the site theme renders every page.
-            'live_preview' => in_array($this->template, \App\Support\Site::themes(), true)
-                || in_array(config('site.theme'), \App\Support\Site::themes(), true),
             // Whether the editor may store overrides for this page's theme.
             'supports_overrides' => \App\Support\Site::hasHandBuiltPages($this->template),
             'status' => $this->status,

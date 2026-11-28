@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Resources\PageResource;
 use App\Models\JobPost;
 use App\Models\Page;
 use App\Services\Site\SiteBuilder;
@@ -202,16 +201,5 @@ class ShopfrontThemeTest extends TestCase
             $this->assertStringContainsString('/themes/shopfront/css/site', $html, $file);
             $this->assertStringNotContainsString('/themes/crystal/', $html, $file);
         }
-    }
-
-    public function test_pages_rendered_by_the_site_theme_are_edited_on_the_live_preview(): void
-    {
-        $page = Page::create(['title' => 'About', 'template' => 'landing', 'status' => 'published']);
-
-        $this->assertTrue((new PageResource($page))->toArray(request())['live_preview']);
-
-        config(['site.theme' => null]);
-
-        $this->assertFalse((new PageResource($page))->toArray(request())['live_preview']);
     }
 }

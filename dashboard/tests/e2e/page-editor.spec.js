@@ -8,9 +8,6 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
   path: isHomepage ? '/' : `/${slug}`,
   status: 'published',
   template: 'shopfront',
-  // The editor shows the real site preview only for a page whose template is
-  // an installed theme; PageResource reports that as `live_preview`.
-  live_preview: true,
   is_homepage: isHomepage,
   show_in_nav: true,
   nav_label: title,
@@ -98,7 +95,8 @@ async function mockEditor(page) {
       records[id] = {
         ...records[id],
         ...payload,
-        sections: payload.sections.map((section, index) => ({ ...section, id: section.id || id * 10 + index })),
+        // A new section gets an id no other section on the page already has.
+        sections: payload.sections.map((section, index) => ({ ...section, id: section.id || id * 100 + index })),
       };
       saves.push(payload);
       return route.fulfill({ json: { data: records[id] } });
@@ -285,4 +283,29 @@ test('an inline edit made after an autosave is kept', async ({ page }) => {
   await second.press('Tab');
   await expect.poll(() => saves.at(-1)?.sections.map((section) => section.title), { timeout: 10000 })
     .toEqual(['First, edited', 'Second, edited']);
+});
+
+test('a section added in the panel appears on the page after the autosave', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/3/edit');
+
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  await expect(preview.locator('h2')).toHaveCount(2);
+
+  await page.getByRole('button', { name: 'Add' }).click();
+  await page.getByRole('button', { name: /^Text/ }).click();
+
+  await expect.poll(() => saves.length, { timeout: 10000 }).toBe(1);
+  // Rendered again from what was saved, with the new section in it.
+  await expect(preview.locator('h2')).toHaveCount(3);
+  await expect(preview.locator('[data-tuxcms-field="302:title"]')).toHaveAttribute('data-tuxcms-editable', 'true');
+});
+
+test('a new page asks to be saved before it can be edited on the page', async ({ page }) => {
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/create');
+
+  await expect(page.getByText('The page appears here once it is saved.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save page' })).toBeVisible();
+  await expect(page.locator('iframe[title="Website preview"]')).toHaveCount(0);
 });

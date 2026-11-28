@@ -201,18 +201,17 @@ class PageApiTest extends TestCase
             ->assertJsonValidationErrors(['template', 'sections.0.type']);
     }
 
-    public function test_an_installed_theme_is_a_valid_template_and_uses_the_live_preview(): void
+    public function test_an_installed_theme_is_a_valid_template(): void
     {
         Sanctum::actingAs($this->editor());
 
-        // Shopfront ships with the CMS, so its folder is always there.
+        // Shopfront ships with the CMS, so its folder is always there. Its
+        // pages are built from sections alone, so there is nothing to override.
         $this->postJson('/api/v1/pages', ['title' => 'Themed', 'template' => 'shopfront'])
-            ->assertCreated()->assertJsonPath('data.live_preview', true)
-            // Its pages are built from sections alone, so nothing to override.
-            ->assertJsonPath('data.supports_overrides', false);
+            ->assertCreated()->assertJsonPath('data.supports_overrides', false);
 
         $this->postJson('/api/v1/pages', ['title' => 'Plain', 'template' => 'landing'])
-            ->assertCreated()->assertJsonPath('data.live_preview', false);
+            ->assertCreated()->assertJsonPath('data.supports_overrides', false);
     }
 
     public function test_an_editor_can_preview_a_page_that_is_not_on_the_site_yet(): void
