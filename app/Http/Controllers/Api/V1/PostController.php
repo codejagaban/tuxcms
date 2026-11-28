@@ -196,6 +196,52 @@ class PostController extends Controller
         };
     }
 
+    /**
+     * Rename a blog tag. Renamed to the name of another tag, the two become
+     * one: its posts move to that tag and this one goes.
+     */
+    public function renameTag(Request $request, string $slug): JsonResponse
+    {
+        $tag = $this->blogTag($slug);
+        $name = trim((string) $request->validate(['name' => ['required', 'string', 'max:50']])['name']);
+
+        $other = Tag::getWithType(Post::TAG_TYPE)
+            ->first(fn (Tag $existing) => $existing->id !== $tag->id && mb_strtolower($existing->name) === mb_strtolower($name));
+
+        DB::transaction(function () use ($tag, $other, $name) {
+            if ($other) {
+                $taken = DB::table('taggables')->where('tag_id', $other->id)->pluck('taggable_id')->all();
+                DB::table('taggables')->where('tag_id', $tag->id)->whereNotIn('taggable_id', $taken)->update(['tag_id' => $other->id]);
+                $tag->delete();
+
+                return;
+            }
+
+            $tag->setTranslation('name', app()->getLocale(), $name);
+            $tag->save();
+        });
+
+        PublishState::markChanged();
+
+        return $this->tags();
+    }
+
+    /** Delete a blog tag. Its posts stay, without it. */
+    public function deleteTag(string $slug): JsonResponse
+    {
+        $this->blogTag($slug)->delete();
+        PublishState::markChanged();
+
+        return response()->json(null, 204);
+    }
+
+    private function blogTag(string $slug): Tag
+    {
+        return Tag::query()->where('type', Post::TAG_TYPE)
+            ->where('slug->'.app()->getLocale(), $slug)
+            ->firstOrFail();
+    }
+
     /** Tags are only changed when the request names them. */
     private function syncTags(Post $post, array $data): void
     {
