@@ -57,6 +57,24 @@ class Site
         return null;
     }
 
+    /**
+     * The themes this site uses: its site theme (SITE_THEME) and any theme
+     * its pages are drawn with. Installed but unused themes are left out, so
+     * what one declares (enquiry kinds, settings) only reaches sites using it.
+     *
+     * @return array<int, string>
+     */
+    public static function themesInUse(): array
+    {
+        $installed = self::themes();
+        $templates = Page::query()->whereNotNull('template')->distinct()->pluck('template')->all();
+
+        return array_values(array_unique(array_filter(
+            [config('site.theme'), ...$templates],
+            fn ($theme) => is_string($theme) && in_array($theme, $installed, true),
+        )));
+    }
+
     /** Every template a page may use: the built-in layouts plus the themes. */
     public static function templates(): array
     {

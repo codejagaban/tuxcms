@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\Enquiry;
-use App\Models\Page;
 
 /**
  * The kinds of message the inbox takes, which a site's forms send as their
@@ -33,23 +32,11 @@ class EnquiryKinds
     {
         $kinds = self::CONTACT;
 
-        foreach (self::themesInUse() as $theme) {
+        foreach (Site::themesInUse() as $theme) {
             $kinds = array_replace($kinds, ThemeManifest::enquiries($theme));
         }
 
         return $kinds;
-    }
-
-    /** @return array<int, string> */
-    private static function themesInUse(): array
-    {
-        $installed = Site::themes();
-        $templates = Page::query()->whereNotNull('template')->distinct()->pluck('template')->all();
-
-        return array_values(array_unique(array_filter(
-            [config('site.theme'), ...$templates],
-            fn ($theme) => is_string($theme) && in_array($theme, $installed, true),
-        )));
     }
 
     /**
