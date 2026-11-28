@@ -3,6 +3,7 @@
 namespace App\Services\Seo;
 
 use App\Models\Page;
+use App\Models\Post;
 use App\Models\Setting;
 use App\Support\Site;
 
@@ -39,6 +40,37 @@ class SchemaGenerator
         return [
             '@context' => 'https://schema.org',
             '@graph' => array_values(array_filter($graph)),
+        ];
+    }
+
+    /** JSON-LD for a blog post: the site, plus the post as a BlogPosting. */
+    public function forPost(Post $post): array
+    {
+        $siteUrl = Site::url();
+        $url = $siteUrl.$post->path();
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                $this->organization($siteUrl),
+                $this->webSite($siteUrl),
+                array_filter([
+                    '@type' => 'BlogPosting',
+                    '@id' => $url.'#article',
+                    'headline' => $post->title,
+                    'description' => $post->meta_description ?: $post->summary(160),
+                    'image' => Site::absolute($post->cover_image) ?: Site::defaultOgImage(),
+                    'datePublished' => $post->published_at?->toAtomString(),
+                    'dateModified' => $post->updated_at?->toAtomString(),
+                    'mainEntityOfPage' => $url,
+                    'author' => $post->author
+                        ? ['@type' => 'Person', 'name' => $post->author->name]
+                        : ['@id' => $siteUrl.'/#organization'],
+                    'publisher' => ['@id' => $siteUrl.'/#organization'],
+                    'isPartOf' => ['@id' => $siteUrl.'/#website'],
+                    'inLanguage' => str_replace('_', '-', Setting::getString('site_locale') ?: app()->getLocale()),
+                ]),
+            ],
         ];
     }
 

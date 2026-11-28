@@ -3,6 +3,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('site.partials.head')
+    @stack('head')
 </head>
 <body class="min-h-screen bg-white text-gray-900 antialiased flex flex-col">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">

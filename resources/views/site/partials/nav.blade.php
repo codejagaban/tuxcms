@@ -35,6 +35,7 @@
                 @foreach ($navigation as $item)
                     @if (empty($item['children']))
                         <a href="{{ $item['url'] }}"
+                           @if ($item['active']) aria-current="page" @endif
                            class="rounded-lg px-3 py-2 text-sm font-medium {{ $item['active'] ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900' }}">
                             {{ $item['label'] }}
                         </a>

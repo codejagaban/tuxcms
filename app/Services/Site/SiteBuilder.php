@@ -5,9 +5,11 @@ namespace App\Services\Site;
 use App\Models\JobPost;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Seo;
 use App\Services\Seo\FeedGenerator;
 use App\Services\Seo\LlmsTxtGenerator;
 use App\Services\Seo\RobotsGenerator;
+use App\Services\Seo\SchemaGenerator;
 use App\Services\Seo\SitemapGenerator;
 use App\Support\Preview;
 use App\Support\Site;
@@ -42,6 +44,7 @@ class SiteBuilder
         private RobotsGenerator $robots,
         private LlmsTxtGenerator $llms,
         private FeedGenerator $feed,
+        private SchemaGenerator $schema,
     ) {}
 
     /** @return array{pages: int, files: int, pruned: int, output: string} */
@@ -216,7 +219,13 @@ class SiteBuilder
                 $address = fn (int $n) => $n === 1 ? $listing['base'] : $listing['base'].'page/'.$n.'/';
                 $relative = ltrim($address($number), '/').'index.html';
 
+                $name = $listing['category']?->name;
                 $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.index'), $shared + [
+                    'page' => $this->blogPage(
+                        title: ($name ? $name.' | Blog' : 'Blog').($number > 1 ? ' | Page '.$number : ''),
+                        description: $name ? 'Posts about '.$name.' from '.Site::name().'.' : 'News and writing from '.Site::name().'.',
+                        path: $address($number),
+                    ),
                     'posts' => $chunk->values(),
                     'category' => $listing['category'],
                     'categories' => $categories,
@@ -232,6 +241,14 @@ class SiteBuilder
         foreach ($posts as $index => $post) {
             $relative = 'blog/'.$post->slug.'/index.html';
             $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.show'), $shared + [
+                'page' => $this->blogPage(
+                    title: $post->meta_title ?: $post->title,
+                    description: $post->meta_description ?: $post->summary(160),
+                    path: $post->path(),
+                    image: $post->cover_image,
+                    type: 'article',
+                    schema: $this->schema->forPost($post),
+                ),
                 'post' => $post,
                 // The list is newest first, so the next one down is older.
                 'newer' => $posts->get($index - 1),
@@ -244,6 +261,28 @@ class SiteBuilder
         $written['blog/feed.xml'] = $this->write($temp, 'blog/feed.xml', $this->feed->generate($posts));
 
         return $written;
+    }
+
+    /**
+     * The blog's pages are not Page records, but the shared <head> reads its
+     * title, description, address and share image from one. This is an
+     * unsaved stand-in that carries them.
+     */
+    private function blogPage(string $title, string $description, string $path, ?string $image = null, string $type = 'website', ?array $schema = null): Page
+    {
+        $page = $this->placeholderPage($title);
+        $page->setRelation('seo', new Seo(array_filter([
+            'meta_title' => $title.' | '.Site::name(),
+            'og_title' => $title,
+            'twitter_title' => $title,
+            'meta_description' => $description,
+            'canonical_url' => rtrim(Site::url(), '/').$path,
+            'og_image' => $image,
+            'og_type' => $type,
+            'schema_markup' => $schema,
+        ])));
+
+        return $page;
     }
 
     /** Published posts, newest first. */
