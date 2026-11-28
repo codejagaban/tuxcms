@@ -423,6 +423,20 @@ Each row includes `delivery_status` (`sent`, `failed` or `spam`) and, where the
 filter flagged it, a `spam_reason`. `meta.kinds` lists the kinds of enquiry, as
 `GET /enquiry-kinds` does.
 
+### GET /theme-settings
+
+*(token)* The settings the site's themes declare in their `theme.json`, in
+groups, for the Settings screen. Values are read and saved with the ordinary
+settings endpoints.
+
+```json
+{ "data": [
+  { "group": "Footer", "fields": [
+    { "key": "footer_notice", "label": "Footer notice", "type": "textarea", "help": null, "placeholder": null }
+  ] }
+] }
+```
+
 ### GET /enquiry-kinds
 
 The kinds of enquiry this site takes, for the inbox's tabs and the notification

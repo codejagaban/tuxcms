@@ -247,6 +247,25 @@ from the dashboard with the `release` endpoints.
 Delivery failures do not lose anything, because the submission is written
 before the email is attempted and the row records `delivery_status`.
 
+### Theme settings
+
+A theme reads site-wide values with `Setting::getString()`. The ones editors
+should be able to change are declared under `settings` in its `theme.json`:
+
+```json
+"settings": {
+  "footer_notice": { "label": "Footer notice", "type": "textarea", "group": "Footer", "help": "Shown under the footer introduction." }
+}
+```
+
+A setting has a `label`, and may have a `type` (`text`, `textarea`, `url`,
+`email` or `checkbox`; text by default), a `group` (the card it appears in;
+`Theme` by default), `help` and a `placeholder`. `App\Support\ThemeSettings`
+gathers them from the themes the site uses (`Site::themesInUse()`) and the
+Settings screen shows each group as a card of its own, saved through the
+ordinary settings endpoints. A key the core's own Settings screen already shows
+is left to the core, so the same box never appears twice.
+
 ### Kinds of enquiry
 
 Each enquiry form sends a hidden `type`, its kind. Every site has `contact`;
@@ -259,8 +278,9 @@ with a label for one and for many:
 }
 ```
 
-`App\Support\EnquiryKinds` gathers them from the themes the site uses: its
-`SITE_THEME` and any theme its pages are drawn with. A theme that is installed
+`App\Support\EnquiryKinds` gathers them from the themes the site uses
+(`Site::themesInUse()`): its `SITE_THEME` and any theme its pages are drawn
+with. A theme that is installed
 but unused adds nothing, and a theme may relabel `contact`. The inbox accepts
 only these kinds, and the dashboard builds its tabs, the email subjects and a
 notification address per kind in Settings (`enquiry_email_<kind>`) from the
