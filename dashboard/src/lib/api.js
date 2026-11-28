@@ -89,6 +89,8 @@ export const postAPI = {
   create: (data) => api.post('/posts', data),
   update: (id, data) => api.put(`/posts/${id}`, data),
   delete: (id) => api.delete(`/posts/${id}`),
+  // The post as the site would show it, from what is in the editor now.
+  preview: (data) => api.post('/posts/preview', data, { responseType: 'text', headers: { Accept: 'text/html' } }),
 };
 
 export const postTagAPI = {

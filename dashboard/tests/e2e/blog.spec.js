@@ -22,10 +22,12 @@ const post = {
 
 let saved;
 let listed;
+let previewed;
 
 test.beforeEach(async ({ page }) => {
   saved = null;
   listed = [];
+  previewed = null;
   await page.addInitScript(() => localStorage.setItem('auth_token', 'editor-token'));
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -43,6 +45,10 @@ test.beforeEach(async ({ page }) => {
         { name: 'Process', slug: 'process', posts_count: 2 },
         { name: 'Studio', slug: 'studio', posts_count: 1 },
       ] } });
+    }
+    if (path.endsWith('/posts/preview')) {
+      previewed = request.postDataJSON();
+      return route.fulfill({ contentType: 'text/html', body: `<html><body><h1>${previewed.title}</h1></body></html>` });
     }
     if (path.endsWith('/posts/7') && request.method() === 'PUT') {
       saved = request.postDataJSON();
@@ -119,4 +125,22 @@ test('the blog list can be shown as a gallery, and remembers it', async ({ page 
 
   await page.reload();
   await expect(page.getByRole('radio', { name: 'Gallery view' })).toHaveAttribute('aria-checked', 'true');
+});
+
+test('the editor previews the post as written, before it is saved', async ({ page }) => {
+  await page.goto('/dashboard/blog/7/edit');
+
+  await page.getByRole('textbox', { name: 'Post title' }).fill('A title not saved yet');
+  await page.getByRole('radio', { name: 'Preview' }).click();
+
+  const frame = page.frameLocator('iframe[title="Post preview"]');
+  await expect(frame.getByRole('heading', { name: 'A title not saved yet' })).toBeVisible();
+  expect(previewed).toMatchObject({ id: 7, title: 'A title not saved yet', tags: ['Studio'] });
+  expect(saved).toBeNull();
+
+  await page.getByRole('radio', { name: 'Phone width' }).click();
+  await expect(page.getByRole('radio', { name: 'Phone width' })).toHaveAttribute('aria-checked', 'true');
+
+  await page.getByRole('radio', { name: 'Write' }).click();
+  await expect(page.getByLabel('Post body')).toBeVisible();
 });

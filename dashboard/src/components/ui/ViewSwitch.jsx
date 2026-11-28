@@ -3,18 +3,21 @@ import { List, SquaresFour } from '../../lib/icons';
 
 const VIEWS = [['list', 'List', List], ['gallery', 'Gallery', SquaresFour]];
 
-/** Two round buttons with a highlight that slides to the one chosen. */
-export default function ViewSwitch({ view, onChange, id }) {
+/**
+ * Round buttons with a highlight that slides to the one chosen. By default
+ * the choice of list or gallery; `options` lists others as [value, label, Icon].
+ */
+export default function ViewSwitch({ view, onChange, id, options = VIEWS, label: groupLabel = 'View', suffix = ' view' }) {
   return (
-    <div role="radiogroup" aria-label="View" className="flex shrink-0 gap-0.5 rounded-full bg-[var(--color-paper-3)] p-0.5">
-      {VIEWS.map(([value, label, Icon]) => (
+    <div role="radiogroup" aria-label={groupLabel} className="flex shrink-0 gap-0.5 rounded-full bg-[var(--color-paper-3)] p-0.5">
+      {options.map(([value, label, Icon]) => (
         <button
           key={value}
           type="button"
           role="radio"
           aria-checked={view === value}
-          aria-label={`${label} view`}
-          title={`${label} view`}
+          aria-label={`${label}${suffix}`}
+          title={`${label}${suffix}`}
           onClick={() => onChange(value)}
           className={`relative grid h-10 w-11 place-items-center rounded-full transition-colors duration-200 ${
             view === value ? 'text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'

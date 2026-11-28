@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowLeft, ArrowUpRight, GlobeHemisphereWest, Image as ImageIcon, Trash } from '../lib/icons';
+import { ArrowLeft, ArrowUpRight, DeviceMobile, Eye, GlobeHemisphereWest, Image as ImageIcon, Monitor, PencilSimpleLine, Trash } from '../lib/icons';
 import { postAPI, postTagAPI, siteAPI, apiErrorMessage } from '../lib/api';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -9,6 +9,7 @@ import { FormSkeleton } from '../components/ui/Skeleton';
 import RichTextEditor from '../components/editor/RichTextEditor';
 import MediaPicker from '../components/editor/MediaPicker';
 import TagInput from '../components/editor/TagInput';
+import ViewSwitch from '../components/ui/ViewSwitch';
 
 const emptyPost = {
   title: '', slug: '', excerpt: '', body: '', cover_image: '', cover_image_alt: '',
@@ -51,6 +52,9 @@ export default function PostEditor() {
   const [slugEdited, setSlugEdited] = useState(!isNew);
   const [knownTags, setKnownTags] = useState([]);
   const [pickingCover, setPickingCover] = useState(false);
+  const [mode, setMode] = useState('write');
+  const [device, setDevice] = useState(() => (window.innerWidth < 768 ? 'phone' : 'desktop'));
+  const [preview, setPreview] = useState({ html: '', loading: false, failed: false });
 
   const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(saved), [form, saved]);
 
@@ -137,6 +141,24 @@ export default function PostEditor() {
     }
   };
 
+  // Preview draws the post as the site would, from the form as it is now,
+  // so it shows unsaved writing too. It is fetched again each time it opens.
+  useEffect(() => {
+    if (mode !== 'preview') return undefined;
+    let cancelled = false;
+    setPreview((current) => ({ ...current, loading: true, failed: false }));
+    postAPI.preview({
+      ...form,
+      id: isNew ? undefined : Number(id),
+      published_at: fromLocalInput(form.published_at),
+    })
+      .then((response) => { if (!cancelled) setPreview({ html: response.data, loading: false, failed: false }); })
+      .catch(() => { if (!cancelled) setPreview({ html: '', loading: false, failed: true }); });
+    return () => { cancelled = true; };
+    // Only opening the preview asks for it; edits are made in Write.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
+
   const leave = () => {
     if (dirty && !window.confirm('Discard unsaved changes?')) return;
     navigate('/dashboard/blog');
@@ -168,6 +190,14 @@ export default function PostEditor() {
           </div>
           <div className="font-data truncate text-[var(--color-muted)]">/blog/{form.slug || '…'}/</div>
         </div>
+        <ViewSwitch
+          id="post-mode"
+          label="Editor mode"
+          suffix=""
+          view={mode}
+          onChange={setMode}
+          options={[['write', 'Write', PencilSimpleLine], ['preview', 'Preview', Eye]]}
+        />
         <div className="flex w-full items-center justify-end gap-2 pb-2.5 sm:w-auto sm:pb-0">
           {isLive && (
             <a href={live.path} target="_blank" rel="noreferrer" className="hidden items-center gap-1.5 px-2 text-sm font-medium text-[var(--color-ink-2)] hover:text-[var(--color-ink)] sm:inline-flex">
@@ -186,6 +216,38 @@ export default function PostEditor() {
 
       {loading ? (
         <div className="mx-auto w-full max-w-3xl p-6"><FormSkeleton fields={4} /></div>
+      ) : mode === 'preview' ? (
+        <div className="flex flex-1 flex-col items-center gap-4 px-4 py-5 sm:px-6">
+          <div className="flex w-full max-w-[84rem] items-center justify-between gap-3">
+            <p className="text-sm text-[var(--color-muted)]">
+              {live?.status === 'published' && !live?.is_scheduled ? 'How the post will look once these changes are published.' : 'How the post will look on your website. Nothing here is public yet.'}
+            </p>
+            <ViewSwitch
+              id="post-device"
+              label="Preview width"
+              suffix=" width"
+              view={device}
+              onChange={setDevice}
+              options={[['desktop', 'Desktop', Monitor], ['phone', 'Phone', DeviceMobile]]}
+            />
+          </div>
+          <div
+            className={`post-preview relative min-h-[70vh] w-full flex-1 overflow-hidden rounded-[var(--radius-l)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] ${device === 'phone' ? 'max-w-[400px]' : 'max-w-[84rem]'}`}
+            aria-busy={preview.loading}
+          >
+            {preview.failed ? (
+              <p className="p-8 text-center text-sm text-[var(--color-muted)]">The preview could not be drawn. Check your connection and open it again.</p>
+            ) : (
+              <iframe
+                title="Post preview"
+                srcDoc={preview.html}
+                // A picture of the post: its links and the theme's scripts stay still.
+                sandbox="allow-same-origin"
+                className={`absolute inset-0 block h-full w-full border-0 bg-white transition-opacity duration-200 ${preview.loading ? 'opacity-40' : ''}`}
+              />
+            )}
+          </div>
+        </div>
       ) : (
         <div className="mx-auto grid w-full max-w-[84rem] flex-1 items-start gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-8 lg:py-8">
           <main className="min-w-0">
