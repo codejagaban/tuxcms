@@ -2,7 +2,6 @@
 
 ## Active
 
-- [ ] **Give Crystal's remaining written-in copy section data** - 108 pieces of copy on Crystal's hand-built pages (43 on About, 28 on Home) have no section data and are edited only through overrides, which are kept by position and break if the template's markup changes. Moving that copy into section data would let overrides be retired.
 - [ ] **Remove Crystal's unused section views** - `resources/views/site/themes/crystal/sections/` (9 files) is never rendered: a Crystal page uses a hand-built view, or falls back to the base views in `resources/views/site/sections/`.
 - [ ] **Move the Crystal client site out of this repository** - its templates and 52 MB of assets (`resources/views/site/themes/crystal`, `public/themes/crystal`), its seeders (`database/seeders/Clients/Crystal`) and its test are a client's website, in a public repository. They need a home of their own and a way to be installed onto that client's server.
 
@@ -13,6 +12,7 @@
 
 ## Done
 
+- [x] ~~**Give Crystal's remaining written-in copy section data** - the copy and photos written into Crystal's hand-built pages now live in each page's `copy` section and are printed and marked like any other field; stored overrides move there with `MoveOverridesIntoPageCopy`, and overrides are gone from the editor, the API and the templates; published pages are unchanged~~ (2026-11-28)
 - [x] ~~**Replace text matching in the preview with field markers** - templates mark which element shows which field, only in preview renders; every page is edited on the rendered preview; the text matcher is gone; `ThemeMarkerContractTest` checks every theme marks every field it shows, using the editor's own section defaults~~ (2026-11-28)
 - [x] ~~**Keep inline edits made after an autosave** - every save gave the sections new client ids while the preview kept the old ones, so the next edit made on the page was dropped; ids now survive a save~~ (2026-11-28)
 - [x] ~~**Stop Crystal edits from being silently lost** - the 58 pieces of copy written into Crystal's templates with an unused copy in the section data now print that data and carry markers, and text matching is off on hand-built pages; published pages are unchanged~~ (2026-11-28)

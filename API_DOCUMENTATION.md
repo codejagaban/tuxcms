@@ -89,7 +89,6 @@ the past.
   "content": null,
   "excerpt": "Sites that load fast.",
   "template": "crystal",
-  "supports_overrides": true,
   "status": "published",
   "is_scheduled": false,
   "order": 2,
@@ -103,9 +102,7 @@ the past.
 }
 ```
 
-`supports_overrides` is true when the template is a theme with hand-built
-pages, whose written-in copy is edited through overrides. `is_scheduled` is
-true for a published page dated in the future. `author`, `parent`, `children`,
+`is_scheduled` is true for a published page dated in the future. `author`, `parent`, `children`,
 `sections`, `seo`, `featured_image` and `gallery` appear when the endpoint
 loads them.
 

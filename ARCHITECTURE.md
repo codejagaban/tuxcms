@@ -134,8 +134,7 @@ an iframe. If the request fails, the editor says so and offers to try again.
   text node, so a heading does not appear to contain its own text twice.
 - It makes each element carrying a field marker (below) editable in place,
   saving to exactly the section and field the marker names. An element
-  without a marker is not edited, unless it is a hand-built page's written-in
-  copy, offered as an override.
+  without a marker is not edited.
 - Editable text and images carry a resting dashed outline, firming on hover and
   focus, so what can be edited is visible without hunting for it.
 - Outline colour is judged per element against what is actually behind it. A
@@ -178,9 +177,10 @@ field labels, which carry an "(optional)" note beside the stored text, so they
 are edited from the inspector.
 
 Crystal's hand-built pages print their section data, with the wording they
-used to have written in as the fallback, and mark it. Copy that has no section
-data at all is edited through overrides, which are kept by position on the
-page.
+used to have written in as the fallback, and mark it. Copy and photos that
+belong to no other section live in each page's `copy` section, so every piece
+is edited the same way. `MoveOverridesIntoPageCopy` moves the position-based
+overrides that pages used to store into it, once, after deploying.
 
 ## SEO
 
