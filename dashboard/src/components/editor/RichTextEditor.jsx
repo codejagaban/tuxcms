@@ -6,6 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import {
   ArrowClockwise,
   ArrowCounterClockwise,
+  CodeBlock,
   Image as ImageIcon,
   LinkSimple,
   ListBullets,
@@ -22,7 +23,8 @@ import {
 import MediaPicker from './MediaPicker';
 
 /**
- * The post body editor: headings, emphasis, lists, quotes, links and images.
+ * The post body editor: headings, emphasis, lists, quotes, code blocks, links
+ * and images.
  * It reads and writes HTML. The server cleans that HTML again before it is
  * stored, so this only needs to offer what a post should contain.
  */
@@ -66,6 +68,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start w
       bulletList: current.isActive('bulletList'),
       orderedList: current.isActive('orderedList'),
       blockquote: current.isActive('blockquote'),
+      codeBlock: current.isActive('codeBlock'),
       link: current.isActive('link'),
       canUndo: current.can().undo(),
       canRedo: current.can().redo(),
@@ -117,6 +120,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start w
       { label: 'Bulleted list', icon: ListBullets, active: state.bulletList, onClick: run((c) => c.toggleBulletList()) },
       { label: 'Numbered list', icon: ListNumbers, active: state.orderedList, onClick: run((c) => c.toggleOrderedList()) },
       { label: 'Quote', icon: Quotes, active: state.blockquote, onClick: run((c) => c.toggleBlockquote()) },
+      { label: 'Code block', icon: CodeBlock, active: state.codeBlock, onClick: run((c) => c.toggleCodeBlock()) },
     ],
     [
       { label: state.link ? 'Edit link' : 'Add link', icon: LinkSimple, active: state.link || linking, onClick: openLink },

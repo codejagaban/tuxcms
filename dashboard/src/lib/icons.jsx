@@ -7,6 +7,7 @@ import {
   ListNumbers as PListNumbers,
   Minus as PMinus,
   Quotes as PQuotes,
+  CodeBlock as PCodeBlock,
   TextB as PTextB,
   TextHThree as PTextHThree,
   TextHTwo as PTextHTwo,
@@ -86,6 +87,7 @@ export const ListBullets = icon(PListBullets);
 export const ListNumbers = icon(PListNumbers);
 export const Minus = icon(PMinus);
 export const Quotes = icon(PQuotes);
+export const CodeBlock = icon(PCodeBlock);
 export const TextB = icon(PTextB);
 export const TextHThree = icon(PTextHThree);
 export const TextHTwo = icon(PTextHTwo);
