@@ -137,8 +137,9 @@ body {
 }
 
 main { flex: 1; padding-top: 5.25rem; }
-/* The front page's first screen runs up under the floating bar. */
-main > .part--front:first-child { margin-top: -5.25rem; }
+/* A page that opens on a hero runs it up under the floating bar, so the
+   scene reaches the top edge with no strip of page above it. */
+main > .part--hero:first-child, main > .hero:first-child { margin-top: -5.25rem; }
 
 img { max-width: 100%; display: block; }
 
