@@ -127,7 +127,9 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--ink);
-  background: var(--canvas);
+  /* The dashboard's grain, faint, over its canvas. */
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E"), var(--canvas);
+  background-color: var(--canvas);
   font: 400 1.0625rem/1.6 var(--body);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
@@ -256,8 +258,14 @@ details[open] > summary .caret { transform: rotate(180deg); }
   position: absolute; right: 0; top: calc(100% + 0.5rem); min-width: 15rem;
   display: grid; padding: 0.4rem;
   border-radius: var(--radius-s);
-  background: var(--paper); box-shadow: var(--edge), 0 8px 16px -10px oklch(0% 0 0 / .22);
+  background: oklch(100% 0 0 / .8); box-shadow: var(--edge), 0 8px 16px -10px oklch(0% 0 0 / .22);
+  -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7);
+  transform-origin: top right;
 }
+@media (prefers-color-scheme: dark) { .bar__drop, .bar__menu nav { background: oklch(17.5% 0 0 / .8); } }
+/* A menu drops in out of a blur, as the dashboard's do. */
+details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var(--ease) both; }
+@keyframes enter-drop { from { filter: blur(6px); transform: translateY(-6px) scale(.985); } to { filter: none; transform: none; } }
 .bar__drop a, .bar__menu nav a {
   padding: 0.6rem 0.75rem; border-radius: 0.4rem;
   color: var(--ink-2); text-decoration: none;
@@ -331,9 +339,30 @@ details[open] > summary .caret { transform: rotate(180deg); }
 .hero--front .hero__aside, .hero--page .hero__aside { grid-column: 3 / span 8; justify-items: center; }
 .hero--front .hero__say, .hero--page .hero__say { color: oklch(24% 0 0); max-width: 52ch; text-shadow: 0 0 18px oklch(100% 0 0 / .6); }
 .hero--front .hero__do, .hero--page .hero__do { justify-content: center; }
-.hero--front .link, .hero--page .link { color: oklch(18% 0 0); padding: 0.75rem 1.1rem; border-radius: 999px; background: oklch(100% 0 0 / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-.hero--front .link:hover, .hero--page .link:hover { background: oklch(100% 0 0 / .92); }
 @media (max-width: 56rem) { .hero--front .hero__title, .hero--front .hero__aside, .hero--page .hero__title, .hero--page .hero__aside { grid-column: 1 / -1; } }
+/* On other pages the words under the title sit on a pane of the
+   dashboard's frosted glass, so they read over any photograph. */
+.hero--page .hero__aside {
+  max-width: 40rem; padding: 1.1rem 1.4rem; border-radius: 1rem;
+  background: oklch(100% 0 0 / .6);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / .8), 0 0 0 1px oklch(100% 0 0 / .45);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6);
+}
+.hero--page .hero__say { text-shadow: none; }
+/* Left alignment, when the editor asks for it. */
+.hero--left .hero__grid { justify-items: start; text-align: left; }
+.hero--front.hero--left .hero__title, .hero--page.hero--left .hero__title { grid-column: 1 / span 10; }
+.hero--front.hero--left .hero__aside, .hero--page.hero--left .hero__aside { grid-column: 1 / span 7; justify-items: start; }
+.hero--left .hero__do { justify-content: flex-start; }
+.hero--left .studio__canvas { text-align: left; }
+@media (max-width: 56rem) { .hero--left .hero__title, .hero--left .hero__aside { grid-column: 1 / -1 !important; } }
+/* A section's own photograph behind the title, darkened a touch at the top
+   so the menu and the words stay clear of it. */
+.hero__sky--photo { background-size: cover; background-position: center; }
+.hero__sky--photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, oklch(100% 0 0 / .35), oklch(100% 0 0 / .15) 60%, transparent); }
+/* The hero is never blurred on arrival: a page opened in a background tab
+   would hold it at its first, blurred frame. Sections further down rise out
+   of a blur only once they are actually on screen. */
 
 /* ── The studio: the editor, working ───────────────────────
    A copy of the TuxCMS page editor: the bar, the page in its preview, and
@@ -356,7 +385,9 @@ details[open] > summary .caret { transform: rotate(180deg); }
   position: relative; z-index: 2;
   margin-top: clamp(2.5rem, 6vw, 4.5rem);
   border-radius: var(--radius);
-  background: var(--paper); color: var(--ink);
+  /* The dashboard's frosted glass: the meadow shows through, blurred. */
+  background: oklch(100% 0 0 / .66); color: var(--ink);
+  -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7);
   box-shadow: 0 0 0 1px oklch(0% 0 0 / .08), 0 2px 3px oklch(0% 0 0 / .06), 0 24px 40px -28px oklch(0% 0 0 / .45);
   overflow: hidden;
 }
@@ -375,8 +406,10 @@ details[open] > summary .caret { transform: rotate(180deg); }
     --green-ink: oklch(84% 0.1 152);
     --amber-soft: oklch(28% 0.05 75);
     --amber-ink: oklch(86% 0.1 80);
+    background: oklch(17.5% 0 0 / .72);
     box-shadow: 0 0 0 1px oklch(100% 0 0 / .12), 0 24px 40px -28px oklch(0% 0 0 / .8);
   }
+  .studio__stage { background: oklch(23.5% 0 0 / .5); }
 }
 .studio button { font: inherit; color: inherit; }
 .studio__bar {
@@ -421,7 +454,7 @@ details[open] > summary .caret { transform: rotate(180deg); }
   clip-path: inset(0 calc(100% - var(--done, 0%)) 0 0);
 }
 .studio__body { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; height: clamp(24rem, 40vw, 32rem); }
-.studio__stage { background: var(--paper-3); padding: clamp(0.9rem, 2vw, 1.5rem); overflow: hidden; display: flex; justify-content: center; }
+.studio__stage { background: oklch(95.5% 0 0 / .55); padding: clamp(0.9rem, 2vw, 1.5rem); overflow: hidden; display: flex; justify-content: center; }
 .studio__canvas {
   width: 100%; max-width: 100%; height: 100%;
   border-radius: 0.6rem; overflow: hidden;
@@ -667,8 +700,16 @@ details[open] > summary .caret { transform: rotate(180deg); }
   background: #b9cfe4 url("../media/meadow.jpg") center 35% / cover;
   color: oklch(14.5% 0 0);
 }
-.call__title { font-size: clamp(2.6rem, 6vw, 5.25rem); max-width: 16ch; text-shadow: 0 1px 24px oklch(100% 0 0 / .35); }
-.call__say { color: oklch(22% 0 0); font-size: clamp(1.05rem, 1.4vw, 1.2rem); max-width: 44ch; text-shadow: 0 0 18px oklch(100% 0 0 / .7); }
+.call__glass {
+  display: grid; justify-items: center; gap: 1.1rem;
+  max-width: 44rem; padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem);
+  border-radius: 1.25rem;
+  background: oklch(100% 0 0 / .55);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / .8), 0 0 0 1px oklch(100% 0 0 / .5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+}
+.call__title { font-size: clamp(2.4rem, 5.4vw, 4.75rem); max-width: 16ch; }
+.call__say { color: oklch(26% 0 0); font-size: clamp(1.05rem, 1.4vw, 1.2rem); max-width: 44ch; }
 .call .button { margin-top: 0.5rem; }
 
 /* Contact details */

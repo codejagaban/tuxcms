@@ -116,14 +116,10 @@ if (film && !calm && !editing) {
 }
 
 if (!calm && !editing) {
-  // The hero arrives: its title settles into place and the rest follows.
+  // The hero rises out of a blur in CSS as the page opens. Here the editor
+  // only drifts as the page scrolls.
   const hero = document.querySelector('.hero');
   if (hero) {
-    const title = hero.querySelector('.hero__title');
-    // Only its position: changing the spacing would re-wrap the line mid-move.
-    if (title) animate(title, { y: [40, 0] }, { ...settle, delay: 0.05 });
-    const rest = hero.querySelectorAll('.hero__aside > *');
-    if (rest.length) animate(rest, { y: [22, 0] }, { ...settle, delay: stagger(0.07, { startDelay: 0.15 }) });
     const desk = hero.querySelector('.studio');
     if (desk) {
       // As the page scrolls it slides over the stage a little faster than
@@ -153,9 +149,9 @@ if (!calm && !editing) {
   }
 
   // Headings rise as their section arrives.
-  document.querySelectorAll('.head, .call__title').forEach((heading) => {
+  document.querySelectorAll('.head, .call__glass').forEach((heading) => {
     inView(heading, () => {
-      animate(heading, { y: [28, 0] }, settle);
+      animate(heading, { y: [24, 0], filter: ['blur(6px)', 'blur(0px)'] }, { ...settle, filter: { duration: 0.5, ease: 'easeOut' } });
     }, { amount: 0.4 });
   });
 
@@ -165,7 +161,8 @@ if (!calm && !editing) {
     const items = document.querySelectorAll(selector);
     if (!items.length) return;
     inView(items[0].parentElement, () => {
-      animate(items, { y: [30, 0] }, { ...settle, delay: stagger(0.07) });
+      // Each rises out of a blur, as the dashboard's screens arrive.
+      animate(items, { y: [28, 0], filter: ['blur(6px)', 'blur(0px)'] }, { ...settle, delay: stagger(0.07), filter: { duration: 0.5, ease: 'easeOut', delay: stagger(0.07) } });
     }, { amount: 0.15 });
   });
 
