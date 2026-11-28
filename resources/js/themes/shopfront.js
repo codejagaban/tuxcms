@@ -136,6 +136,30 @@ if (!editing) {
   });
 }
 
+// The pricing block: picking a plan in the tray shows its card. With no
+// script, and in the dashboard's preview, each plan links to its card and
+// every card shows, one under another.
+if (!editing) {
+  document.querySelectorAll('[data-plans]').forEach((plans) => {
+    const tabs = [...plans.querySelectorAll('[data-plan-tab]')];
+    const cards = [...plans.querySelectorAll('[data-plan]')];
+    if (cards.length < 2) return;
+    const show = (index, animated) => {
+      tabs.forEach((tab, i) => tab.setAttribute('aria-current', String(i === index)));
+      cards.forEach((card, i) => {
+        card.classList.toggle('is-on', i === index);
+        card.setAttribute('aria-hidden', String(i !== index));
+      });
+      if (animated && !calm) animate(cards[index], { y: [16, 0], filter: ['blur(6px)', 'blur(0px)'] }, { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] });
+    };
+    plans.classList.add('is-sliding');
+    tabs.forEach((tab, i) => tab.addEventListener('click', (event) => {
+      event.preventDefault();
+      show(i, true);
+    }));
+    show(0, false);
+  });
+}
 
 // The front page's scene plays only for visitors who welcome motion, and
 // never in the dashboard's preview. Otherwise its still frame stays.

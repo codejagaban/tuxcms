@@ -49,7 +49,7 @@ class SectionTypeEndpointTest extends TestCase
     {
         Sanctum::actingAs($this->editor());
 
-        foreach (['shopfront' => 'shopfront', 'landing' => null, '' => null] as $template => $theme) {
+        foreach (['crystal' => 'crystal', 'landing' => null, '' => null] as $template => $theme) {
             $response = $this->getJson('/api/v1/section-types?template='.$template)->assertOk();
             $response->assertJsonPath('data.theme', $theme);
             $this->assertSame(config('tuxcms.pages.section_types'), collect($response->json('data.types'))->pluck('type')->all());

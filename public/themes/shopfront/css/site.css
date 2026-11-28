@@ -869,6 +869,55 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .place__where { color: var(--muted); }
 .map__note { margin-top: 1rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; align-items: center; }
 
+/* ── Pricing (Automation SaaS) ─────────────────────────────
+   The plans in a tinted tray on the left, the chosen one lit white with
+   its round arrow; its card on the right. */
+.plans { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: start; max-width: 980px; margin: 0 auto; }
+.plans__pick { display: grid; gap: 20px; position: sticky; top: 6.5rem; }
+.plans__tray { display: grid; gap: 8px; padding: 8px; border-radius: 20px; background: var(--paper-3); }
+.plans__tab {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 12px 12px 12px 20px; border-radius: 12px; color: var(--ink); text-decoration: none;
+  transition: background-color 0.25s var(--ease);
+}
+.plans__tab:hover, .plans__tab[aria-current="true"] { background: var(--paper); }
+.plans__words { display: grid; gap: 4px; }
+.plans__name { font-size: 18px; line-height: 1.4; }
+.plans__for { font-size: 14px; line-height: 1.5; color: color-mix(in oklch, var(--ink) 60%, transparent); }
+.plans__go {
+  display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 999px;
+  background: var(--action); color: var(--action-ink);
+  transform: scale(0); transition: transform 0.5s var(--ease);
+}
+.plans__go .arrow { width: 12px; height: 12px; }
+.plans__tab[aria-current="true"] .plans__go { transform: scale(1); }
+.plans__promises { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
+.plans__promises li { display: inline-flex; align-items: center; gap: 4px; font-size: 15px; color: var(--ink-2); }
+.plans__promises .plan__tick { width: 18px; height: 18px; color: var(--green); }
+.plans__cards { display: grid; gap: 16px; }
+.plans.is-sliding .plans__cards { grid-template-areas: "card"; }
+.plans.is-sliding .plan { grid-area: card; }
+.plans.is-sliding .plan:not(.is-on) { visibility: hidden; }
+.plan { display: grid; gap: 56px; padding: 32px 24px; border-radius: 12px; background: var(--paper); scroll-margin-top: 6.5rem; }
+.plan__top { display: grid; gap: 16px; justify-items: start; }
+.plan__badge { padding: 4px 12px; margin-bottom: 16px; border: 1px solid var(--rule); border-radius: 999px; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+.plan__row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; width: 100%; }
+.plan__title { font: 400 24px/1.3 var(--display); letter-spacing: -0.01em; }
+.plan__price { font: 500 clamp(2rem, 3.4vw, 2.6rem)/1.1 var(--display); letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; }
+.plan__per { font: 400 15px/1 var(--body); letter-spacing: 0; color: color-mix(in oklch, var(--ink) 60%, transparent); }
+.plan__what { color: color-mix(in oklch, var(--ink) 60%, transparent); line-height: 1.6; max-width: 52ch; }
+.plan__button { width: 100%; justify-content: center; margin-top: 16px; }
+.plan__in { display: grid; gap: 16px; }
+.plan__in-head { font: 400 20px/1.4 var(--display); letter-spacing: -0.01em; }
+.plan__list { display: grid; gap: 20px; }
+.plan__list li { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--ink); }
+.plan__ring { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink); }
+.plan__ring .plan__tick { width: 16px; height: 16px; }
+@media (max-width: 56rem) {
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .plans__pick { position: static; }
+}
+
 /* ── Careers ───────────────────────────────────────────────
    A role's page: the career details of the Time Tracking template. The
    facts in an overview card that holds its place on the left as the page

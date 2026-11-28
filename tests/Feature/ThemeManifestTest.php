@@ -41,7 +41,7 @@ class ThemeManifestTest extends TestCase
 
     public function test_a_theme_without_a_manifest_declares_nothing(): void
     {
-        $this->assertSame([], ThemeManifest::sections('shopfront'));
+        $this->assertSame([], ThemeManifest::sections('crystal'));
         $this->assertSame([], ThemeManifest::sections(null));
     }
 
