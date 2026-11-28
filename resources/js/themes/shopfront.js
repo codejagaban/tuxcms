@@ -108,23 +108,71 @@ if (!editing) {
   document.querySelectorAll('[data-studio]').forEach(studio);
 }
 
-// The tour's rail marks the card in view. The cards themselves stack in
-// plain CSS; this only moves the mark.
-document.querySelectorAll('[data-tour]').forEach((tour) => {
-  const cards = [...tour.querySelectorAll('[data-tour-card]')];
-  const steps = [...tour.querySelectorAll('[data-tour-step]')];
-  const mark = (index) => steps.forEach((step, i) => step.classList.toggle('is-here', i === index));
-  // The card on top of the stack is the last one whose top has reached the
-  // line where the cards hold, or the first card before any has.
-  const update = () => {
-    const line = window.innerHeight * 0.45;
-    let index = 0;
-    cards.forEach((card, i) => { if (card.getBoundingClientRect().top <= line) index = i; });
-    mark(index);
+// The showcase: choosing a feature opens its piece of the product. It moves
+// on to the next by itself while it is on screen, and holds while it is
+// pointed at or used. In the dashboard's preview it never moves on.
+document.querySelectorAll('[data-show]').forEach((show) => {
+  const items = [...show.querySelectorAll('.show__item')];
+  const tabs = [...show.querySelectorAll('[data-show-tab]')];
+  const panels = [...show.querySelectorAll('[data-show-panel]')];
+  let current = 0;
+  let timer = null;
+  let held = false;
+  let seen = false;
+
+  const select = (index, fromUser) => {
+    current = (index + items.length) % items.length;
+    items.forEach((item, i) => {
+      item.classList.toggle('is-on', i === current);
+      item.style.setProperty('--done', '0%');
+    });
+    tabs.forEach((tab, i) => {
+      tab.setAttribute('aria-selected', String(i === current));
+      tab.tabIndex = i === current ? 0 : -1;
+    });
+    panels.forEach((panel, i) => { panel.hidden = i !== current; });
+    if (!calm && !editing) {
+      animate(panels[current], { y: [12, 0], filter: ['blur(6px)', 'blur(0px)'] }, { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] });
+    }
+    if (fromUser) held = true;
+    run();
   };
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+
+  const run = () => {
+    timer?.stop();
+    timer = null;
+    if (calm || editing || held || !seen || items.length < 2) {
+      show.classList.remove('is-running');
+      return;
+    }
+    show.classList.add('is-running');
+    const item = items[current];
+    timer = animate(0, 100, {
+      duration: 6,
+      ease: 'linear',
+      onUpdate: (value) => item.style.setProperty('--done', `${value}%`),
+      onComplete: () => select(current + 1, false),
+    });
+  };
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(i, true));
+    tab.addEventListener('keydown', (event) => {
+      const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[event.key];
+      if (!step) return;
+      event.preventDefault();
+      select(i + step, true);
+      tabs[current].focus();
+    });
+  });
+  show.addEventListener('pointerenter', () => { held = true; run(); });
+  show.addEventListener('pointerleave', () => { held = false; run(); });
+  inView(show, () => {
+    seen = true;
+    run();
+    return () => { seen = false; run(); };
+  }, { amount: 0.4 });
+  tabs.forEach((tab, i) => { tab.tabIndex = i === current ? 0 : -1; });
 });
 
 // The front page's scene plays only for visitors who welcome motion, and

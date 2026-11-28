@@ -692,11 +692,8 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .show__panel .bit__serp-text { font-size: 0.95rem; }
 .show__panel > .bit--photo { padding: 0; min-height: 18rem; }
 @media (max-width: 52rem) {
-  .tour { grid-template-columns: minmax(0, 1fr); }
-  .tour__rail { display: none; }
-  .tour__card { position: static; grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 0.6rem 0.6rem 1.5rem; }
-  .tour__photo { order: -1; aspect-ratio: 16 / 10; }
-  .tour__text { padding: 0.5rem 0.9rem 0; }
+  .show { grid-template-columns: minmax(0, 1fr); }
+  .show__stage { order: -1; min-height: 0; padding: 0.6rem; }
 }
 
 /* Stats: a row of cards, counted as the dashboard's Overview counts. */

@@ -212,10 +212,14 @@ class ShopfrontThemeTest extends TestCase
 
         app(SiteBuilder::class)->build();
 
-        // The photographs reach the page, in the tour of features.
+        // The front page shows off what the CMS runs, each feature with a
+        // real piece of it: the open roles, and photographs the pages use.
         $home = $this->contents('index.html');
-        $this->assertStringContainsString('desk-from-above.jpg', $home);
-        $this->assertStringContainsString('data-tour', $home);
+        $this->assertStringContainsString('data-show', $home);
+        $this->assertStringContainsString('bit--jobs', $home);
+        $this->assertStringContainsString('Senior product designer', $home);
+        $this->assertStringContainsString('room-by-the-windows.jpg', $home);
+        $this->assertStringContainsString('room-by-the-windows.jpg', $this->contents('about/index.html'));
 
         $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');
         $this->assertFileDoesNotExist($this->output . '/careers/support-lead/index.html');

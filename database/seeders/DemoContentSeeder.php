@@ -104,12 +104,13 @@ class DemoContentSeeder extends Seeder
                 'key' => 'work', 'type' => 'features', 'title' => 'What you can run on it',
                 'content' => 'Every part of a small business website, edited from the same place.',
                 'data' => [
-                    'columns' => 2,
+                    // One column: the theme lays these out as a showcase.
+                    'columns' => 1,
                     'items' => [
-                        ['icon' => 'compass', 'title' => 'Services, page by page', 'description' => 'A page for each thing you sell, grouped under one heading in the menu.', 'image' => $this->photos['desk-from-above'], 'url' => '/features/', 'link_label' => 'All features'],
-                        ['icon' => 'pen-tool', 'title' => 'A careers page', 'description' => 'Post a role, set a closing date and read applications with their CVs attached.', 'image' => $this->photos['printed-pages'], 'url' => '/careers/', 'link_label' => 'Open roles'],
-                        ['icon' => 'sparkles', 'title' => 'A media library', 'description' => 'Upload a photograph once and use it on any page, with its alt text kept beside it.', 'image' => $this->photos['identity-on-a-desk'], 'url' => '', 'link_label' => ''],
-                        ['icon' => 'layers', 'title' => 'Search that works', 'description' => 'Titles, descriptions and structured data are written for every page as it is published.', 'image' => $this->photos['kit-laid-out'], 'url' => '', 'link_label' => ''],
+                        ['icon' => 'compass', 'title' => 'Services, page by page', 'description' => 'A page for each thing you sell, grouped under one heading in the menu.', 'url' => '/features/', 'link_label' => 'All features'],
+                        ['icon' => 'briefcase', 'title' => 'A careers page', 'description' => 'Post a role, set a closing date and read applications with their CVs attached.', 'url' => '/careers/', 'link_label' => 'Open roles'],
+                        ['icon' => 'image', 'title' => 'A media library', 'description' => 'Upload a photograph once and use it on any page, with its alt text kept beside it.'],
+                        ['icon' => 'search', 'title' => 'Search that works', 'description' => 'Titles, descriptions and structured data are written for every page as it is published.'],
                     ],
                 ],
             ],
