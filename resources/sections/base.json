@@ -155,7 +155,8 @@
           "icon": {
             "type": "text",
             "label": "Icon name",
-            "default": "star"
+            "default": "star",
+            "placeholder": "Icon name"
           },
           "title": {
             "type": "text",
@@ -171,7 +172,8 @@
           },
           "image": {
             "type": "text",
-            "label": "Image URL"
+            "label": "Image URL",
+            "placeholder": "Image URL"
           },
           "url": {
             "type": "url",
@@ -180,7 +182,8 @@
           },
           "link_label": {
             "type": "text",
-            "label": "Link label"
+            "label": "Link label",
+            "placeholder": "Link label"
           }
         }
       }

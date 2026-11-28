@@ -130,7 +130,7 @@ function Control({ field, value, onChange, name, compact }) {
 /** A field with its label, or a whole list. */
 function FieldRow({ field, value, onChange, name, compact }) {
   if (field.type === 'list') {
-    return <ListField field={field} value={value} onChange={onChange} nested={compact} />;
+    return <ListField field={field} value={value} onChange={onChange} name={name} nested={compact} />;
   }
   if (field.type === 'boolean') {
     return (
@@ -140,18 +140,25 @@ function FieldRow({ field, value, onChange, name, compact }) {
       </label>
     );
   }
-  if (compact && field.type !== 'textarea' && field.type !== 'richtext' && field.type !== 'select') {
+  // In a list item, a one-line field that has a placeholder stands bare, as
+  // the built-in lists always have; anything else keeps a visible label, so
+  // a filled-in value still says what it is.
+  if (compact && field.placeholder && !['textarea', 'richtext', 'select'].includes(field.type)) {
     return <Control field={field} value={value} onChange={onChange} name={name} compact />;
   }
   return (
     <Field label={field.label}>
-      <Control field={field} value={value} onChange={onChange} name={name} />
+      <Control field={field} value={value} onChange={onChange} name={name} compact={compact} />
     </Field>
   );
 }
 
-/** A repeatable list: add, remove and reorder its items, and edit each. */
-function ListField({ field, value, onChange, nested }) {
+/**
+ * A repeatable list: add, remove and reorder its items, and edit each. Its
+ * `name` is the list's label, qualified by the item it sits in when nested
+ * ("Offer 1 Included"), so every control has a name of its own.
+ */
+function ListField({ field, value, onChange, name, nested }) {
   const items = Array.isArray(value) ? value : [];
   const scalar = typeof field.item === 'string';
   const itemFields = scalar ? [] : Object.entries(field.item).filter(([, child]) => shownInPanel(child));
@@ -176,7 +183,7 @@ function ListField({ field, value, onChange, nested }) {
         <button
           type="button"
           onClick={() => set([...items, newValue(scalar ? { type: field.item, label: field.label } : field)])}
-          aria-label={`Add ${field.label}`}
+          aria-label={`Add ${name}`}
           className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[var(--color-ink)]"
         >
           <Plus className="h-4 w-4" weight="bold" /> Add
@@ -184,7 +191,7 @@ function ListField({ field, value, onChange, nested }) {
       </div>
       <ul className="space-y-1.5">
         {items.map((item, index) => {
-          const itemName = `${field.label} ${index + 1}`;
+          const itemName = `${name} ${index + 1}`;
           return (
             <li key={index} className="rounded-lg border border-[var(--color-rule-2)] px-2.5 py-2">
               <div className="flex items-center gap-1">
