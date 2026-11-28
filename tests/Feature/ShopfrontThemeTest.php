@@ -175,14 +175,14 @@ class ShopfrontThemeTest extends TestCase
 
         app(SiteBuilder::class)->build();
 
-        // The photographs reach the page: behind the sign and on the wall of work.
+        // The photographs reach the page, on the wall of work.
         $home = $this->contents('index.html');
         $this->assertStringContainsString('desk-from-above.jpg', $home);
         $this->assertStringContainsString('class="works"', $home);
 
         $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');
-        $this->assertFileDoesNotExist($this->output . '/careers/studio-manager/index.html');
-        $this->assertFileDoesNotExist($this->output . '/open-studio-day/index.html');
+        $this->assertFileDoesNotExist($this->output . '/careers/support-lead/index.html');
+        $this->assertFileDoesNotExist($this->output . '/tuxcms-20/index.html');
     }
 
     public function test_careers_fall_back_to_the_theme_when_no_site_theme_is_set(): void
