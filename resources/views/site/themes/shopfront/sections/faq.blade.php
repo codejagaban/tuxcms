@@ -14,7 +14,7 @@
                 <details class="ask">
                     <summary>
                         <span @field($section, "data.items.{$i}.question")>{{ data_get($item, 'question') }}</span>
-                        <svg class="ask__mark" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M6 1.5v9M1.5 6h9"/></svg>
+                        <span class="ask__mark" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" focusable="false"><path d="M6 2v8M2 6h8"/></svg></span>
                     </summary>
                     <div class="ask__answer" @field($section, "data.items.{$i}.answer")>{{ data_get($item, 'answer') }}</div>
                 </details>
