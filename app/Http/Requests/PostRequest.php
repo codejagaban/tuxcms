@@ -28,6 +28,8 @@ class PostRequest extends FormRequest
             'tags.*' => ['string', 'max:50', 'distinct:ignore_case'],
             'status' => ['required', Rule::in(['draft', 'published'])],
             'published_at' => ['nullable', 'date'],
+            // Sent by the editor when it saves a draft on its own.
+            'autosave' => ['sometimes', 'boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
         ];

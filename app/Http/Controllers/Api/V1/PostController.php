@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Models\PostRevision;
+use App\Services\Content\PostRevisionService;
 use App\Services\Site\SiteBuilder;
 use App\Support\PublishState;
 use App\Support\RichText;
@@ -60,22 +62,28 @@ class PostController extends Controller
         $data = $request->validated();
         $data['author_id'] = $request->user()->id;
         $data['published_at'] = $this->publishMoment($data['published_at'] ?? null, null, $data['status']);
-        $post = Post::create(Arr::except($data, 'tags'));
+        $post = Post::create(Arr::except($data, ['tags', 'autosave']));
         $this->syncTags($post, $data);
 
         return response()->json(['data' => new PostResource($post->load(['tags', 'author']))], 201);
     }
 
-    public function update(PostRequest $request, Post $post): JsonResponse
+    public function update(PostRequest $request, Post $post, PostRevisionService $revisions): JsonResponse
     {
         $data = $request->validated();
         if (array_key_exists('published_at', $data) || $data['status'] === 'published') {
             $data['published_at'] = $this->publishMoment($data['published_at'] ?? null, $post->published_at, $data['status']);
         }
-        $post->update(Arr::except($data, 'tags'));
+        $before = $revisions->snapshot($post);
+        $post->update(Arr::except($data, ['tags', 'autosave']));
         $this->syncTags($post, $data);
 
-        return response()->json(['data' => new PostResource($post->fresh(['tags', 'author']))]);
+        $post = $post->fresh(['tags', 'author']);
+        if ($revisions->snapshot($post) !== $before) {
+            $revisions->capture($post, $before, $request->user(), autosave: (bool) ($data['autosave'] ?? false));
+        }
+
+        return response()->json(['data' => new PostResource($post)]);
     }
 
     /**
@@ -125,6 +133,18 @@ class PostController extends Controller
             ->header('Content-Type', 'text/html; charset=UTF-8')
             ->header('X-Robots-Tag', 'noindex, nofollow')
             ->header('Cache-Control', 'no-store');
+    }
+
+    /** Earlier states of the post, newest first, to restore from. */
+    public function revisions(Post $post): JsonResponse
+    {
+        return response()->json(['data' => $post->revisions()->with('user:id,name')->latest('id')->get()
+            ->map(fn (PostRevision $revision) => [
+                'id' => $revision->id,
+                'created_at' => $revision->created_at->toIso8601String(),
+                'author' => $revision->user?->name,
+                'snapshot' => $revision->snapshot,
+            ])]);
     }
 
     /** Every blog tag in use, with how many posts carry it, for the editor to offer. */

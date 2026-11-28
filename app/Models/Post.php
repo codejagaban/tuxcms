@@ -7,6 +7,7 @@ use App\Support\RichText;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\Tags\HasTags;
@@ -121,6 +122,11 @@ class Post extends Model
         $text = trim(preg_replace('/([.!?…:])\s*\.(?=\s|$)/u', '$1', $text));
 
         return preg_match('/[\p{L}\p{N}]/u', $text) ? $text : '';
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(PostRevision::class);
     }
 
     public function author(): BelongsTo

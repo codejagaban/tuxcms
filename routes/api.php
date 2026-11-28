@@ -80,6 +80,7 @@ Route::prefix('v1')->group(function () {
         // The post as the site would show it, from the editor's unsaved form.
         Route::post('posts/preview', [PostController::class, 'preview']);
         Route::get('posts/{post}', [PostController::class, 'show']);
+        Route::get('posts/{post}/revisions', [PostController::class, 'revisions']);
         Route::post('posts', [PostController::class, 'store']);
         Route::put('posts/{post}', [PostController::class, 'update']);
         Route::delete('posts/{post}', [PostController::class, 'destroy']);
