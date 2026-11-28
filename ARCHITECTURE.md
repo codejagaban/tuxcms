@@ -119,10 +119,11 @@ directly on the live preview.
 
 ## The live preview
 
-A page whose template names an installed theme is edited on the real rendered
-site rather than on a mock-up of it. `PageResource` reports this as
-`live_preview`; `App\Support\Site::themes()` is the source of truth, and it is
-just the directories under `resources/views/site/themes`.
+Every page is edited on the real rendered site rather than on a mock-up of
+it, whatever its template and whether or not a site theme is set: a page with
+no theme renders through the base views in `resources/views/site/sections`,
+which are marked up like any theme. A new page has nothing to render until it
+is saved, so the editor asks for that first.
 
 The dashboard asks `GET /api/v1/pages/{page}/preview` for the page as the CMS
 renders it, which works for drafts and scheduled pages too, and shows that in
@@ -144,7 +145,10 @@ an iframe. Only if the request fails does it fall back to the built page.
 - Internal links are rewired to open that page in the editor instead of
   navigating.
 
-Pages on a built-in template get a plain field editor instead.
+A section added, removed, moved, hidden or shown appears once the page is
+saved, autosave included: the editor renders the preview again whenever a save
+changes that shape. Changes to words need no new render, as they are made on
+the preview itself, or written into it from the panel.
 
 ### Field markers
 

@@ -52,9 +52,8 @@ applications and enquiries lists, CV download and the two `release` endpoints
 for submissions the spam filter held by mistake; per-page SEO; settings; media;
 and `site/status` with `site/publish`.
 
-`PageResource` reports `live_preview` for a page whose template is an installed
-theme. The dashboard shows the real site in an editable iframe for those, and
-a plain field editor for the rest.
+`GET /pages/{page}/preview` renders a page for the editor, with markers saying
+which element shows which field. Every page is edited that way, in an iframe.
 
 ## Dashboard
 

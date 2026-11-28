@@ -89,8 +89,9 @@ the past.
   "content": null,
   "excerpt": "Sites that load fast.",
   "template": "crystal",
-  "live_preview": true,
+  "supports_overrides": true,
   "status": "published",
+  "is_scheduled": false,
   "order": 2,
   "is_homepage": false,
   "show_in_nav": true,
@@ -102,8 +103,9 @@ the past.
 }
 ```
 
-`live_preview` is true when the template is an installed theme; the dashboard
-then edits the page on the real site preview. `author`, `parent`, `children`,
+`supports_overrides` is true when the template is a theme with hand-built
+pages, whose written-in copy is edited through overrides. `is_scheduled` is
+true for a published page dated in the future. `author`, `parent`, `children`,
 `sections`, `seo`, `featured_image` and `gallery` appear when the endpoint
 loads them.
 
