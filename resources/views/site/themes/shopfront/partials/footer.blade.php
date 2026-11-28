@@ -8,7 +8,10 @@
 <footer class="foot">
     <div class="wrap">
         <div class="foot__grid">
-            <p class="foot__line">{{ \App\Models\Setting::getString('footer_intro') ?: (Site::tagline() ?: (Site::description() ?: Site::name())) }}</p>
+            <div class="foot__lead">
+                <a href="/" class="bar__name foot__name" aria-label="{{ Site::name() }}, front page">@include('site.themes.shopfront.partials.wordmark')</a>
+                <p class="foot__line">{{ \App\Models\Setting::getString('footer_intro') ?: (Site::tagline() ?: (Site::description() ?: Site::name())) }}</p>
+            </div>
 
             @if (! empty($navigation))
                 <div>

@@ -735,7 +735,9 @@ main:has(> .part--cta:last-child) + .foot { margin-top: 0; }
 main:has(> .part--cta:last-child) + .foot .foot__grid { border-top: 1px solid var(--rule); }
 @media (max-width: 52rem) { .foot__grid { grid-template-columns: 1fr 1fr; } .foot__grid > :first-child { grid-column: 1 / -1; } }
 @media (max-width: 32rem) { .foot__grid { grid-template-columns: 1fr; } }
-.foot__line { font: 600 clamp(1.5rem, 2.6vw, 2.1rem)/1.15 var(--display); letter-spacing: -0.035em; max-width: 24ch; }
+.foot__lead { display: grid; gap: 1.5rem; justify-items: start; }
+.foot__name .bar__mark { font-size: 1.9rem; }
+.foot__line { font: 500 clamp(1.15rem, 1.8vw, 1.45rem)/1.35 var(--display); letter-spacing: -0.02em; max-width: 30ch; color: var(--ink-2); }
 .foot h2 { font: 600 0.95rem/1.4 var(--body); color: var(--muted); margin-bottom: 0.8rem; }
 .foot li + li { margin-top: 0.5rem; }
 .foot a { text-decoration: none; transition: color 0.18s ease; }
