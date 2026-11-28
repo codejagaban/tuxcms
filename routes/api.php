@@ -77,6 +77,8 @@ Route::prefix('v1')->group(function () {
         // Blog
         Route::get('posts', [PostController::class, 'index']);
         Route::get('post-tags', [PostController::class, 'tags']);
+        // The post as the site would show it, from the editor's unsaved form.
+        Route::post('posts/preview', [PostController::class, 'preview']);
         Route::get('posts/{post}', [PostController::class, 'show']);
         Route::post('posts', [PostController::class, 'store']);
         Route::put('posts/{post}', [PostController::class, 'update']);

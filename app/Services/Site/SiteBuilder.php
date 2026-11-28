@@ -241,20 +241,8 @@ class SiteBuilder
 
         foreach ($posts as $index => $post) {
             $relative = 'blog/'.$post->slug.'/index.html';
-            $written[$relative] = $this->write($temp, $relative, View::make($this->blogView('blog.show'), $shared + [
-                'page' => $this->blogPage(
-                    title: $post->meta_title ?: $post->title,
-                    description: $post->meta_description ?: $post->summary(160),
-                    path: $post->path(),
-                    image: $post->cover_image,
-                    type: 'article',
-                    schema: $this->schema->forPost($post),
-                ),
-                'post' => $post,
-                // The list is newest first, so the next one down is older.
-                'newer' => $posts->get($index - 1),
-                'older' => $posts->get($index + 1),
-            ])->render());
+            // The list is newest first, so the next one down is older.
+            $written[$relative] = $this->write($temp, $relative, $this->postHtml($post, $shared, $posts->get($index - 1), $posts->get($index + 1)));
 
             $progress && $progress($post->title, $relative);
         }
@@ -262,6 +250,49 @@ class SiteBuilder
         $written['blog/feed.xml'] = $this->write($temp, 'blog/feed.xml', $this->feed->generate($posts));
 
         return $written;
+    }
+
+    /**
+     * Render one post exactly as a build would, without writing anything.
+     * The post editor shows this while a post is written, so it may be a
+     * draft or not saved at all. Its neighbours are the published posts
+     * either side of its date.
+     */
+    public function renderPost(Post $post): string
+    {
+        URL::forceRootUrl(Site::url());
+        config(['app.asset_url' => '']);
+
+        $others = $this->publishedPosts()->reject(fn (Post $other) => $other->is($post));
+        $date = $post->published_at ?? now();
+
+        return $this->postHtml(
+            $post,
+            [
+                'navigation' => $this->navigation->build(currentPath: '/blog/'),
+                'buildYear' => date('Y'),
+                'layout' => $this->blogView('layout'),
+            ],
+            $others->filter(fn (Post $other) => $other->published_at > $date)->last(),
+            $others->first(fn (Post $other) => $other->published_at <= $date),
+        );
+    }
+
+    private function postHtml(Post $post, array $shared, ?Post $newer, ?Post $older): string
+    {
+        return View::make($this->blogView('blog.show'), $shared + [
+            'page' => $this->blogPage(
+                title: $post->meta_title ?: $post->title,
+                description: $post->meta_description ?: $post->summary(160),
+                path: $post->path(),
+                image: $post->cover_image,
+                type: 'article',
+                schema: $this->schema->forPost($post),
+            ),
+            'post' => $post,
+            'newer' => $newer,
+            'older' => $older,
+        ])->render();
     }
 
     /**

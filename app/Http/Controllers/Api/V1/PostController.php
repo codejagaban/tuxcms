@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Services\Site\SiteBuilder;
 use App\Support\PublishState;
+use App\Support\RichText;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Spatie\Tags\Tag;
 
 class PostController extends Controller
@@ -72,6 +77,55 @@ class PostController extends Controller
         $this->syncTags($post, $data);
 
         return response()->json(['data' => new PostResource($post->fresh(['tags', 'author']))]);
+    }
+
+    /**
+     * The post as the site would show it, drawn from what is in the editor
+     * now, saved or not. The body is cleaned exactly as it is on save, since
+     * the dashboard shows this HTML in a frame of its own.
+     */
+    public function preview(Request $request, SiteBuilder $builder): Response
+    {
+        $data = $request->validate([
+            'id' => ['nullable', 'integer'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
+            'excerpt' => ['nullable', 'string', 'max:500'],
+            'body' => ['nullable', 'string'],
+            'cover_image' => ['nullable', 'string', 'max:2048'],
+            'cover_image_alt' => ['nullable', 'string', 'max:255'],
+            'tags' => ['nullable', 'array', 'max:20'],
+            'tags.*' => ['string', 'max:50'],
+            'published_at' => ['nullable', 'date'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $saved = isset($data['id']) ? Post::with('author')->find($data['id']) : null;
+
+        $post = $saved ? $saved->replicate() : new Post;
+        if ($saved) {
+            $post->id = $saved->id;
+        }
+        $post->fill(Arr::only($data, ['excerpt', 'cover_image', 'cover_image_alt', 'meta_title', 'meta_description']));
+        $post->title = filled($data['title'] ?? null) ? $data['title'] : 'Untitled post';
+        $post->slug = filled($data['slug'] ?? null) ? $data['slug'] : 'preview';
+        $post->body = app(RichText::class)->clean($data['body'] ?? null);
+        $post->published_at = isset($data['published_at']) ? Carbon::parse($data['published_at']) : ($saved?->published_at ?? now());
+        $post->updated_at = now();
+        $post->setRelation('author', $saved?->author ?? $request->user());
+        $post->setRelation('tags', collect($data['tags'] ?? [])->map(fn (string $name) => tap(new Tag, function (Tag $tag) use ($name) {
+            $tag->type = Post::TAG_TYPE;
+            $tag->setTranslation('name', app()->getLocale(), trim($name));
+            $tag->setTranslation('slug', app()->getLocale(), Str::slug(trim($name)));
+        }))->filter(fn (Tag $tag) => filled($tag->name))->values());
+
+        $html = $builder->renderPost($post);
+
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('X-Robots-Tag', 'noindex, nofollow')
+            ->header('Cache-Control', 'no-store');
     }
 
     /** Every blog tag in use, with how many posts carry it, for the editor to offer. */
