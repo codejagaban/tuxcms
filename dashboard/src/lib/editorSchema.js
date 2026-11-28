@@ -5,6 +5,15 @@
 // add a fresh item. Text inside sections is edited inline on the preview; this
 // schema drives the structural controls in the Inspector.
 
+import SECTION_DEFAULTS from './sectionDefaults.json';
+
+// What a new section of each type starts with: its title, content and data.
+// It lives in JSON so the server's tests read the very same defaults when
+// they check that every theme marks every field (ThemeMarkerContractTest).
+// A contact form's blank access_key falls back to the site-wide
+// web3forms_access_key setting.
+const fromDefaults = (type) => ({ key: type, type, ...structuredClone(SECTION_DEFAULTS[type]) });
+
 let uidCounter = 0;
 export const makeUid = () => `s_${Date.now().toString(36)}_${uidCounter++}`;
 
@@ -13,51 +22,19 @@ export const SECTION_REGISTRY = {
   hero: {
     label: 'Hero',
     blurb: 'Large banner with heading and call-to-action.',
-    create: () => ({
-      key: 'hero',
-      type: 'hero',
-      title: 'Your headline goes here',
-      content: 'A short supporting sentence that explains the value.',
-      data: {
-        subheading: 'Eyebrow text',
-        alignment: 'center',
-        background_image: '',
-        image: '',
-        primary_cta: { label: 'Get started', url: '/contact' },
-        secondary_cta: { label: 'Learn more', url: '/about' },
-      },
-    }),
+    create: () => fromDefaults('hero'),
   },
 
   text: {
     label: 'Text',
     blurb: 'A rich text content block.',
-    create: () => ({
-      key: 'text',
-      type: 'text',
-      title: 'Section heading',
-      content: 'Write your content here. Click to edit this text directly.',
-      data: { eyebrow: '', image: '', image_alt: '' },
-    }),
+    create: () => fromDefaults('text'),
   },
 
   features: {
     label: 'Features',
     blurb: 'A grid of feature cards (icon, title, description).',
-    create: () => ({
-      key: 'features',
-      type: 'features',
-      title: 'What we offer',
-      content: '',
-      data: {
-        columns: 3,
-        items: [
-          { icon: 'sparkles', title: 'Feature one', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
-          { icon: 'zap', title: 'Feature two', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
-          { icon: 'shield', title: 'Feature three', description: 'Describe the benefit here.', image: '', url: '', link_label: '' },
-        ],
-      },
-    }),
+    create: () => fromDefaults('features'),
     list: {
       path: 'items',
       label: 'Feature',
@@ -68,19 +45,7 @@ export const SECTION_REGISTRY = {
   stats: {
     label: 'Stats',
     blurb: 'A row of numbers / counters.',
-    create: () => ({
-      key: 'stats',
-      type: 'stats',
-      title: 'By the numbers',
-      content: '',
-      data: {
-        items: [
-          { value: '100+', label: 'Projects' },
-          { value: '4.9/5', label: 'Rating' },
-          { value: '10', label: 'Years' },
-        ],
-      },
-    }),
+    create: () => fromDefaults('stats'),
     list: {
       path: 'items',
       label: 'Stat',
@@ -91,17 +56,7 @@ export const SECTION_REGISTRY = {
   testimonials: {
     label: 'Testimonials',
     blurb: 'Quotes from customers.',
-    create: () => ({
-      key: 'testimonials',
-      type: 'testimonials',
-      title: 'What people say',
-      content: '',
-      data: {
-        items: [
-          { quote: 'A glowing quote about the work.', author: 'Full Name', role: 'Title, Company' },
-        ],
-      },
-    }),
+    create: () => fromDefaults('testimonials'),
     list: {
       path: 'items',
       label: 'Quote',
@@ -112,17 +67,7 @@ export const SECTION_REGISTRY = {
   team: {
     label: 'Team',
     blurb: 'People cards with name, role and bio.',
-    create: () => ({
-      key: 'team',
-      type: 'team',
-      title: 'The team',
-      content: '',
-      data: {
-        members: [
-          { name: 'Full Name', role: 'Role', bio: 'One line about this person.' },
-        ],
-      },
-    }),
+    create: () => fromDefaults('team'),
     list: {
       path: 'members',
       label: 'Member',
@@ -133,17 +78,7 @@ export const SECTION_REGISTRY = {
   faq: {
     label: 'FAQ',
     blurb: 'Question and answer pairs.',
-    create: () => ({
-      key: 'faq',
-      type: 'faq',
-      title: 'Frequently asked questions',
-      content: '',
-      data: {
-        items: [
-          { question: 'A common question?', answer: 'A clear, helpful answer.' },
-        ],
-      },
-    }),
+    create: () => fromDefaults('faq'),
     list: {
       path: 'items',
       label: 'Question',
@@ -154,56 +89,19 @@ export const SECTION_REGISTRY = {
   cta: {
     label: 'Call to action',
     blurb: 'A focused prompt with a button.',
-    create: () => ({
-      key: 'cta',
-      type: 'cta',
-      title: 'Ready to get started?',
-      content: 'A single sentence nudging the visitor to act.',
-      data: { primary_cta: { label: 'Get in touch', url: '/contact' } },
-    }),
+    create: () => fromDefaults('cta'),
   },
 
   contact: {
     label: 'Contact details',
     blurb: 'Email, phone, address and hours.',
-    create: () => ({
-      key: 'contact',
-      type: 'contact',
-      title: 'Contact details',
-      content: '',
-      data: {
-        email: 'hello@example.com',
-        phone: '+1 555 000 0000',
-        address: '123 Example St, City',
-        hours: 'Mon–Fri, 9:00–17:00',
-        eyebrow: '',
-        image: '',
-        image_alt: '',
-      },
-    }),
+    create: () => fromDefaults('contact'),
   },
 
   contact_form: {
     label: 'Contact form',
     blurb: 'A contact form powered by Web3Forms.',
-    create: () => ({
-      key: 'contact_form',
-      type: 'contact_form',
-      title: 'Send a message',
-      content: '',
-      data: {
-        // Falls back to the site-wide web3forms_access_key setting when blank.
-        access_key: '',
-        subject: 'New enquiry',
-        button_label: 'Send message',
-        success_message: "Thanks — we'll be in touch shortly.",
-        fields: [
-          { name: 'name', label: 'Name', type: 'text', required: true },
-          { name: 'email', label: 'Email', type: 'email', required: true },
-          { name: 'message', label: 'Message', type: 'textarea', required: true },
-        ],
-      },
-    }),
+    create: () => fromDefaults('contact_form'),
     list: {
       path: 'fields',
       label: 'Field',
@@ -214,13 +112,7 @@ export const SECTION_REGISTRY = {
   map: {
     label: 'Map',
     blurb: 'An embedded location map.',
-    create: () => ({
-      key: 'map',
-      type: 'map',
-      title: 'Find us',
-      content: '',
-      data: { lat: 51.5074, lng: -0.1278, zoom: 14, label: 'Our office', query: '' },
-    }),
+    create: () => fromDefaults('map'),
   },
 };
 
