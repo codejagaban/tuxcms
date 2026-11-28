@@ -226,7 +226,8 @@ class ShopfrontThemeTest extends TestCase
         $this->assertStringContainsString('orbit__ring', $home);
         $this->assertStringContainsString('/themes/shopfront/media/logos/laravel.svg', $home);
         $this->assertStringContainsString('Senior product designer', $home);
-        $this->assertStringContainsString('room-by-the-windows.jpg', $home);
+        // The media card shows photographs the published pages already use.
+        $this->assertMatchesRegularExpression('/bit--media.*?\.jpg/s', $home);
         $this->assertStringContainsString('room-by-the-windows.jpg', $this->contents('about/index.html'));
 
         $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');

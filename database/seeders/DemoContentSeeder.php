@@ -160,21 +160,7 @@ class DemoContentSeeder extends Seeder
                 'data' => [
                     'cta_label' => 'How publishing works',
                     'url' => '/features/publishing/',
-                    'items' => [
-                        ['name' => 'Laravel', 'logo' => '/themes/shopfront/media/logos/laravel.svg', 'url' => 'https://laravel.com'],
-                        ['name' => 'PHP', 'logo' => '/themes/shopfront/media/logos/php.svg', 'url' => 'https://www.php.net'],
-                        ['name' => 'MySQL', 'logo' => '/themes/shopfront/media/logos/mysql.svg', 'url' => 'https://www.mysql.com'],
-                        ['name' => 'SQLite', 'logo' => '/themes/shopfront/media/logos/sqlite.svg', 'url' => 'https://sqlite.org'],
-                        ['name' => 'Resend', 'logo' => '/themes/shopfront/media/logos/resend.svg', 'url' => 'https://resend.com'],
-                        ['name' => 'Amazon SES', 'logo' => '/themes/shopfront/media/logos/amazonwebservices.svg', 'url' => 'https://aws.amazon.com/ses/'],
-                        ['name' => 'OpenStreetMap', 'logo' => '/themes/shopfront/media/logos/openstreetmap.svg', 'url' => 'https://www.openstreetmap.org'],
-                        ['name' => 'Netlify', 'logo' => '/themes/shopfront/media/logos/netlify.svg', 'url' => 'https://www.netlify.com'],
-                        ['name' => 'Cloudflare Pages', 'logo' => '/themes/shopfront/media/logos/cloudflarepages.svg', 'url' => 'https://pages.cloudflare.com'],
-                        ['name' => 'GitHub Pages', 'logo' => '/themes/shopfront/media/logos/githubpages.svg', 'url' => 'https://pages.github.com'],
-                        ['name' => 'Vercel', 'logo' => '/themes/shopfront/media/logos/vercel.svg', 'url' => 'https://vercel.com'],
-                        ['name' => 'Nginx', 'logo' => '/themes/shopfront/media/logos/nginx.svg', 'url' => 'https://nginx.org'],
-                        ['name' => 'Apache', 'logo' => '/themes/shopfront/media/logos/apache.svg', 'url' => 'https://httpd.apache.org'],
-                    ],
+                    'items' => $this->integrationItems(),
                 ],
             ],
             [
@@ -263,19 +249,39 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'hero', 'type' => 'hero', 'title' => 'Features',
                 'content' => 'One dashboard for the pages, the people applying to work with you and the messages your customers send.',
-                'data' => ['alignment' => 'left'],
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
             ],
             [
-                'key' => 'offerings', 'type' => 'features', 'title' => 'What is in the dashboard',
+                // The template's "Everything you need" grid: one wide card, then a row.
+                'key' => 'offerings', 'type' => 'features', 'title' => 'Everything in the dashboard',
+                'content' => 'Each part works on its own, and all of it is in one place.',
                 'data' => [
-                    'columns' => 2,
+                    'columns' => 1,
                     'items' => [
-                        ['icon' => 'compass', 'title' => 'Live preview editing', 'description' => 'Every editable part of the real page is outlined. Click it and type.'],
+                        ['icon' => 'compass', 'title' => 'Live preview editing', 'description' => 'Every editable part of the real page is outlined. Click it and type, and the menu follows the page tree.', 'url' => '/features/editing/', 'link_label' => 'How editing works'],
                         ['icon' => 'layers', 'title' => 'Revisions', 'description' => 'Each save keeps a copy, so any page can go back to how it was.'],
-                        ['icon' => 'pen-tool', 'title' => 'Careers and applications', 'description' => 'Vacancies with closing dates, and applications with their CVs.'],
-                        ['icon' => 'gauge', 'title' => 'Scheduled publishing', 'description' => 'Date a page for next week and it goes live on the day by itself.'],
+                        ['icon' => 'briefcase', 'title' => 'Careers and applications', 'description' => 'Vacancies with closing dates, and applications with their CVs.', 'url' => '/careers/', 'link_label' => 'Open roles'],
+                        ['icon' => 'gauge', 'title' => 'Scheduled publishing', 'description' => 'Date a page for next week and it goes live on the day by itself.', 'url' => '/features/publishing/', 'link_label' => 'How publishing works'],
                     ],
                 ],
+            ],
+            [
+                // The template's "Features that fit your workflow": who it is for.
+                'key' => 'fit', 'type' => 'features', 'title' => 'Made for the sites that go stale',
+                'content' => 'The businesses we built TuxCMS for, and what each gets from it.',
+                'data' => [
+                    'columns' => 3,
+                    'items' => [
+                        ['icon' => 'users', 'title' => 'For clinics and practices', 'description' => 'Opening hours, prices and the team page change often. Now the front desk changes them.'],
+                        ['icon' => 'pen-tool', 'title' => 'For studios and agencies', 'description' => 'Hand a client a site they can edit without breaking the design you made for them.'],
+                        ['icon' => 'image', 'title' => 'For shops and services', 'description' => 'Swap a photograph or a price in the morning and it is live before you open.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'integrations', 'type' => 'integrations', 'title' => 'Works with what you already use',
+                'content' => 'Built on Laravel, sending mail through the usual services, and publishing plain files to any host that serves them.',
+                'data' => ['cta_label' => 'How publishing works', 'url' => '/features/publishing/', 'items' => $this->integrationItems()],
             ],
             [
                 'key' => 'faq', 'type' => 'faq', 'title' => 'Common questions',
@@ -286,6 +292,11 @@ class DemoContentSeeder extends Seeder
                         ['question' => 'What happens to spam?', 'answer' => 'It is held in the inbox, marked with the reason, and never emailed on. You can release anything genuine with one click.'],
                     ],
                 ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See every feature on one site',
+                'content' => 'The demo dashboard runs this site. Sign in and try any of it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
             ],
         ], [
             'meta_title' => 'Features | TuxCMS',
@@ -307,11 +318,41 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'hero', 'type' => 'hero', 'title' => 'Editing on the page',
                 'content' => 'The dashboard shows your real page, with everything you can change outlined in blue.',
-                'data' => ['alignment' => 'left'],
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
             ],
             [
+                // The template's service details: a photograph, then what it does.
                 'key' => 'body', 'type' => 'text', 'title' => 'How it feels',
+                'data' => ['image' => $this->photos['desk-from-above'], 'image_alt' => 'A desk seen from above'],
                 'content' => "Open a page and you see it exactly as visitors will. Click a heading and type over it. Drag a section to move it, or add a new one from the list.\n\nNothing goes live until you press Publish, and every save is kept as a revision.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What you can change',
+                'content' => 'Everything a visitor sees, from the same screen.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'layers', 'title' => 'Sections', 'description' => 'Add a section from the list, drag it into place, or hide it until it is ready.'],
+                        ['icon' => 'compass', 'title' => 'Pages and the menu', 'description' => 'Nest a page under another and the menu follows. Choose which pages show in it.'],
+                        ['icon' => 'image', 'title' => 'Photographs', 'description' => 'Pick one from the media library, with its alt text already written.'],
+                        ['icon' => 'search', 'title' => 'How it shows in search', 'description' => 'Set the title and description each page shows in search results, and see it before you publish.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Questions about editing',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Who can edit?', 'answer' => 'Anyone you invite, with a role that decides what they may change. Each save is kept as a revision with who made it.'],
+                        ['question' => 'What if I make a mistake?', 'answer' => 'Nothing is live until you publish, and any earlier revision can be restored.'],
+                        ['question' => 'Can I break the design?', 'answer' => 'No. You change the words, photographs and order of sections; the theme keeps the layout.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'Change a headline yourself',
+                'content' => 'Sign in to the demo, click any words and type over them.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
             ],
         ], [
             'meta_title' => 'Editing | TuxCMS',
@@ -385,7 +426,37 @@ class DemoContentSeeder extends Seeder
             ],
             [
                 'key' => 'body', 'type' => 'text', 'title' => 'Why static',
+                'data' => ['image' => $this->photos['printed-pages'], 'image_alt' => 'Printed pages and magazines laid out'],
                 'content' => "A static page has nothing to run when someone opens it, so it is fast everywhere and costs almost nothing to host.\n\nThere is no login page on the public site and no database for anyone to reach.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What a publish does',
+                'content' => 'One press, and the whole site is written out again.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'zap', 'title' => 'Writes every page', 'description' => 'Each published page becomes a plain HTML file, with its stylesheet and photographs beside it.'],
+                        ['icon' => 'search', 'title' => 'Writes what search engines read', 'description' => 'Titles, descriptions, structured data and the sitemap, for every page.'],
+                        ['icon' => 'briefcase', 'title' => 'Writes the careers pages', 'description' => 'Open roles get a page each, and closed ones come down by themselves.'],
+                        ['icon' => 'gauge', 'title' => 'Waits when you tell it to', 'description' => 'A page dated for next week is left out until its day, then goes live on its own.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'stats', 'type' => 'stats', 'title' => 'What static buys you',
+                'data' => [
+                    'items' => [
+                        ['label' => 'Database queries when someone visits', 'value' => '0'],
+                        ['label' => 'Second, at most, to publish this demo site', 'value' => '1'],
+                        ['label' => 'Login pages on the public site', 'value' => '0'],
+                        ['label' => 'Host that serves files can run it', 'value' => 'Any'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'integrations', 'type' => 'integrations', 'title' => 'Publish to any host',
+                'content' => 'The published site is plain files, so it runs on whatever serves them.',
+                'data' => ['cta_label' => 'Ask about hosting', 'url' => '/contact/', 'items' => $this->integrationItems()],
             ],
             [
                 'key' => 'cta', 'type' => 'cta', 'title' => 'See it publish',
@@ -467,6 +538,30 @@ class DemoContentSeeder extends Seeder
      * Put the demo photographs in the media library, where the Media screen
      * lists them and an editor can pick them for any section.
      */
+    /**
+     * The services TuxCMS really works with, by their own marks (Simple Icons).
+     *
+     * @return array<int, array{name: string, logo: string, url: string}>
+     */
+    private function integrationItems(): array
+    {
+        return [
+            ['name' => 'Laravel', 'logo' => '/themes/shopfront/media/logos/laravel.svg', 'url' => 'https://laravel.com'],
+            ['name' => 'PHP', 'logo' => '/themes/shopfront/media/logos/php.svg', 'url' => 'https://www.php.net'],
+            ['name' => 'MySQL', 'logo' => '/themes/shopfront/media/logos/mysql.svg', 'url' => 'https://www.mysql.com'],
+            ['name' => 'SQLite', 'logo' => '/themes/shopfront/media/logos/sqlite.svg', 'url' => 'https://sqlite.org'],
+            ['name' => 'Resend', 'logo' => '/themes/shopfront/media/logos/resend.svg', 'url' => 'https://resend.com'],
+            ['name' => 'Amazon SES', 'logo' => '/themes/shopfront/media/logos/amazonwebservices.svg', 'url' => 'https://aws.amazon.com/ses/'],
+            ['name' => 'OpenStreetMap', 'logo' => '/themes/shopfront/media/logos/openstreetmap.svg', 'url' => 'https://www.openstreetmap.org'],
+            ['name' => 'Netlify', 'logo' => '/themes/shopfront/media/logos/netlify.svg', 'url' => 'https://www.netlify.com'],
+            ['name' => 'Cloudflare Pages', 'logo' => '/themes/shopfront/media/logos/cloudflarepages.svg', 'url' => 'https://pages.cloudflare.com'],
+            ['name' => 'GitHub Pages', 'logo' => '/themes/shopfront/media/logos/githubpages.svg', 'url' => 'https://pages.github.com'],
+            ['name' => 'Vercel', 'logo' => '/themes/shopfront/media/logos/vercel.svg', 'url' => 'https://vercel.com'],
+            ['name' => 'Nginx', 'logo' => '/themes/shopfront/media/logos/nginx.svg', 'url' => 'https://nginx.org'],
+            ['name' => 'Apache', 'logo' => '/themes/shopfront/media/logos/apache.svg', 'url' => 'https://httpd.apache.org'],
+        ];
+    }
+
     private function seedPhotographs(): void
     {
         $library = MediaLibrary::singleton();
