@@ -759,26 +759,26 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .ask[open] .ask__mark { transform: rotate(45deg); background: var(--action); color: var(--action-ink); }
 .ask__answer { padding: 0 0 28px; color: color-mix(in oklch, var(--ink) 60%, transparent); white-space: pre-line; max-width: 62ch; }
 
-/* Call to action: a card of the meadow, everything centred. */
+/* Call to action: the closing card of the Automation SaaS template. A large
+   white card with 16px corners; the words centred high in it, the heading no
+   wider than 650px and the line no wider than 550px; and a picture rising
+   from its foot, here the meadow, fading in from the white. */
 .call__card {
   position: relative; isolation: isolate; overflow: hidden;
-  display: grid; justify-items: center; gap: 1.25rem; text-align: center;
-  padding: clamp(4rem, 9vw, 7rem) clamp(1.5rem, 5vw, 4rem);
-  border-radius: 1.5rem;
-  background: #b9cfe4 url("../media/meadow.jpg") center 35% / cover;
-  color: oklch(14.5% 0 0);
+  padding: clamp(80px, 12vw, 160px) clamp(20px, 5vw, 64px) clamp(200px, 26vw, 330px);
+  border-radius: 16px; background: var(--paper); text-align: center;
 }
-.call__glass {
-  display: grid; justify-items: center; gap: 1.1rem;
-  max-width: 44rem; padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem);
-  border-radius: 1.25rem;
-  background: oklch(100% 0 0 / .55);
-  box-shadow: inset 0 1px 0 oklch(100% 0 0 / .8), 0 0 0 1px oklch(100% 0 0 / .5);
-  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+.call__words { position: relative; z-index: 2; display: grid; justify-items: center; gap: 12px; }
+.call__title { max-width: 650px; font-size: clamp(2.4rem, 4.6vw, 3.6rem); }
+.call__say { max-width: 550px; color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; line-height: 24px; }
+.call .button { margin-top: 20px; }
+.call__meadow {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  height: clamp(260px, 30vw, 390px);
+  background: url("../media/meadow.jpg") center 70% / cover;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgb(0 0 0 / .1) 12%, rgb(0 0 0 / .3) 26%, rgb(0 0 0 / .55) 40%, rgb(0 0 0 / .8) 55%, #000 72%);
+  mask-image: linear-gradient(180deg, transparent 0, rgb(0 0 0 / .1) 12%, rgb(0 0 0 / .3) 26%, rgb(0 0 0 / .55) 40%, rgb(0 0 0 / .8) 55%, #000 72%);
 }
-.call__title { font-size: clamp(2.4rem, 5.4vw, 4.75rem); max-width: 16ch; }
-.call__say { color: oklch(26% 0 0); font-size: clamp(1.05rem, 1.4vw, 1.2rem); max-width: 44ch; }
-.call .button { margin-top: 0.5rem; }
 
 /* Contact details */
 .reach { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem); padding: clamp(1.5rem, 3vw, 2.25rem); border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge); }
