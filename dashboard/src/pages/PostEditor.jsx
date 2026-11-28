@@ -109,7 +109,9 @@ export default function PostEditor() {
     const payload = {
       ...form,
       title: form.title.trim(),
-      slug: form.slug || slugify(form.title),
+      // An address the editor did not choose is left to the server, which
+      // makes one from the title that no other post has.
+      slug: slugEdited ? form.slug : '',
       status,
       published_at: fromLocalInput(form.published_at),
     };
@@ -291,7 +293,9 @@ export default function PostEditor() {
                     className={`field-control font-data min-w-0 ${error('slug') ? 'border-[var(--color-danger)]' : ''}`}
                   />
                 </div>
-                {error('slug') && <p className="mt-1.5 text-sm font-medium text-[var(--color-danger)]">{error('slug')}</p>}
+                {error('slug')
+                  ? <p className="mt-1.5 text-sm font-medium text-[var(--color-danger)]">{error('slug')}</p>
+                  : !slugEdited && <p className={help}>Made from the title. If another post has it, a number is added.</p>}
               </label>
             </section>
 
@@ -336,7 +340,7 @@ export default function PostEditor() {
               <label className="block">
                 <span className={fieldLabel}>Excerpt</span>
                 <textarea name="excerpt" value={form.excerpt} onChange={change} maxLength={500} rows={3} className="field-control mt-1.5" placeholder="One or two sentences about the post" />
-                <p className={help}>Shown under the title in the blog listing. Left empty, the start of the post is used.</p>
+                <p className={help}>Shown under the title in the blog listing. Left empty, one is written from the opening sentences when you publish.</p>
               </label>
             </section>
 

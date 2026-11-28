@@ -23,11 +23,13 @@ const post = {
 let saved;
 let listed;
 let previewed;
+let created;
 
 test.beforeEach(async ({ page }) => {
   saved = null;
   listed = [];
   previewed = null;
+  created = null;
   await page.addInitScript(() => localStorage.setItem('auth_token', 'editor-token'));
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -56,6 +58,13 @@ test.beforeEach(async ({ page }) => {
     }
     if (path.endsWith('/posts/7')) {
       return route.fulfill({ json: { data: post } });
+    }
+    if (path.endsWith('/posts') && request.method() === 'POST') {
+      created = request.postDataJSON();
+      return route.fulfill({ status: 201, json: { data: { ...post, id: 8, ...created, slug: 'a-brand-new-post-2', excerpt: null, tags: [] } } });
+    }
+    if (path.endsWith('/posts/8')) {
+      return route.fulfill({ json: { data: { ...post, id: 8, title: 'A brand new post', slug: 'a-brand-new-post-2', tags: [] } } });
     }
     if (path.endsWith('/posts')) {
       listed.push(Object.fromEntries(url.searchParams));
@@ -172,4 +181,18 @@ test('the tag field is a dropdown of the tags in use', async ({ page }) => {
   await expect(field).toBeFocused();
   await field.press('Escape');
   await expect(field).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('a new post leaves its address and excerpt to the server', async ({ page }) => {
+  await page.goto('/dashboard/blog/create');
+
+  await page.getByRole('textbox', { name: 'Post title' }).fill('A brand new post');
+  await expect(page.locator('input[name="slug"]')).toHaveValue('a-brand-new-post');
+  await expect(page.getByText('Made from the title. If another post has it, a number is added.')).toBeVisible();
+  await expect(page.getByText('Left empty, one is written from the opening sentences when you publish.')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save draft' }).click();
+  await expect.poll(() => created).toMatchObject({ title: 'A brand new post', slug: '', excerpt: '' });
+  // The address the server chose is the one shown from then on.
+  await expect(page.locator('input[name="slug"]')).toHaveValue('a-brand-new-post-2');
 });
