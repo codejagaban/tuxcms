@@ -622,41 +622,75 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .bit__line { display: block; height: 0.55rem; margin-top: 1.4rem; border-radius: 999px; background: var(--paper-3); }
 .bit__line + .bit__line { margin-top: 0.6rem; }
 .bit__line--short { width: 60%; }
+/* A feature with a photograph shows it in the piece's place. */
+.bit--photo { position: relative; padding: 0; margin-block-end: 0; }
+.bit--photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Lists: open roles and the photographs in use. */
+.bit__list { display: grid; gap: 0.45rem; }
+.bit__list .bit__row { justify-content: space-between; font-weight: 400; }
+.bit__what { display: grid; min-width: 0; margin-right: auto; }
+.bit__what .bit__name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bit__what .bit__type { font-size: 0.8rem; }
+.bit__glyph { width: 1.4rem; height: 1.4rem; color: var(--rose); }
+.bit__pill { padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+.bit__pill--open { background: var(--green-soft); color: var(--green-ink); }
+.bit__list .bit__path { white-space: nowrap; }
+@media (max-width: 40rem) { .bit__tree .bit__path { display: none; } }
+/* How the page reads in a search result. */
+.bit__serp { display: grid; gap: 0.35rem; padding: 1rem 1.1rem; border-radius: 0.6rem; background: var(--paper); box-shadow: var(--edge); }
+.bit__serp-site { display: flex; align-items: center; gap: 0.6rem; }
+.bit__serp-site > span { display: grid; }
+.bit__serp-site .bit__name { font-weight: 600; font-size: 0.85rem; }
+.bit__serp-site .bit__path { margin-left: 0; font-size: 0.72rem; }
+.bit__serp-title { margin-top: 0.35rem; color: var(--blue-ink); font-size: 1.15rem; line-height: 1.3; }
+.bit__serp-text { color: var(--muted); font-size: 0.85rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Features with photographs: a tour. A card to a feature, its words on
-   one side and its photograph on the other. Each card holds at the top as
-   the page scrolls and the next slides up over it, a little lower, so the
-   ones behind show as a stack of edges. A rail of round steps marks the card
-   in view. */
-.tour { display: grid; grid-template-columns: minmax(0, 1fr) 2.75rem; gap: clamp(1rem, 2vw, 1.75rem); align-items: start; }
-.tour__cards { display: grid; gap: clamp(1.25rem, 3vw, 2rem); }
-.tour__card {
-  position: sticky; top: calc(6.25rem + var(--n, 0) * 0.9rem);
-  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(1rem, 3vw, 2.5rem);
-  min-height: clamp(22rem, 34vw, 28rem);
-  padding: 0.75rem 0.75rem 0.75rem clamp(1.5rem, 3.5vw, 2.75rem);
-  border-radius: 1.5rem; background: var(--paper);
-  box-shadow: var(--edge), 0 -6px 18px -14px oklch(0% 0 0 / .3);
+/* Features in one column: a showcase. The features listed down the left,
+   the chosen one raised as a white card with its words open, and its piece
+   of the product large in the panel on the right. A line along the foot of
+   the chosen card fills while it waits to move on. */
+.show { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1rem, 3vw, 2.5rem); align-items: stretch; }
+.show__list { display: grid; gap: 0.5rem; align-content: start; }
+.show__item {
+  position: relative; overflow: hidden;
+  padding: 0.35rem 0.5rem; border-radius: 1.25rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
-.tour__text { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 0.85rem; padding-block: clamp(1.25rem, 3vw, 2rem); }
-.tour__step { display: flex; align-items: center; gap: 0.65rem; color: var(--muted); }
-.tour__glyph { width: 1.75rem; height: 1.75rem; color: var(--hue, var(--ink)); }
-.tour__name { font: 600 clamp(1.8rem, 3.2vw, 2.7rem)/1.05 var(--display); letter-spacing: -0.04em; text-wrap: balance; }
-.tour__what { color: var(--muted); max-width: 40ch; font-size: clamp(1.05rem, 1.4vw, 1.2rem); }
-.tour__go { margin-top: 0.6rem; }
-.tour__photo { position: relative; margin: 0; overflow: hidden; border-radius: 1.05rem; background: var(--paper-3); }
-.tour__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.tour__card > .bit { height: auto; margin: 0; }
-.tour__rail { position: sticky; top: 7rem; display: grid; gap: 0.6rem; justify-items: center; isolation: isolate; }
-/* The track the steps sit on: a rounded line behind them. */
-.tour__rail::before { content: ""; position: absolute; z-index: -1; top: 1rem; bottom: 1rem; left: calc(50% - 1px); width: 2px; border-radius: 2px; background: var(--rule); }
-.tour__rail a {
-  display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 999px;
-  background: var(--paper); box-shadow: var(--edge); color: var(--muted); text-decoration: none;
-  transition: background-color 0.25s ease, color 0.25s ease;
+.show__item.is-on { background: var(--paper); box-shadow: var(--edge); }
+.show__head { margin: 0; font: inherit; }
+.show__tab {
+  display: flex; align-items: center; gap: 0.85rem; width: 100%;
+  padding: 0.85rem 0.9rem; border: 0; border-radius: 0.9rem; background: transparent; cursor: pointer;
+  color: var(--muted); font: 600 clamp(1.15rem, 1.6vw, 1.35rem)/1.2 var(--display); letter-spacing: -0.025em; text-align: left;
+  transition: color 0.2s ease;
 }
-.tour__rail a:hover { color: var(--ink); }
-.tour__rail a.is-here { background: var(--action); color: var(--action-ink); box-shadow: none; }
+.show__tab:hover, .show__item.is-on .show__tab { color: var(--ink); }
+.show__glyph { width: 1.75rem; height: 1.75rem; color: var(--muted); transition: color 0.2s ease; }
+.show__item.is-on .show__glyph, .show__tab:hover .show__glyph { color: var(--hue); }
+/* The words of the chosen feature open below its name; the others stay
+   folded but are still in the page for anyone reading it as text. */
+.show__more { display: grid; gap: 0.75rem; justify-items: start; padding: 0 0.9rem 1.1rem calc(0.9rem + 1.75rem + 0.85rem); }
+.show__item:not(.is-on) .show__more { display: none; }
+.show__what { color: var(--muted); max-width: 42ch; }
+.show__time { position: absolute; left: 1.4rem; right: 1.4rem; bottom: 0.55rem; height: 3px; border-radius: 3px; background: var(--rule); opacity: 0; }
+.show__time::after { content: ""; position: absolute; inset: 0; border-radius: 3px; background: var(--hue); clip-path: inset(0 calc(100% - var(--done, 0%)) 0 0 round 3px); }
+.show.is-running .show__item.is-on .show__time { opacity: 1; }
+.show__stage {
+  display: grid; min-height: clamp(22rem, 34vw, 28rem);
+  padding: clamp(1rem, 2.5vw, 2rem); border-radius: 1.5rem;
+  background: var(--paper); box-shadow: var(--edge);
+}
+.show__panel { display: grid; }
+.show__panel[hidden] { display: none; }
+.show__panel > .bit { height: auto; margin: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(1.25rem, 3vw, 2.5rem); border-radius: 1.05rem; font-size: 1.02rem; }
+.show__panel > .bit > * { width: 100%; max-width: 32rem; margin-inline: auto; }
+.show__panel .bit__row, .show__panel .bit__stack li { padding: 0.75rem 1rem; }
+.show__panel .bit__list, .show__panel .bit__tree, .show__panel .bit__stack, .show__panel .bit__log { gap: 0.6rem; }
+.show__panel .bit__what .bit__type, .show__panel .bit__path { font-size: 0.82rem; }
+.show__panel .bit__serp { padding: 1.35rem 1.5rem; }
+.show__panel .bit__serp-title { font-size: 1.35rem; }
+.show__panel .bit__serp-text { font-size: 0.95rem; }
+.show__panel > .bit--photo { padding: 0; min-height: 18rem; }
 @media (max-width: 52rem) {
   .tour { grid-template-columns: minmax(0, 1fr); }
   .tour__rail { display: none; }

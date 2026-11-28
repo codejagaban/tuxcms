@@ -85,6 +85,15 @@
             <path d="M3.5 10h17M8 3v4M16 3v4"/>
             <rect class="glyph__lit" x="7" y="13" width="4" height="3.8" rx="1"/>
             @break
+        @case('search')
+            <circle class="glyph__lit" cx="10.5" cy="10.5" r="6.5"/>
+            <path d="M15.3 15.3 20 20"/>
+            @break
+        @case('image')
+            <rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/>
+            <circle class="glyph__lit" cx="9" cy="9.5" r="1.8"/>
+            <path d="M3.8 17l5.2-5 3.5 3.3 2.5-2.3 5.2 4.6"/>
+            @break
         @default
             <path class="glyph__lit" d="M12 3.5 19.5 7.5 12 11.5 4.5 7.5 12 3.5z"/>
             <path d="M4.5 7.5v9l7.5 4v-9M19.5 7.5v9l-7.5 4"/>
