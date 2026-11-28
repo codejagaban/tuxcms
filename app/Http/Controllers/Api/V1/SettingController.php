@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateSettingRequest;
 use App\Http\Resources\SettingResource;
 use App\Models\Setting;
 use App\Support\PublishState;
+use App\Support\ThemeSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,15 @@ class SettingController extends Controller
         PublishState::markChanged();
 
         return new SettingResource($setting);
+    }
+
+    /**
+     * The settings the site's themes declare in their theme.json, in groups,
+     * for the Settings screen to offer beside its own.
+     */
+    public function themeSettings(): JsonResponse
+    {
+        return response()->json(['data' => ThemeSettings::groups()]);
     }
 
     public function destroy($key): JsonResponse

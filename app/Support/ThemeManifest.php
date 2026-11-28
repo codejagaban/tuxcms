@@ -19,11 +19,18 @@ use Illuminate\Support\Facades\View;
  *       },
  *       "enquiries": {
  *         "<kind>": { "label": "Client review", "plural": "Client reviews" }
+ *       },
+ *       "settings": {
+ *         "<key>": { "label": "Footer notice", "type": "textarea", "group": "Footer", "help": "..." }
  *       }
  *     }
  *
  * `enquiries` names the kinds of message the site's forms send to the
  * inbox, as each form's hidden `type`. See App\Support\EnquiryKinds.
+ *
+ * `settings` names site-wide values the theme reads with Setting::getString()
+ * that editors should be able to change under Settings. See
+ * App\Support\ThemeSettings.
  *
  * A field's path is `title`, `content` or `data.<key>[.<key>...]`, the same
  * paths the @field and @image markers name. A field is:
@@ -128,6 +135,69 @@ class ThemeManifest
             $checked[$kind] = [
                 'label' => trim($definition['label']),
                 'plural' => trim($definition['plural'] ?? $definition['label'].'s'),
+            ];
+        }
+
+        return $checked;
+    }
+
+    /** What a theme setting may be: one line, several lines, an address, an email or a tick box. */
+    public const SETTING_TYPES = ['text', 'textarea', 'url', 'email', 'checkbox'];
+
+    /**
+     * The settings a theme declares, keyed by setting key, in the order the
+     * theme lists them. A theme with no theme.json declares none.
+     *
+     * @return array<string, array{label: string, type: string, group: string, help: ?string, placeholder: ?string}>
+     */
+    public static function settings(?string $theme): array
+    {
+        if ($theme === null || $theme === '' || ! ($path = self::path($theme))) {
+            return [];
+        }
+
+        self::sections($theme);
+        $key = 'settings|'.$path.'|'.filesize($path).'|'.filemtime($path);
+
+        return self::$cache[$key] ??= self::parseSettings($theme, json_decode((string) file_get_contents($path), true)['settings'] ?? []);
+    }
+
+    /** @return array<string, array{label: string, type: string, group: string, help: ?string, placeholder: ?string}> */
+    public static function parseSettings(string $theme, mixed $settings): array
+    {
+        if (! is_array($settings) || array_is_list($settings) && $settings !== []) {
+            throw InvalidThemeManifest::for($theme, null, '"settings" must be an object keyed by setting key.');
+        }
+
+        $checked = [];
+        foreach ($settings as $key => $definition) {
+            $key = (string) $key;
+            $where = "setting \"{$key}\"";
+            if (! preg_match(self::TYPE_NAME, $key) || strlen($key) > 64) {
+                throw InvalidThemeManifest::for($theme, null, "{$where}: a key must be lower case letters, digits and underscores, starting with a letter.");
+            }
+            if (! is_array($definition) || ! is_string($definition['label'] ?? null) || trim($definition['label']) === '') {
+                throw InvalidThemeManifest::for($theme, null, "{$where}: \"label\" is required.");
+            }
+            if ($unknown = array_diff(array_keys($definition), ['label', 'type', 'group', 'help', 'placeholder'])) {
+                throw InvalidThemeManifest::for($theme, null, "{$where} has unknown keys: ".implode(', ', $unknown).'.');
+            }
+            $type = $definition['type'] ?? 'text';
+            if (! in_array($type, self::SETTING_TYPES, true)) {
+                throw InvalidThemeManifest::for($theme, null, "{$where} has unknown type \"".(is_scalar($type) ? $type : gettype($type)).'"; use one of '.implode(', ', self::SETTING_TYPES).'.');
+            }
+            foreach (['group', 'help', 'placeholder'] as $text) {
+                if (isset($definition[$text]) && ! is_string($definition[$text])) {
+                    throw InvalidThemeManifest::for($theme, null, "{$where}: \"{$text}\" must be text.");
+                }
+            }
+
+            $checked[$key] = [
+                'label' => trim($definition['label']),
+                'type' => $type,
+                'group' => trim($definition['group'] ?? '') ?: 'Theme',
+                'help' => $definition['help'] ?? null,
+                'placeholder' => $definition['placeholder'] ?? null,
             ];
         }
 

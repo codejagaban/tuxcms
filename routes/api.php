@@ -91,6 +91,7 @@ Route::prefix('v1')->group(function () {
         // Settings
         Route::get('settings', [SettingController::class, 'index']);
         Route::get('settings/grouped', [SettingController::class, 'getGrouped']);
+        Route::get('theme-settings', [SettingController::class, 'themeSettings']);
         Route::get('settings/{key}', [SettingController::class, 'show']);
         Route::put('settings', [SettingController::class, 'updateMany']);
         Route::post('settings', [SettingController::class, 'store']);

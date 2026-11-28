@@ -82,5 +82,22 @@
       "label": "Quote request",
       "plural": "Quote requests"
     }
+  },
+  "settings": {
+    "promo_banner": {
+      "label": "Promotion banner",
+      "type": "textarea",
+      "group": "Promotions",
+      "help": "Shown above the menu."
+    },
+    "promo_link": {
+      "label": "Promotion link",
+      "type": "url",
+      "group": "Promotions"
+    },
+    "contact_email": {
+      "label": "Clashes with the core",
+      "type": "email"
+    }
   }
 }
