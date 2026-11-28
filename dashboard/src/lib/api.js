@@ -91,11 +91,8 @@ export const postAPI = {
   delete: (id) => api.delete(`/posts/${id}`),
 };
 
-export const postCategoryAPI = {
-  list: () => api.get('/post-categories'),
-  create: (data) => api.post('/post-categories', data),
-  update: (id, data) => api.put(`/post-categories/${id}`, data),
-  delete: (id) => api.delete(`/post-categories/${id}`),
+export const postTagAPI = {
+  list: () => api.get('/post-tags'),
 };
 
 export const jobApplicationAPI = {

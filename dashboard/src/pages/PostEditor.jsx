@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, ArrowUpRight, GlobeHemisphereWest, Image as ImageIcon, Trash } from '../lib/icons';
-import { postAPI, postCategoryAPI, siteAPI, apiErrorMessage } from '../lib/api';
+import { postAPI, postTagAPI, siteAPI, apiErrorMessage } from '../lib/api';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { FormSkeleton } from '../components/ui/Skeleton';
 import RichTextEditor from '../components/editor/RichTextEditor';
 import MediaPicker from '../components/editor/MediaPicker';
-import { CategoryManager } from './Blog';
+import TagInput from '../components/editor/TagInput';
 
 const emptyPost = {
   title: '', slug: '', excerpt: '', body: '', cover_image: '', cover_image_alt: '',
-  post_category_id: '', status: 'draft', published_at: '', meta_title: '', meta_description: '',
+  tags: [], status: 'draft', published_at: '', meta_title: '', meta_description: '',
 };
 
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -30,6 +30,7 @@ const fromLocalInput = (value) => (value ? new Date(value).toISOString() : null)
 const fromServer = (post) => ({
   ...emptyPost,
   ...Object.fromEntries(Object.keys(emptyPost).map((key) => [key, post[key] ?? ''])),
+  tags: (post.tags || []).map((tag) => tag.name),
   published_at: toLocalInput(post.published_at),
 });
 
@@ -48,17 +49,16 @@ export default function PostEditor() {
   const [busy, setBusy] = useState('');
   const [errors, setErrors] = useState({});
   const [slugEdited, setSlugEdited] = useState(!isNew);
-  const [categories, setCategories] = useState([]);
+  const [knownTags, setKnownTags] = useState([]);
   const [pickingCover, setPickingCover] = useState(false);
-  const [managing, setManaging] = useState(false);
 
   const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(saved), [form, saved]);
 
-  const loadCategories = useCallback(async () => {
-    try { setCategories((await postCategoryAPI.list()).data.data || []); } catch { /* the post can still be written */ }
+  useEffect(() => {
+    postTagAPI.list()
+      .then((response) => setKnownTags((response.data.data || []).map((tag) => tag.name)))
+      .catch(() => { /* the post can still be tagged by hand */ });
   }, []);
-
-  useEffect(() => { loadCategories(); }, [loadCategories]);
 
   useEffect(() => {
     if (isNew) return;
@@ -107,7 +107,6 @@ export default function PostEditor() {
       title: form.title.trim(),
       slug: form.slug || slugify(form.title),
       status,
-      post_category_id: form.post_category_id || null,
       published_at: fromLocalInput(form.published_at),
     };
 
@@ -149,6 +148,8 @@ export default function PostEditor() {
     : scheduled ? (live?.is_scheduled ? 'Update schedule' : 'Schedule')
       : live?.status === 'published' ? 'Update' : 'Publish';
   const error = (name) => errors[name]?.[0];
+  // A problem with one tag comes back as tags.2; show it under the field.
+  const tagError = Object.entries(errors).find(([key]) => key === 'tags' || key.startsWith('tags.'))?.[1]?.[0];
 
   return (
     <div className="post-editor flex min-h-dvh flex-col bg-[var(--color-canvas)]">
@@ -233,14 +234,12 @@ export default function PostEditor() {
             </section>
 
             <section className="work-surface space-y-4 p-5">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-base font-semibold">Category</h2>
-                <button type="button" onClick={() => setManaging(true)} className="text-[13px] font-medium text-[var(--color-blue-ink)] hover:underline">Manage</button>
+              <h2 className="text-base font-semibold">Tags</h2>
+              <div>
+                <TagInput value={form.tags} onChange={(tags) => set('tags', tags)} suggestions={knownTags} />
+                <p className={help}>Each tag gets its own page on the blog, listing the posts that carry it.</p>
+                {tagError && <p className="mt-1.5 text-sm font-medium text-[var(--color-danger)]">{tagError}</p>}
               </div>
-              <select name="post_category_id" value={form.post_category_id} onChange={change} className="field-control" aria-label="Category">
-                <option value="">No category</option>
-                {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-              </select>
             </section>
 
             <section className="work-surface space-y-4 p-5">
@@ -307,7 +306,6 @@ export default function PostEditor() {
           setPickingCover(false);
         }}
       />
-      <CategoryManager isOpen={managing} onClose={() => { setManaging(false); loadCategories(); }} />
     </div>
   );
 }
