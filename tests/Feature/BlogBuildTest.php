@@ -135,6 +135,21 @@ class BlogBuildTest extends TestCase
         $this->assertFileDoesNotExist($this->site.'/blog/feed.xml');
     }
 
+    public function test_a_theme_without_blog_views_gets_the_plain_blog_in_its_own_layout(): void
+    {
+        Post::create(['title' => 'A note', 'slug' => 'a-note', 'status' => 'published', 'published_at' => now()->subDay(), 'body' => '<p>Hello.</p>']);
+
+        // Crystal has no blog views, so it gets the plain blog inside its own
+        // layout, never another theme's.
+        config(['site.theme' => 'crystal']);
+        app(SiteBuilder::class)->build();
+        $post = $this->read('blog/a-note/index.html');
+        $this->assertStringContainsString('class="blog"', $post);
+        $this->assertStringContainsString('/themes/crystal/css/style.css', $post);
+        $this->assertStringNotContainsString('/themes/shopfront/', $post);
+        $this->assertStringContainsString('<p>Hello.</p>', $post);
+    }
+
     private function read(string $relative): string
     {
         return file_get_contents($this->site.'/'.$relative);

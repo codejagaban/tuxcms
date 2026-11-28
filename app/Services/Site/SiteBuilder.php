@@ -196,7 +196,7 @@ class SiteBuilder
 
         $written = [];
         $navigation = $this->navigation->build(currentPath: '/blog/');
-        $shared = ['navigation' => $navigation, 'buildYear' => date('Y')];
+        $shared = ['navigation' => $navigation, 'buildYear' => date('Y'), 'layout' => $this->blogView('layout')];
 
         // Only tags on a published post are offered to visitors.
         $tags = $posts->flatMap(fn (Post $post) => $post->tags->where('type', Post::TAG_TYPE))
@@ -221,7 +221,7 @@ class SiteBuilder
                 $relative = ltrim($address($number), '/').'index.html';
 
                 $name = $listing['tag']?->name;
-                $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.index'), $shared + [
+                $written[$relative] = $this->write($temp, $relative, View::make($this->blogView('blog.index'), $shared + [
                     'page' => $this->blogPage(
                         title: ($name ? $name.' | Blog' : 'Blog').($number > 1 ? ' | Page '.$number : ''),
                         description: $name ? 'Posts tagged '.$name.' from '.Site::name().'.' : 'News and writing from '.Site::name().'.',
@@ -241,7 +241,7 @@ class SiteBuilder
 
         foreach ($posts as $index => $post) {
             $relative = 'blog/'.$post->slug.'/index.html';
-            $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.show'), $shared + [
+            $written[$relative] = $this->write($temp, $relative, View::make($this->blogView('blog.show'), $shared + [
                 'page' => $this->blogPage(
                     title: $post->meta_title ?: $post->title,
                     description: $post->meta_description ?: $post->summary(160),
@@ -284,6 +284,23 @@ class SiteBuilder
         ])));
 
         return $page;
+    }
+
+    /**
+     * Each theme draws its own blog. One that has no blog views yet gets the
+     * plain ones in resources/views/site/blog, set inside that theme's own
+     * layout so the menu, footer, fonts and colours still match the site.
+     * Unlike careers, the blog never borrows another theme's views.
+     */
+    private function blogView(string $name): string
+    {
+        $theme = config('site.theme') ?: 'shopfront';
+
+        if (View::exists($view = "site.themes.{$theme}.{$name}")) {
+            return $view;
+        }
+
+        return $name === 'layout' ? 'site.layout' : "site.{$name}";
     }
 
     /** Published posts, newest first. */
