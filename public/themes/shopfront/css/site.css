@@ -681,21 +681,16 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
   .key--wide .key__visual > .bit { padding: 16px; }
 }
 
-/* Stats: a row of cards, counted as the dashboard's Overview counts. */
-.tally__list { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 1rem; margin-top: clamp(2.25rem, 5vw, 3.75rem); }
-.tally__list--3 { --cols: 3; }
-.tally__list--4 { --cols: 4; }
-@media (max-width: 60rem) { .tally__list--3, .tally__list--4 { --cols: 2; } }
-@media (max-width: 26rem) { .tally__list { --cols: 1; } }
-.tally__item {
-  display: flex; flex-direction: column; justify-content: flex-start;
-  min-height: clamp(9.5rem, 16vw, 13rem); padding: clamp(1.4rem, 2.4vw, 1.9rem);
-  border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge);
-}
-.tally__n { font: 600 clamp(3.4rem, 6vw, 5.25rem)/0.95 var(--display); letter-spacing: -0.05em; }
-.tally__of { display: flex; align-items: baseline; gap: 0.55rem; color: var(--ink-2); font-weight: 500; }
-.tally__dot { width: 0.55rem; height: 0.55rem; flex: none; border-radius: 50%; background: var(--hue); transform: translateY(-0.05em); }
-.tally__n { margin-top: auto; padding-top: 1.75rem; }
+/* Stats: the figures of "The team behind smarter automation" in the
+   Automation SaaS template. The heading on the left, and the figures in a
+   plain two-column grid on the right: a regular-weight number at 40px over
+   a 16px label at 60% ink, with no cards around them. */
+.figures { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 56px; align-items: start; }
+.figures__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; }
+.figures__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 4px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.figures__n { font: 400 clamp(2.5rem, 4vw, 3.25rem)/1.1 var(--display); letter-spacing: -0.03em; color: var(--ink); }
+.figures__of { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; line-height: 24px; max-width: 26ch; }
+@media (max-width: 56rem) { .figures { grid-template-columns: minmax(0, 1fr); } }
 
 /* Testimonials: white cards, the words large, the speaker at the foot. */
 .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }

@@ -1,15 +1,17 @@
 @php $items = data_get($d, 'items', []); @endphp
 @if (count($items))
-<section class="block tally" @tuxsection($section)>
-    <div class="wrap">
-        @include('site.themes.shopfront.partials.head')
-        <dl class="tally__list tally__list--{{ min(4, count($items)) }}">
+{{-- The figures of "The team behind smarter automation" in the Automation
+     SaaS template: the heading and its words on one side, and the figures in
+     a plain grid on the other, each a large regular-weight number over a
+     quiet label. --}}
+<section class="block" @tuxsection($section)>
+    <div class="wrap figures">
+        @include('site.themes.shopfront.partials.head', ['side' => true])
+        <dl class="figures__list">
             @foreach ($items as $i => $item)
-                {{-- As the dashboard's Overview counts: a label with its marker
-                     colour, then the figure. --}}
-                <div class="tally__item" style="--hue: var(--{{ ['blue', 'green', 'amber', 'rose'][$i % 4] }})">
-                    <dt class="tally__of"><span class="tally__dot" aria-hidden="true"></span><span @field($section, "data.items.{$i}.label")>{{ data_get($item, 'label') }}</span></dt>
-                    <dd class="tally__n" @field($section, "data.items.{$i}.value")>{{ data_get($item, 'value') }}</dd>
+                <div class="figures__item">
+                    <dt class="figures__of" @field($section, "data.items.{$i}.label")>{{ data_get($item, 'label') }}</dt>
+                    <dd class="figures__n tally__n" @field($section, "data.items.{$i}.value")>{{ data_get($item, 'value') }}</dd>
                 </div>
             @endforeach
         </dl>
