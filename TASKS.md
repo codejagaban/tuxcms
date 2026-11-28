@@ -2,9 +2,9 @@
 
 ## Active
 
-- [ ] **Stop Crystal edits from being silently lost** - most of Crystal's copy (testimonials, the services and salon lists, the booking prompts) is written into its hand-built templates, and the section data holds an unused duplicate. Because the two match, the editor pairs those elements with the unused fields, so an edit saves but never reaches the published site. Fixing it needs the Task 7 decision: print the data from the templates, or key overrides to stable names.
+- [ ] **Give Crystal's remaining written-in copy section data** - 108 pieces of copy on Crystal's hand-built pages (43 on About, 28 on Home) have no section data and are edited only through overrides, which are kept by position and break if the template's markup changes. Moving that copy into section data would let overrides be retired.
 - [ ] **Remove Crystal's unused section views** - `resources/views/site/themes/crystal/sections/` (9 files) is never rendered: a Crystal page uses a hand-built view, or falls back to the base views in `resources/views/site/sections/`.
-- [ ] **Replace text matching in the preview with field markers** - done: the server prints `@field`, `@image` and `@tuxsection` markers in preview renders only (1); the editor edits marked fields by their markers, falling back to text matching for unmarked sections (2); Shopfront marks every field it shows, and Crystal's hand-built pages mark what they print from section data (3). Next: edit every page on the live canvas and delete `SectionRenderer.jsx` (4); remove the text matcher (5); a test that every theme marks every field (6). Crystal's overrides need a decision first (7).
+- [ ] **Replace text matching in the preview with field markers** - done: the server prints `@field`, `@image` and `@tuxsection` markers in preview renders only (1); the editor edits marked fields by their markers, falling back to text matching for unmarked sections (2); Shopfront marks every field it shows, and Crystal's hand-built pages mark what they print from section data (3). Next: edit every page on the live canvas and delete `SectionRenderer.jsx` (4); remove the text matcher (5); a test that every theme marks every field (6). Crystal's copy is decided (7): its templates print the section data.
 - [ ] **Move the Crystal client site out of this repository** - its templates and 52 MB of assets (`resources/views/site/themes/crystal`, `public/themes/crystal`), its seeders (`database/seeders/Clients/Crystal`) and its test are a client's website, in a public repository. They need a home of their own and a way to be installed onto that client's server.
 
 ## Waiting On
@@ -14,6 +14,7 @@
 
 ## Done
 
+- [x] ~~**Stop Crystal edits from being silently lost** - the 58 pieces of copy written into Crystal's templates with an unused copy in the section data now print that data and carry markers, and text matching is off on hand-built pages; published pages are unchanged~~ (2026-11-28)
 - [x] ~~**Stop the core naming one client** - the editor's preview is `SitePreview`, overrides are offered to any theme with hand-built pages, the client's media importer is an option on the theme importer, footer link lists follow each site's settings, and the client's seeders are fenced off~~ (2026-11-27)
 - [x] ~~**Fill out the Overview** - recent pages as a gallery, an inbox of the latest messages and applications, vacancies and the newest media~~ (2026-11-27)
 - [x] ~~**Add a gallery view to Pages** - each page as a small live picture of itself, with the choice remembered~~ (2026-11-27)

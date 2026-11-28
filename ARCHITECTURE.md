@@ -168,9 +168,14 @@ matching its text.
 
 Shopfront marks every field it shows. The one exception is a contact form's
 field labels, which carry an "(optional)" note beside the stored text, so they
-are edited from the inspector. Crystal's hand-built pages mark the fields they
-print from section data; most of their copy is written into the templates
-themselves, which no marker can make editable.
+are edited from the inspector.
+
+Crystal's hand-built pages print their section data, with the wording they
+used to have written in as the fallback, and mark it. Text matching is
+switched off on hand-built pages: it used to pair written-in copy with an
+unused copy in the section data, so an edit saved but never reached the
+published page. Copy that has no section data at all is still edited through
+overrides, which are kept by position on the page.
 
 ## SEO
 
