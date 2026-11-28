@@ -551,8 +551,8 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
   grid-column: span var(--span, 6);
   display: flex; flex-direction: column; gap: 1.75rem;
   padding: clamp(1.4rem, 2.4vw, 2rem);
-  border-radius: 1.25rem;
-  background: var(--paper); box-shadow: var(--edge);
+  border-radius: 20px;
+  background: var(--paper);
 }
 .card--5 { --span: 5; }
 .card--7 { --span: 7; }
@@ -647,55 +647,47 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .bit__serp-title { margin-top: 0.35rem; color: var(--blue-ink); font-size: 1.15rem; line-height: 1.3; }
 .bit__serp-text { color: var(--muted); font-size: 0.85rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Features in one column: a showcase. The features listed down the left,
-   the chosen one raised as a white card with its words open, and its piece
-   of the product large in the panel on the right. A line along the foot of
-   the chosen card fills while it waits to move on. */
-.show { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1rem, 3vw, 2.5rem); align-items: stretch; }
-.show__list { display: grid; gap: 0.5rem; align-content: start; }
-.show__item {
-  position: relative; overflow: hidden;
-  padding: 0.35rem 0.5rem; border-radius: 1.25rem;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+/* Features in one column: the "Key features" grid of the Time Tracking
+   template, measure for measure. Twelve columns, 40px between rows and 32px
+   between columns; white cards with 20px corners and no shadow. The first is
+   wide: 32px in, no more than 319px tall, its words on the left and its
+   piece rising from the foot on the right, cut off by the card. The rest:
+   16px in, the piece in a 211px panel with 16px corners, then a regular-
+   weight 24px name, a line at 60% ink, and a small white pill. */
+.keys { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px 32px; }
+.key {
+  grid-column: span var(--span, 4);
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 16px; border-radius: 20px;
+  background: var(--paper);
 }
-.show__item.is-on { background: var(--paper); box-shadow: var(--edge); }
-.show__head { margin: 0; font: inherit; }
-.show__tab {
-  display: flex; align-items: center; gap: 0.85rem; width: 100%;
-  padding: 0.85rem 0.9rem; border: 0; border-radius: 0.9rem; background: transparent; cursor: pointer;
-  color: var(--muted); font: 600 clamp(1.15rem, 1.6vw, 1.35rem)/1.2 var(--display); letter-spacing: -0.025em; text-align: left;
-  transition: color 0.2s ease;
+.key__visual { height: 211px; border-radius: 16px; overflow: hidden; background: var(--paper-3); }
+.key__visual > .bit { height: 100%; margin: 0; border-radius: 0; display: flex; flex-direction: column; justify-content: center; }
+.key__visual > .bit--photo { padding: 0; }
+.key__text { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 4px 4px 8px; flex: 1; }
+.key__glyph { width: 1.5rem; height: 1.5rem; color: var(--hue); margin-bottom: 8px; }
+.key__name { font: 400 24px/1.4 var(--display); letter-spacing: -0.01em; color: var(--ink); }
+.key__what { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; line-height: 24px; max-width: 46ch; }
+.key__go { margin-top: auto; }
+.key__text .key__go { margin-top: 16px; }
+.key--wide {
+  flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: 32px;
+  max-height: 319px; overflow: hidden; position: relative;
+  padding: 32px 32px 0;
 }
-.show__tab:hover, .show__item.is-on .show__tab { color: var(--ink); }
-.show__glyph { width: 1.75rem; height: 1.75rem; color: var(--muted); transition: color 0.2s ease; }
-.show__item.is-on .show__glyph, .show__tab:hover .show__glyph { color: var(--hue); }
-/* The words of the chosen feature open below its name; the others stay
-   folded but are still in the page for anyone reading it as text. */
-.show__more { display: grid; gap: 0.75rem; justify-items: start; padding: 0 0.9rem 1.1rem calc(0.9rem + 1.75rem + 0.85rem); }
-.show__item:not(.is-on) .show__more { display: none; }
-.show__what { color: var(--muted); max-width: 42ch; }
-.show__time { position: absolute; left: 1.4rem; right: 1.4rem; bottom: 0.55rem; height: 3px; border-radius: 3px; background: var(--rule); opacity: 0; }
-.show__time::after { content: ""; position: absolute; inset: 0; border-radius: 3px; background: var(--hue); clip-path: inset(0 calc(100% - var(--done, 0%)) 0 0 round 3px); }
-.show.is-running .show__item.is-on .show__time { opacity: 1; }
-.show__stage {
-  display: grid; min-height: clamp(22rem, 34vw, 28rem);
-  padding: clamp(1rem, 2.5vw, 2rem); border-radius: 1.5rem;
-  background: var(--paper); box-shadow: var(--edge);
-}
-.show__panel { display: grid; }
-.show__panel[hidden] { display: none; }
-.show__panel > .bit { height: auto; margin: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(1.25rem, 3vw, 2.5rem); border-radius: 1.05rem; font-size: 1.02rem; }
-.show__panel > .bit > * { width: 100%; max-width: 32rem; margin-inline: auto; }
-.show__panel .bit__row, .show__panel .bit__stack li { padding: 0.75rem 1rem; }
-.show__panel .bit__list, .show__panel .bit__tree, .show__panel .bit__stack, .show__panel .bit__log { gap: 0.6rem; }
-.show__panel .bit__what .bit__type, .show__panel .bit__path { font-size: 0.82rem; }
-.show__panel .bit__serp { padding: 1.35rem 1.5rem; }
-.show__panel .bit__serp-title { font-size: 1.35rem; }
-.show__panel .bit__serp-text { font-size: 0.95rem; }
-.show__panel > .bit--photo { padding: 0; min-height: 18rem; }
-@media (max-width: 52rem) {
-  .show { grid-template-columns: minmax(0, 1fr); }
-  .show__stage { order: -1; min-height: 0; padding: 0.6rem; }
+.key--wide .key__text { flex: 0 1 26rem; align-self: center; padding: 0 0 32px; }
+.key--wide .key__visual { flex: 0 1 34rem; height: auto; min-height: 320px; margin-top: 64px; border-radius: 16px 16px 0 0; }
+.key--wide .key__visual > .bit { justify-content: flex-start; padding: 24px; }
+/* The pill of the template: white, a hairline edge, small. */
+.button--small { min-height: 0; padding: 10px 20px; font-size: 14px; line-height: 21px; font-weight: 400; box-shadow: 0 1px 2px oklch(20% 0.02 260 / .05); }
+@media (max-width: 64rem) { .key { grid-column: span 6; } .key--wide { grid-column: span 12; } }
+@media (max-width: 46rem) {
+  .keys { gap: 24px; }
+  .key, .key--wide { grid-column: span 12; }
+  .key--wide { flex-direction: column; max-height: none; padding: 16px; gap: 12px; }
+  .key--wide .key__text { flex: none; padding: 4px 4px 8px; }
+  .key--wide .key__visual { flex: none; width: 100%; min-height: 211px; height: auto; margin-top: 0; border-radius: 16px; order: -1; }
+  .key--wide .key__visual > .bit { padding: 16px; }
 }
 
 /* Stats: a row of cards, counted as the dashboard's Overview counts. */

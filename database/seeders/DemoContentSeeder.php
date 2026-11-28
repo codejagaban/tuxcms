@@ -104,7 +104,7 @@ class DemoContentSeeder extends Seeder
                 'key' => 'work', 'type' => 'features', 'title' => 'What you can run on it',
                 'content' => 'Every part of a small business website, edited from the same place.',
                 'data' => [
-                    // One column: the theme lays these out as a showcase.
+                    // One column: the theme lays these out as its key-features grid.
                     'columns' => 1,
                     'items' => [
                         ['icon' => 'compass', 'title' => 'Services, page by page', 'description' => 'A page for each thing you sell, grouped under one heading in the menu.', 'url' => '/features/', 'link_label' => 'All features'],

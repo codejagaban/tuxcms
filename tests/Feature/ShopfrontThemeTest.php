@@ -212,10 +212,10 @@ class ShopfrontThemeTest extends TestCase
 
         app(SiteBuilder::class)->build();
 
-        // The front page shows off what the CMS runs, each feature with a
-        // real piece of it: the open roles, and photographs the pages use.
+        // The front page lays out what the CMS runs as a grid of key
+        // features, each with a real piece of it: the open roles, and photographs the pages use.
         $home = $this->contents('index.html');
-        $this->assertStringContainsString('data-show', $home);
+        $this->assertStringContainsString('class="keys"', $home);
         $this->assertStringContainsString('bit--jobs', $home);
         $this->assertStringContainsString('Senior product designer', $home);
         $this->assertStringContainsString('room-by-the-windows.jpg', $home);
