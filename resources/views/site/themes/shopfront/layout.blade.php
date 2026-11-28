@@ -20,7 +20,10 @@
         <link rel="icon" href="/favicon.ico" sizes="any">
     @endisset
     <link rel="preload" href="/themes/shopfront/fonts/UncutSans-Variable.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="{{ CssMinifier::themeStylesheet('shopfront') }}">
+    {{-- Each asset carries its file's age, so a browser fetches it again
+         after the theme changes instead of keeping an old copy. --}}
+    @php $stylesheet = CssMinifier::themeStylesheet('shopfront'); @endphp
+    <link rel="stylesheet" href="{{ $stylesheet }}?v={{ @filemtime(public_path(ltrim($stylesheet, '/'))) }}">
     @stack('head')
 </head>
 <body>
@@ -34,7 +37,7 @@
 
     @include('site.themes.shopfront.partials.footer')
 
-    <script src="/themes/shopfront/js/site.js" defer></script>
+    <script src="/themes/shopfront/js/site.js?v={{ @filemtime(public_path('themes/shopfront/js/site.js')) }}" defer></script>
     @stack('scripts')
     @include('site.partials.analytics')
 </body>
