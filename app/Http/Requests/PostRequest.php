@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class PostRequest extends FormRequest
 {
-    /** Addresses under /blog/ that belong to the listing, not to a post. */
-    public const RESERVED_SLUGS = ['page', 'tag', 'feed'];
-
     public function authorize(): bool
     {
         return true;
@@ -21,7 +19,7 @@ class PostRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'alpha_dash', Rule::notIn(self::RESERVED_SLUGS), Rule::unique('posts', 'slug')->ignore($post)],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', Rule::notIn(Post::RESERVED_SLUGS), Rule::unique('posts', 'slug')->ignore($post)],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'body' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'string', 'max:2048'],

@@ -128,6 +128,50 @@ class PostTest extends TestCase
         $this->getJson('/api/v1/post-tags')->assertJsonCount(1, 'data');
     }
 
+    public function test_a_post_without_an_address_gets_one_from_its_title(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $first = ['title' => 'Notes from the studio', 'status' => 'draft'];
+
+        $id = $this->postJson('/api/v1/posts', $first)->assertCreated()->assertJsonPath('data.slug', 'notes-from-the-studio')->json('data.id');
+        $this->postJson('/api/v1/posts', [...$first, 'slug' => ''])->assertCreated()->assertJsonPath('data.slug', 'notes-from-the-studio-2');
+        Post::find($id)->delete();
+        // A deleted post still holds its address, so it can be restored.
+        $this->postJson('/api/v1/posts', $first)->assertCreated()->assertJsonPath('data.slug', 'notes-from-the-studio-3');
+        // The blog's own addresses are never handed out.
+        $this->postJson('/api/v1/posts', ['title' => 'Tag', 'status' => 'draft'])->assertCreated()->assertJsonPath('data.slug', 'tag-2');
+        $this->postJson('/api/v1/posts', ['title' => '¿¡!', 'status' => 'draft'])->assertCreated()->assertJsonPath('data.slug', 'post');
+    }
+
+    public function test_a_saved_post_keeps_its_address_when_none_is_sent(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $id = $this->postJson('/api/v1/posts', $this->payload())->assertCreated()->json('data.id');
+
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'title' => 'A new title', 'slug' => null])
+            ->assertOk()->assertJsonPath('data.slug', 'a-first-post');
+    }
+
+    public function test_publishing_without_an_excerpt_writes_one_from_the_body(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $body = '<h2>Why we moved</h2><p>We needed more room. The old studio had one window.</p><p>'.str_repeat('More words here. ', 20).'</p>';
+
+        $id = $this->postJson('/api/v1/posts', [...$this->payload(), 'excerpt' => null, 'body' => $body])
+            ->assertCreated()->assertJsonPath('data.excerpt', null)->json('data.id');
+
+        $excerpt = $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'excerpt' => '', 'body' => $body, 'status' => 'published'])
+            ->assertOk()->json('data.excerpt');
+        $this->assertStringStartsWith('We needed more room. The old studio had one window.', $excerpt);
+        $this->assertStringNotContainsString('Why we moved', $excerpt);
+        $this->assertLessThanOrEqual(200, mb_strlen($excerpt));
+        $this->assertMatchesRegularExpression('/\.$/', $excerpt, 'It ends on a whole sentence.');
+
+        // One the editor wrote is kept as it is.
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'excerpt' => 'Written by hand.', 'status' => 'published'])
+            ->assertOk()->assertJsonPath('data.excerpt', 'Written by hand.');
+    }
+
     public function test_saving_a_post_marks_the_site_as_changed(): void
     {
         PublishState::markPublished(now());
