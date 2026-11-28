@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowLeft, ArrowUpRight, DeviceMobile, Eye, GlobeHemisphereWest, Image as ImageIcon, Monitor, PencilSimpleLine, Trash } from '../lib/icons';
+import { ArrowLeft, ArrowUpRight, ClockCounterClockwise, DeviceMobile, Eye, GlobeHemisphereWest, Image as ImageIcon, Monitor, PencilSimpleLine, Trash } from '../lib/icons';
 import { postAPI, postTagAPI, siteAPI, apiErrorMessage } from '../lib/api';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -9,6 +9,7 @@ import { FormSkeleton } from '../components/ui/Skeleton';
 import RichTextEditor from '../components/editor/RichTextEditor';
 import MediaPicker from '../components/editor/MediaPicker';
 import TagInput from '../components/editor/TagInput';
+import RevisionHistory from '../components/editor/RevisionHistory';
 import ViewSwitch from '../components/ui/ViewSwitch';
 import DatePicker from '../components/ui/DatePicker';
 import { dayOf, today } from '../lib/days';
@@ -45,6 +46,7 @@ export default function PostEditor() {
   const [knownTags, setKnownTags] = useState([]);
   const [pickingCover, setPickingCover] = useState(false);
   const [mode, setMode] = useState('write');
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [device, setDevice] = useState(() => (window.innerWidth < 768 ? 'phone' : 'desktop'));
   const [preview, setPreview] = useState({ html: '', loading: false, failed: false });
 
@@ -193,6 +195,11 @@ export default function PostEditor() {
           options={[['write', 'Write', PencilSimpleLine], ['preview', 'Preview', Eye]]}
         />
         <div className="flex w-full items-center justify-end gap-2 pb-2.5 sm:w-auto sm:pb-0">
+          {!isNew && (
+            <button type="button" className="icon-button" onClick={() => setHistoryOpen(true)} title="Post history" aria-label="Post history">
+              <ClockCounterClockwise className="h-5 w-5" />
+            </button>
+          )}
           {isLive && (
             <a href={live.path} target="_blank" rel="noreferrer" className="hidden items-center gap-1.5 px-2 text-sm font-medium text-[var(--color-ink-2)] hover:text-[var(--color-ink)] sm:inline-flex">
               View post <ArrowUpRight className="h-4 w-4" />
@@ -356,6 +363,23 @@ export default function PostEditor() {
         </div>
       )}
 
+      <RevisionHistory
+        kind="post"
+        isOpen={historyOpen}
+        pageId={isNew ? null : id}
+        onClose={() => setHistoryOpen(false)}
+        onRestore={(snapshot) => {
+          // Back into the editor, unsaved: it is saved or published as usual.
+          setForm((current) => ({
+            ...fromServer({ ...snapshot, tags: (snapshot.tags || []).map((name) => ({ name })) }),
+            status: current.status,
+          }));
+          setSlugEdited(true);
+          setMode('write');
+          setHistoryOpen(false);
+          toast.success('Earlier version restored. Review it, then save.');
+        }}
+      />
       <MediaPicker
         isOpen={pickingCover}
         currentUrl={form.cover_image}

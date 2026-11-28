@@ -24,12 +24,14 @@ let saved;
 let listed;
 let previewed;
 let created;
+let updates;
 
 test.beforeEach(async ({ page }) => {
   saved = null;
   listed = [];
   previewed = null;
   created = null;
+  updates = [];
   await page.addInitScript(() => localStorage.setItem('auth_token', 'editor-token'));
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -62,6 +64,16 @@ test.beforeEach(async ({ page }) => {
     if (path.endsWith('/posts') && request.method() === 'POST') {
       created = request.postDataJSON();
       return route.fulfill({ status: 201, json: { data: { ...post, id: 8, ...created, slug: 'a-brand-new-post-2', excerpt: null, tags: [] } } });
+    }
+    if (path.endsWith('/posts/7/revisions')) {
+      return route.fulfill({ json: { data: [{
+        id: 3, created_at: '2026-11-27T10:00:00Z', author: 'Editor',
+        snapshot: { ...post, title: 'An earlier title', body: '<p>Earlier words.</p>', tags: ['Process'] },
+      }] } });
+    }
+    if (path.endsWith('/posts/8') && request.method() === 'PUT') {
+      updates.push(request.postDataJSON());
+      return route.fulfill({ json: { data: { ...post, id: 8, ...request.postDataJSON(), slug: 'a-brand-new-post-2', tags: [] } } });
     }
     if (path.endsWith('/posts/8')) {
       return route.fulfill({ json: { data: { ...post, id: 8, title: 'A brand new post', slug: 'a-brand-new-post-2', tags: [] } } });
@@ -223,4 +235,19 @@ test('the publish date is a day chosen from a calendar', async ({ page }) => {
   await calendar.getByRole('button', { name: 'Today', exact: true }).click();
   await page.getByRole('button', { name: 'Save draft' }).click();
   await expect.poll(() => saved?.published_at).toBe('2026-11-28');
+});
+
+test('an earlier version of a post is restored into the editor', async ({ page }) => {
+  await page.goto('/dashboard/blog/7/edit');
+
+  await page.getByRole('button', { name: 'Post history' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Post history' });
+  await expect(dialog.getByText('An earlier title')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Restore' }).click();
+
+  await expect(page.getByRole('textbox', { name: 'Post title' })).toHaveValue('An earlier title');
+  await expect(page.getByLabel('Post body')).toContainText('Earlier words.');
+  await expect(page.getByRole('list', { name: 'Tags' }).getByText('Process')).toBeVisible();
+  // Restored, not saved: it is saved like any other change.
+  expect(saved).toBeNull();
 });
