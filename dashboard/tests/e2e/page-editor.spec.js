@@ -267,3 +267,22 @@ test('the preview falls back to the built page when it cannot be rendered', asyn
   const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
   await expect(heading).toHaveText('Home heading');
 });
+
+test('an inline edit made after an autosave is kept', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/3/edit');
+
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  const first = preview.locator('[data-tuxcms-field="31:title"]');
+  const second = preview.locator('[data-tuxcms-field="32:title"]');
+
+  await first.fill('First, edited');
+  await first.press('Tab');
+  await expect.poll(() => saves.length, { timeout: 10000 }).toBe(1);
+
+  // The save hands back the page; the second edit must still find its section.
+  await second.fill('Second, edited');
+  await second.press('Tab');
+  await expect.poll(() => saves.at(-1)?.sections.map((section) => section.title), { timeout: 10000 })
+    .toEqual(['First, edited', 'Second, edited']);
+});

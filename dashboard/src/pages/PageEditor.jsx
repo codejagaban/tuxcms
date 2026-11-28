@@ -20,6 +20,17 @@ const withUids = (sections = []) =>
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((s) => ({ ...s, _uid: makeUid(), data: s.data || {} }));
 
+// After a save the server hands the sections back. Each keeps the client id
+// it had, matched by position (they come back in the order they were sent),
+// so anything still pointing at a section, such as an element in the preview,
+// keeps pointing at the same one. Giving them new ids lost the next edit made
+// on the page.
+const keepUids = (previous = [], fresh = []) => withUids(fresh).map((section, index) => {
+  const before = previous[index];
+  const same = before && (before.id == null || String(before.id) === String(section.id));
+  return same ? { ...section, _uid: before._uid } : section;
+});
+
 const setNestedValue = (source, path, value) => {
   const keys = path.split('.');
   const root = Array.isArray(source) ? [...source] : { ...(source || {}) };
@@ -263,7 +274,7 @@ export default function PageEditor() {
       } else {
         const res = await pageAPI.update(id, payload);
         const data = res.data.data;
-        const sections = withUids(data.sections);
+        const sections = keepUids(page.sections, data.sections);
         // Preserve which section was selected across the reload by position.
         const prevIdx = page.sections.findIndex((s) => s._uid === selectedUid);
         setPage({ ...data, seo: data.seo || {}, sections });
