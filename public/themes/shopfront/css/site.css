@@ -568,6 +568,9 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
    in its own colour and the arrow steps out; nothing lifts. */
 .card, .key { position: relative; }
 .card__go::after, .key__go::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+/* A pressed button moves, and a moved box would pull the stretched link in
+   to its own size mid-click, so the click would miss. Keep it still. */
+.key__go:active { transform: none; }
 .card:has(.card__go), .key:has(.key__go) { cursor: pointer; transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease); }
 .card:has(.card__go):hover, .key:has(.key__go):hover {
   background: color-mix(in oklch, var(--paper) 93%, var(--hue, var(--ink)));
