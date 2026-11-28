@@ -60,7 +60,7 @@ export default function PostEditor() {
 
   useEffect(() => {
     postTagAPI.list()
-      .then((response) => setKnownTags((response.data.data || []).map((tag) => tag.name)))
+      .then((response) => setKnownTags(response.data.data || []))
       .catch(() => { /* the post can still be tagged by hand */ });
   }, []);
 

@@ -81,7 +81,7 @@ test('a post is tagged in the editor and saved with its tags', async ({ page }) 
   const tags = page.getByRole('list', { name: 'Tags' });
   await expect(tags.getByText('Studio')).toBeVisible();
 
-  const field = page.getByPlaceholder('Add a tag');
+  const field = page.getByRole('combobox', { name: 'Tags' });
   await field.fill('process');
   await field.press('Enter');
   // A tag already in use keeps its spelling.
@@ -143,4 +143,33 @@ test('the editor previews the post as written, before it is saved', async ({ pag
 
   await page.getByRole('radio', { name: 'Write' }).click();
   await expect(page.getByLabel('Post body')).toBeVisible();
+});
+
+test('the tag field is a dropdown of the tags in use', async ({ page }) => {
+  await page.goto('/dashboard/blog/7/edit');
+
+  const field = page.getByRole('combobox', { name: 'Tags' });
+  await field.click();
+  const menu = page.getByRole('listbox', { name: 'Tags to add' });
+  await expect(field).toHaveAttribute('aria-expanded', 'true');
+  // Tags already on the post are not offered again; the rest carry their counts.
+  await expect(menu.getByRole('option')).toHaveCount(1);
+  await expect(menu.getByRole('option', { name: /Process\s*2 posts/ })).toBeVisible();
+
+  // Typing narrows the list and offers a new tag; the keys choose.
+  await field.fill('pro');
+  await expect(menu.getByRole('option')).toHaveText([/Process/, /Create “pro”/]);
+  await field.press('ArrowDown');
+  await expect(menu.getByRole('option', { name: /Create/ })).toHaveAttribute('aria-selected', 'true');
+  await field.press('ArrowUp');
+  await field.press('Enter');
+  await expect(page.getByRole('list', { name: 'Tags' }).getByText('Process', { exact: true })).toBeVisible();
+
+  // A click picks too, and Escape closes the list.
+  await field.fill('Kiln');
+  await menu.getByRole('option', { name: 'Create “Kiln”' }).click();
+  await expect(page.getByRole('list', { name: 'Tags' }).getByText('Kiln', { exact: true })).toBeVisible();
+  await expect(field).toBeFocused();
+  await field.press('Escape');
+  await expect(field).toHaveAttribute('aria-expanded', 'false');
 });
