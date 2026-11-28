@@ -869,32 +869,29 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .place__where { color: var(--muted); }
 .map__note { margin-top: 1rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; align-items: center; }
 
-/* ── Careers ─────────────────────────────────────────────── */
-.roles { display: grid; gap: 0.75rem; }
-.role {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem 2rem;
-  padding: clamp(1.3rem, 2.6vw, 1.8rem) clamp(1.3rem, 2.6vw, 2rem);
-  border-radius: var(--radius); background: var(--paper); box-shadow: var(--edge);
-  text-decoration: none;
-  transition: box-shadow 0.18s ease;
-}
-.role:hover { box-shadow: 0 0 0 1.5px var(--ink); }
-.role__title { font: 600 clamp(1.5rem, 2.6vw, 2rem)/1.1 var(--display); letter-spacing: -0.035em; }
-.role__facts { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; color: var(--muted); }
-.role__fact { display: inline-flex; align-items: center; gap: 0.4rem; }
-.role__fact .glyph { color: var(--ink); }
-.role__go { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; color: var(--blue-ink); }
-.role:hover .arrow { transform: translate(2px, -2px); }
-@media (max-width: 40rem) { .role { grid-template-columns: 1fr; } }
-.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 1.5rem clamp(1.25rem, 3vw, 2.5rem); margin-top: clamp(2rem, 4vw, 3rem); }
-.facts dt { display: flex; align-items: center; gap: 0.45rem; color: var(--muted); font-size: 0.92rem; }
-.facts__glyph { color: var(--ink); }
-.facts dd { margin-top: 0.2rem; font-weight: 600; }
-.job h2 { font: 600 clamp(1.8rem, 3.4vw, 2.6rem)/1.1 var(--display); letter-spacing: -0.04em; margin: clamp(2.5rem, 5vw, 3.5rem) 0 0.9rem; }
-.job p, .job li { color: var(--ink-2); max-width: 66ch; }
-.job ul { display: grid; gap: 0.55rem; }
-.job li { padding-left: 1.4rem; position: relative; }
-.job li::before { content: ""; position: absolute; left: 0.1rem; top: 0.6em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--blue); }
+/* ── Careers ───────────────────────────────────────────────
+   A role's page: the career details of the Time Tracking template. The
+   facts in an overview card that holds its place on the left as the page
+   scrolls, and the description on the right, each point ticked. */
+.brief { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 56px; align-items: start; margin-top: 32px; }
+.brief__card { position: sticky; top: 6.5rem; display: grid; gap: 20px; padding: 32px; border-radius: 20px; background: var(--paper); }
+.brief__head { font: 400 24px/1.4 var(--display); letter-spacing: -0.01em; }
+.brief__facts { display: grid; }
+.brief__facts > div { padding: 14px 0; border-top: 1px solid var(--rule); }
+.brief__facts dt { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 14px; }
+.brief__facts dd { margin-top: 2px; font-size: 16px; color: var(--ink); }
+.brief__go { width: 100%; }
+.brief__body h2 { font: 400 24px/1.4 var(--display); letter-spacing: -0.01em; margin: 40px 0 12px; }
+.brief__body h2:first-child { margin-top: 0; }
+.brief__body p { color: color-mix(in oklch, var(--ink) 60%, transparent); max-width: 66ch; }
+.ticks { display: grid; gap: 12px; }
+.ticks li { display: flex; align-items: flex-start; gap: 10px; color: var(--ink-2); max-width: 64ch; }
+.ticks__mark { width: 18px; height: 18px; flex: none; margin-top: 3px; fill: var(--action); stroke: var(--action-ink); }
+@media (max-width: 56rem) { .brief { grid-template-columns: minmax(0, 1fr); } .brief__card { position: static; } }
+#apply { margin-top: var(--section); }
+#apply > h2 { font: 400 clamp(2rem, 3.6vw, 2.75rem)/1.15 var(--display); letter-spacing: -0.03em; margin-bottom: 8px; }
+#apply > p { color: color-mix(in oklch, var(--ink) 60%, transparent); }
+.form--apply { padding: 32px; border-radius: 20px; background: var(--paper); }
 .back { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); text-decoration: none; font-weight: 600; transition: color 0.18s ease; }
 .back:hover { color: var(--ink); }
 .back .arrow { transform: rotate(-135deg); }

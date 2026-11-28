@@ -47,31 +47,42 @@
         <div class="wrap">
             <a class="back" href="/careers/">@include('site.themes.shopfront.partials.arrow')<span>All roles</span></a>
 
-            @if ($facts)
-                <dl class="facts">
-                    @foreach ($facts as $label => $value)
-                        <div><dt>@include('site.themes.shopfront.partials.glyph', ['name' => ['Location' => 'pin', 'Job type' => 'briefcase', 'Hours' => 'clock', 'Salary' => 'coin', 'Closes' => 'calendar'][$label] ?? 'box', 'class' => 'facts__glyph']){{ $label }}</dt><dd>{{ $value }}</dd></div>
+            {{-- The career details of the Time Tracking template: the role's
+                 facts in an overview card that holds its place on the left,
+                 and the description with its lists on the right, each point
+                 ticked. --}}
+            <div class="brief">
+                <aside class="brief__card">
+                    <h2 class="brief__head">Job overview</h2>
+                    @if ($facts)
+                        <dl class="brief__facts">
+                            @foreach ($facts as $label => $value)
+                                <div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
+                            @endforeach
+                        </dl>
+                    @endif
+                    <a href="#apply" class="button brief__go"><span>Apply now</span>@include('site.themes.shopfront.partials.arrow')</a>
+                </aside>
+                <div class="brief__body">
+                    @if (filled($job->description))
+                        <h2>The role</h2>
+                        <div class="prose">
+                            @include('site.themes.shopfront.partials.paragraphs', ['text' => $job->description])
+                        </div>
+                    @endif
+
+                    @foreach ($lists as $field => $heading)
+                        @if (count($job->{$field} ?? []))
+                            <h2>{{ $heading }}</h2>
+                            <ul class="ticks">
+                                @foreach ($job->{$field} as $item)
+                                    <li><svg class="ticks__mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="8"/><path d="M4.8 8.2l2.2 2.2 4.2-4.5" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ $item }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
                     @endforeach
-                </dl>
-            @endif
-
-            @if (filled($job->description))
-                <h2>The role</h2>
-                <div class="prose">
-                    @include('site.themes.shopfront.partials.paragraphs', ['text' => $job->description])
                 </div>
-            @endif
-
-            @foreach ($lists as $field => $heading)
-                @if (count($job->{$field} ?? []))
-                    <h2>{{ $heading }}</h2>
-                    <ul>
-                        @foreach ($job->{$field} as $item)
-                            <li>{{ $item }}</li>
-                        @endforeach
-                    </ul>
-                @endif
-            @endforeach
+            </div>
 
             <section id="apply">
                 <h2>Apply for this role</h2>
