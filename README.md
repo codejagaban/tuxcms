@@ -10,8 +10,8 @@ static HTML that visitors read without ever starting PHP.
 | --- | --- |
 | ![Editing a page on the live preview](docs/screenshots/dashboard-editor.png) | ![The Overview screen](docs/screenshots/dashboard-overview.png) |
 | Every editable part of the real page is outlined and edited in place. | The Overview: recent pages, the inbox, vacancies and media. |
-| ![The Pages screen in gallery view](docs/screenshots/dashboard-pages.png) | ![A wall of work on the bundled theme](docs/screenshots/theme-work.jpg) |
-| Pages as a gallery of live thumbnails. | The bundled Shopfront theme, with photographs. |
+| ![The Pages screen in gallery view](docs/screenshots/dashboard-pages.png) | ![The Features page on the bundled theme](docs/screenshots/theme-work.jpg) |
+| Pages as a gallery of live thumbnails. | The bundled Shopfront theme: each feature card holds a live piece of the CMS. |
 
 The theme follows the visitor's light or dark setting:
 
