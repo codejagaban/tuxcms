@@ -117,4 +117,18 @@ class ThemeManifestTest extends TestCase
         $this->assertRejected('field "data.items": a list needs "item"',
             fn () => $this->parse(['offers' => $this->offers(['fields' => ['data.items' => ['type' => 'list', 'label' => 'Items']]])]));
     }
+
+    public function test_a_field_can_be_kept_off_the_page(): void
+    {
+        $types = $this->parse(['offers' => $this->offers(['fields' => [
+            'data.photo_alt' => ['type' => 'text', 'label' => 'Photo description', 'preview' => false],
+        ]])]);
+
+        $this->assertFalse($types['offers']['fields']['data.photo_alt']['preview']);
+
+        $this->assertRejected('field "data.photo_alt": "preview" must be true or false',
+            fn () => $this->parse(['offers' => $this->offers(['fields' => [
+                'data.photo_alt' => ['type' => 'text', 'label' => 'Photo description', 'preview' => 'no'],
+            ]])]));
+    }
 }

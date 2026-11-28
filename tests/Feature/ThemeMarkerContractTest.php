@@ -214,6 +214,11 @@ class ThemeMarkerContractTest extends TestCase
                 $key = $within === '' ? $path : "{$within}.{$path}";
                 $value = data_get($values, $path);
 
+                // A field the page shows only as an attribute or as
+                // formatted text is edited in the panel, not on the page.
+                if (($field['preview'] ?? true) === false) {
+                    continue;
+                }
                 if ($field['type'] !== 'list') {
                     $check($field['type'], $value, $key);
 

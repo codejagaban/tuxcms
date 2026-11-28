@@ -5,7 +5,7 @@
     @endif
     @foreach ($d['items'] ?? [] as $i => $item)
         <article>
-            <img src="{{ $item['image'] ?? '' }}" alt="" @image($section, "data.items.{$i}.image")>
+            <img src="{{ $item['image'] ?? '' }}" alt="{{ $item['image_alt'] ?? '' }}" @image($section, "data.items.{$i}.image")>
             <h3 @field($section, "data.items.{$i}.name")>{{ $item['name'] ?? '' }}</h3>
             <p @field($section, "data.items.{$i}.price")>{{ $item['price'] ?? '' }}</p>
             <ul>

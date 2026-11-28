@@ -321,7 +321,10 @@ read and checked by `App\Support\ThemeManifest`:
   the markers name. A field has a `type` and a `label`, and may have
   `required`, `placeholder`, `default` (what a new list item starts with) and
   `inspector: false` (left out of the side panel because it is edited on the
-  preview).
+  preview) or `preview: false` (the page never shows it as plain text an editor
+  could type over, such as an image's description or formatted rich text, so
+  it is edited in the side panel, carries no marker, and the contract test does
+  not ask for one).
 - Field types: `text`, `textarea`, `richtext`, `url`, `image`, `number`,
   `boolean`, `select` (with `options`: strings, or `{value, label}` where a
   value may be a number) and `list` (with `item`: an object of fields keyed by

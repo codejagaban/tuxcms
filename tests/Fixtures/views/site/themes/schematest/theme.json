@@ -17,7 +17,8 @@
             "seats": { "type": "number", "label": "Seats" },
             "featured": { "type": "boolean", "label": "Featured" },
             "url": { "type": "url", "label": "Booking link" },
-            "image": { "type": "image", "label": "Photo" }
+            "image": { "type": "image", "label": "Photo" },
+            "image_alt": { "type": "text", "label": "Photo description", "preview": false }
           }
         }
       },

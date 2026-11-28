@@ -32,6 +32,10 @@ use Illuminate\Support\Facades\View;
  *     default      optional value a new list item starts with
  *     inspector    false to keep the field out of the side panel, because it
  *                  is edited on the preview (used by the base types)
+ *     preview      false when the page never shows the field as plain text
+ *                  an editor could type over, such as an image's description
+ *                  or formatted rich text, so it is edited in the side panel
+ *                  and carries no marker
  *
  * The manifest is checked as it is read, and a bad one throws, naming the
  * theme, the type and the problem, rather than letting a half-understood
@@ -50,7 +54,7 @@ class ThemeManifest
 
     private const PATH = '/^(title|content|data(\.[a-z_][a-z0-9_]*)+)$/';
 
-    private const FIELD_KEYS = ['type', 'label', 'required', 'options', 'item', 'placeholder', 'default', 'inspector'];
+    private const FIELD_KEYS = ['type', 'label', 'required', 'options', 'item', 'placeholder', 'default', 'inspector', 'preview'];
 
     /** @var array<string, array<string, array>> parsed manifests, keyed by file, size and time */
     private static array $cache = [];
@@ -192,7 +196,7 @@ class ThemeManifest
             if (! is_string($field['label'] ?? null) || trim($field['label']) === '') {
                 throw $fail("field \"{$name}\" needs a label.");
             }
-            foreach (['required', 'inspector'] as $flag) {
+            foreach (['required', 'inspector', 'preview'] as $flag) {
                 if (isset($field[$flag]) && ! is_bool($field[$flag])) {
                     throw $fail("field \"{$name}\": \"{$flag}\" must be true or false.");
                 }
