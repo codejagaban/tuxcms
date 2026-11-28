@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, PencilSimple, Trash, FileText, List, SquaresFour } from '../../lib/icons';
+import { Plus, PencilSimple, Trash, FileText } from '../../lib/icons';
 import { Link } from 'react-router-dom';
-import { motion as Motion } from 'motion/react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -12,17 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHeadCell, Pagination } from '../../components/ui/Table';
 import { pageAPI } from '../../lib/api';
 import PageThumb from '../../components/PageThumb';
-
-// Remembered between visits; a private window may refuse, and then it is
-// simply the list each time.
-const VIEW_KEY = 'tux_pages_view';
-const savedView = () => {
-  try {
-    return localStorage.getItem(VIEW_KEY) === 'gallery' ? 'gallery' : 'list';
-  } catch {
-    return 'list';
-  }
-};
+import ViewSwitch from '../../components/ui/ViewSwitch';
+import { useSavedView } from '../../lib/useSavedView';
 
 const Pages = () => {
   const [pages, setPages] = useState([]);
@@ -32,16 +22,7 @@ const Pages = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, pageId: null, pageTitle: '' });
   const [isDeleting, setIsDeleting] = useState(false);
-  const [view, setView] = useState(savedView);
-
-  const chooseView = (next) => {
-    setView(next);
-    try {
-      localStorage.setItem(VIEW_KEY, next);
-    } catch {
-      // Nothing to do: the choice lasts for this visit.
-    }
-  };
+  const [view, chooseView] = useSavedView('tux_pages_view');
 
   const pathOf = (page) => (page.is_homepage ? '/' : page.path || `/${page.slug}`);
   const statusOf = (page) => (page.is_scheduled
@@ -160,31 +141,7 @@ const Pages = () => {
           }}
           containerClassName="w-full"
         />
-        <div role="radiogroup" aria-label="View" className="flex shrink-0 gap-0.5 rounded-full bg-[var(--color-paper-3)] p-0.5">
-          {[['list', 'List', List], ['gallery', 'Gallery', SquaresFour]].map(([value, label, Icon]) => (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={view === value}
-              aria-label={`${label} view`}
-              title={`${label} view`}
-              onClick={() => chooseView(value)}
-              className={`relative grid h-10 w-11 place-items-center rounded-full transition-colors duration-200 ${
-                view === value ? 'text-[var(--color-ink)]' : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
-              }`}
-            >
-              {view === value && (
-                <Motion.span
-                  layoutId="pages-view"
-                  className="absolute inset-0 rounded-full bg-[var(--color-paper)] shadow-[var(--glass-chip-edge)]"
-                  transition={{ type: 'spring', stiffness: 460, damping: 40 }}
-                />
-              )}
-              <Icon className="relative h-[18px] w-[18px]" />
-            </button>
-          ))}
-        </div>
+        <ViewSwitch view={view} onChange={chooseView} id="pages-view" />
       </div>
 
       {/* Loading State */}
