@@ -10,6 +10,7 @@ import Modal, { ModalContent, ModalFooter, ModalHeader, ModalTitle } from '../co
 import { Card } from '../components/ui/Card';
 import { Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from '../components/ui/Table';
 import ViewSwitch from '../components/ui/ViewSwitch';
+import TagManager from '../components/editor/TagManager';
 import { useSavedView } from '../lib/useSavedView';
 
 const FILTERS = [
@@ -39,6 +40,7 @@ export default function Blog() {
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState([]);
   const [view, chooseView] = useSavedView('tux_blog_view');
+  const [managingTags, setManagingTags] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -53,9 +55,11 @@ export default function Blog() {
     }
   }, [status, tag, search, page]);
 
-  useEffect(() => {
+  const loadTags = useCallback(() => {
     postTagAPI.list().then((response) => setTags(response.data.data || [])).catch(() => { /* filtering by tag is optional */ });
   }, []);
+
+  useEffect(() => { loadTags(); }, [loadTags]);
 
   // Typing in the search box waits a moment before asking the server.
   useEffect(() => {
@@ -83,7 +87,10 @@ export default function Blog() {
           <h1 className="page-heading">Blog</h1>
           <p className="page-deck">Write posts, keep them as drafts, then publish them to the blog on your website.</p>
         </div>
-        <Button onClick={() => navigate('/dashboard/blog/create')}><Plus className="h-4 w-4" weight="bold" />New post</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" onClick={() => setManagingTags(true)}>Tags</Button>
+          <Button onClick={() => navigate('/dashboard/blog/create')}><Plus className="h-4 w-4" weight="bold" />New post</Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -222,6 +229,17 @@ export default function Blog() {
           <Button variant="danger" onClick={remove}>Delete post</Button>
         </ModalFooter>
       </Modal>
+
+      <TagManager
+        isOpen={managingTags}
+        onClose={() => setManagingTags(false)}
+        onChanged={() => {
+          loadTags();
+          // A tag being filtered on may have gone or changed its address.
+          setTag('');
+          load();
+        }}
+      />
     </div>
   );
 }

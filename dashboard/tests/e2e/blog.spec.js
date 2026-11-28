@@ -25,6 +25,7 @@ let listed;
 let previewed;
 let created;
 let updates;
+let tagChanges;
 
 test.beforeEach(async ({ page }) => {
   saved = null;
@@ -32,6 +33,7 @@ test.beforeEach(async ({ page }) => {
   previewed = null;
   created = null;
   updates = [];
+  tagChanges = [];
   await page.addInitScript(() => localStorage.setItem('auth_token', 'editor-token'));
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -43,6 +45,14 @@ test.beforeEach(async ({ page }) => {
     }
     if (path.endsWith('/site/status')) {
       return route.fulfill({ json: { data: { is_published: true } } });
+    }
+    if (path.includes('/post-tags/') && request.method() === 'PUT') {
+      tagChanges.push({ rename: path.split('/').pop(), ...request.postDataJSON() });
+      return route.fulfill({ json: { data: [{ name: 'Studio', slug: 'studio', posts_count: 3 }] } });
+    }
+    if (path.includes('/post-tags/') && request.method() === 'DELETE') {
+      tagChanges.push({ delete: path.split('/').pop() });
+      return route.fulfill({ status: 204, body: '' });
     }
     if (path.endsWith('/post-tags')) {
       return route.fulfill({ json: { data: [
@@ -282,4 +292,22 @@ test('a published post waits for Update instead of saving itself', async ({ page
   await page.getByRole('textbox', { name: 'Post title' }).fill('Changed on a live post');
   await page.waitForTimeout(4000);
   expect(saved).toBeNull();
+});
+
+test('tags are renamed, merged and deleted from the Blog screen', async ({ page }) => {
+  await page.goto('/dashboard/blog');
+  await page.getByRole('button', { name: 'Tags', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tags' });
+  await expect(dialog.getByText('2 posts')).toBeVisible();
+
+  // Renaming to another tag's name merges, after asking.
+  page.once('dialog', (confirm) => confirm.accept());
+  await dialog.getByRole('button', { name: 'Rename Process' }).click();
+  await dialog.getByRole('textbox', { name: 'New name for Process' }).fill('studio');
+  await dialog.getByRole('button', { name: 'Save' }).click();
+  await expect.poll(() => tagChanges[0]).toEqual({ rename: 'process', name: 'studio' });
+
+  page.once('dialog', (confirm) => confirm.accept());
+  await dialog.getByRole('button', { name: 'Delete Studio' }).click();
+  await expect.poll(() => tagChanges[1]).toEqual({ delete: 'studio' });
 });

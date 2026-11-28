@@ -96,6 +96,8 @@ export const postAPI = {
 
 export const postTagAPI = {
   list: () => api.get('/post-tags'),
+  rename: (slug, name) => api.put(`/post-tags/${slug}`, { name }),
+  delete: (slug) => api.delete(`/post-tags/${slug}`),
 };
 
 export const jobApplicationAPI = {
