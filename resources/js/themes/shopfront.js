@@ -131,23 +131,6 @@ if (!calm && !editing) {
     }
   }
 
-  // The bar steps out of the way going down the page and returns going up.
-  const bar = document.querySelector('.bar');
-  if (bar) {
-    let last = window.scrollY;
-    let hidden = false;
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      const open = bar.querySelector('details[open]');
-      const hide = y > last && y > 400 && !open;
-      if (hide !== hidden && Math.abs(y - last) > 6) {
-        hidden = hide;
-        animate(bar, { y: hide ? '-160%' : '0%' }, { type: 'spring', stiffness: 260, damping: 32 });
-      }
-      last = y;
-    }, { passive: true });
-  }
-
   // Headings rise as their section arrives.
   document.querySelectorAll('.head, .call__glass').forEach((heading) => {
     inView(heading, () => {
