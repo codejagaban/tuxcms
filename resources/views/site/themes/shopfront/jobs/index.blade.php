@@ -22,20 +22,25 @@
             @if ($jobs->isEmpty())
                 <p class="notice">There are no open roles at the moment.</p>
             @else
-                <ul class="roles">
+                {{-- The career cards of the Time Tracking template: two to a row,
+                     the place and the hours as tags, the title, a line, and a
+                     pill to read more. --}}
+                <ul class="posts">
                     @foreach ($jobs as $job)
-                        <li>
-                            <a class="role" href="/careers/{{ $job->slug }}/">
-                                <div>
-                                    <h2 class="role__title">{{ $job->title }}</h2>
-                                    <div class="role__facts">
-                                        @foreach (array_filter(['pin' => $job->location, 'briefcase' => $job->job_type, 'coin' => $job->salary]) as $glyph => $fact)
-                                            <span class="role__fact">@include('site.themes.shopfront.partials.glyph', ['name' => $glyph]){{ $fact }}</span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <span class="role__go">View role @include('site.themes.shopfront.partials.arrow')</span>
-                            </a>
+                        <li class="post">
+                            <p class="post__tags">
+                                @foreach (array_filter([$job->location, $job->job_type]) as $tag)
+                                    <span class="post__tag">{{ $tag }}</span>
+                                @endforeach
+                            </p>
+                            <h2 class="post__name">{{ $job->title }}</h2>
+                            @if (filled($job->summary))
+                                <p class="post__what">{{ $job->summary }}</p>
+                            @endif
+                            @if (filled($job->salary))
+                                <p class="post__fact">@include('site.themes.shopfront.partials.glyph', ['name' => 'coin']){{ $job->salary }}</p>
+                            @endif
+                            <a class="button button--quiet button--small post__go" href="/careers/{{ $job->slug }}/"><span>Read more</span><span class="sr-only"> about {{ $job->title }}</span></a>
                         </li>
                     @endforeach
                 </ul>

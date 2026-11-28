@@ -723,18 +723,21 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .voice__role { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; }
 @media (max-width: 56rem) { .voices { grid-template-columns: minmax(0, 1fr); } .voice { min-height: 0; padding: 28px; } }
 
-/* Team: a card to a person. */
-.staff { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-@media (max-width: 56rem) { .staff { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 36rem) { .staff { grid-template-columns: 1fr; } }
-.person {
-  display: flex; flex-direction: column; gap: 0.35rem;
-  padding: clamp(1.4rem, 2.4vw, 1.9rem);
-  border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge);
-}
-.person__name { font: 600 clamp(1.4rem, 2.2vw, 1.75rem)/1.1 var(--display); letter-spacing: -0.035em; }
-.person__role { color: var(--blue-ink); font-weight: 600; font-size: 0.95rem; }
-.person__bio { margin-top: 0.9rem; color: var(--muted); }
+/* Cards of the Time Tracking template's career page, used for people and
+   for open roles: white, 20px corners, 32px in; small round tags on top,
+   a regular-weight 24px name, a line at 60% ink, and a small white pill. */
+.posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.posts--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 64rem) { .posts--three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 46rem) { .posts, .posts--three { grid-template-columns: minmax(0, 1fr); } }
+.post { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 32px; border-radius: 20px; background: var(--paper); }
+.post__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.post__tag { padding: 4px 14px; border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; line-height: 21px; color: var(--ink-2); }
+.post__name { font: 400 24px/1.4 var(--display); letter-spacing: -0.01em; color: var(--ink); }
+.post__what { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; line-height: 24px; max-width: 52ch; }
+.post__fact { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 15px; }
+.post__fact .glyph { color: var(--amber); }
+.post__go { margin-top: 12px; }
 
 /* FAQ: white cards, each with its mark in a round. */
 .asks { display: grid; gap: 0.6rem; }
