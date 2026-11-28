@@ -247,6 +247,27 @@ from the dashboard with the `release` endpoints.
 Delivery failures do not lose anything, because the submission is written
 before the email is attempted and the row records `delivery_status`.
 
+### Kinds of enquiry
+
+Each enquiry form sends a hidden `type`, its kind. Every site has `contact`;
+any other kind is declared by a theme, under `enquiries` in its `theme.json`,
+with a label for one and for many:
+
+```json
+"enquiries": {
+  "client_review": { "label": "Client review", "plural": "Client reviews" }
+}
+```
+
+`App\Support\EnquiryKinds` gathers them from the themes the site uses: its
+`SITE_THEME` and any theme its pages are drawn with. A theme that is installed
+but unused adds nothing, and a theme may relabel `contact`. The inbox accepts
+only these kinds, and the dashboard builds its tabs, the email subjects and a
+notification address per kind in Settings (`enquiry_email_<kind>`) from the
+same list, so the core names no client's forms. A kind no longer declared but
+still holding messages keeps its tab. Crystal declares its staff requests and
+candidate registrations this way.
+
 ## Settings and publish state
 
 `settings` is a key and value store, grouped for the dashboard's tabs. Two keys

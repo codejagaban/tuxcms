@@ -304,7 +304,7 @@ Throttled to 30 a minute, never cached.
 
 | Field | Rule |
 | --- | --- |
-| `type` | Required: `staff_request`, `registration` or `contact` |
+| `type` | Required: `contact`, or a kind a theme the site uses declares under `enquiries` in its `theme.json` |
 | `name` | Required, up to 255 |
 | `email` | Required |
 | `organisation`, `phone` | Optional |
@@ -419,7 +419,21 @@ spam filter is holding, and `meta.held` always carries the held count.
 Enquiries also filter by `type`.
 
 Each row includes `delivery_status` (`sent`, `failed` or `spam`) and, where the
-filter flagged it, a `spam_reason`.
+filter flagged it, a `spam_reason`. `meta.kinds` lists the kinds of enquiry, as
+`GET /enquiry-kinds` does.
+
+### GET /enquiry-kinds
+
+The kinds of enquiry this site takes, for the inbox's tabs and the notification
+addresses in Settings: `contact`, then those declared by the themes the site
+uses, then any older kind that still holds messages.
+
+```json
+{ "data": [
+  { "value": "contact", "label": "Enquiry", "plural": "Enquiries", "setting": "enquiry_email_contact" },
+  { "value": "client_review", "label": "Client review", "plural": "Client reviews", "setting": "enquiry_email_client_review" }
+] }
+```
 
 ### GET /job-applications/{id}/cv
 
