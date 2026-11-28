@@ -238,7 +238,10 @@ a:hover > .arrow, button:hover > .arrow { transform: translate(2px, -2px); }
 @media (prefers-color-scheme: dark) {
   .bar__in { background: oklch(17.5% 0 0 / .84); box-shadow: 0 0 0 1px oklch(100% 0 0 / .08), 0 2px 6px -2px oklch(0% 0 0 / .5); }
 }
-.bar__name { font: 700 1.3rem/1 var(--display); letter-spacing: -0.04em; text-decoration: none; display: flex; align-items: center; }
+.bar__name { display: flex; align-items: baseline; gap: 0.45rem; text-decoration: none; }
+/* As the dashboard's own TUX CMS mark. */
+.bar__mark { font: 700 1.45rem/1 var(--display); letter-spacing: -0.07em; text-transform: uppercase; }
+.bar__tail { font: 500 0.75rem/1 var(--body); letter-spacing: 0.06em; color: var(--muted); }
 .bar__name img { height: 2rem; width: auto; }
 .bar__links { display: flex; align-items: center; gap: 0.15rem; }
 .bar__links > a, .bar__links summary {

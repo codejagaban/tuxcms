@@ -1,13 +1,24 @@
-@php use App\Support\Site; @endphp
+@php
+    use App\Support\Site;
+    // The name set as the dashboard sets its own: the first part heavy, tight
+    // and in capitals, and a trailing run of capitals (TuxCMS's "CMS") small
+    // beside it. A name with no such run is set whole.
+    $name = Site::name();
+    preg_match('/^(.+?)\s*([A-Z]{2,})$/u', $name, $parts);
+    [$mark, $tail] = $parts ? [$parts[1], $parts[2]] : [$name, null];
+@endphp
 {{-- Navigation comes from the page tree. Both menus are <details>, so they
      open with no JavaScript on a fully static site. --}}
 <header class="bar">
     <div class="wrap bar__in">
-        <a href="/" class="bar__name">
+        <a href="/" class="bar__name" aria-label="{{ $name }}, front page">
             @if ($logo = Site::logo())
-                <img src="{{ $logo }}" alt="{{ Site::name() }}">
+                <img src="{{ $logo }}" alt="{{ $name }}">
             @else
-                {{ Site::name() }}
+                <span class="bar__mark" aria-hidden="true">{{ $mark }}</span>
+                @if ($tail)
+                    <span class="bar__tail" aria-hidden="true">{{ $tail }}</span>
+                @endif
             @endif
         </a>
 
