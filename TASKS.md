@@ -12,6 +12,7 @@
 
 ## Done
 
+- [x] ~~**Add a blog** - posts written in a Tiptap editor (headings, lists, quotes, code blocks, links and library images) and cleaned by Symfony's HTML sanitizer, with tags, cover images, drafts and scheduling; the site gains a paged listing, post and tag pages and an RSS feed once a post is published, drawn by base views every theme falls back to; posts are in the sitemap, `llms.txt` and the site search~~ (2026-11-28)
 - [x] ~~**Give Crystal's remaining written-in copy section data** - the copy and photos written into Crystal's hand-built pages now live in each page's `copy` section and are printed and marked like any other field; stored overrides move there with `MoveOverridesIntoPageCopy`, and overrides are gone from the editor, the API and the templates; published pages are unchanged~~ (2026-11-28)
 - [x] ~~**Replace text matching in the preview with field markers** - templates mark which element shows which field, only in preview renders; every page is edited on the rendered preview; the text matcher is gone; `ThemeMarkerContractTest` checks every theme marks every field it shows, using the editor's own section defaults~~ (2026-11-28)
 - [x] ~~**Keep inline edits made after an autosave** - every save gave the sections new client ids while the preview kept the old ones, so the next edit made on the page was dropped; ids now survive a save~~ (2026-11-28)
