@@ -2,6 +2,7 @@
 
 @section('content')
     <section class="hero hero--page">
+        @include('site.themes.shopfront.partials.sky')
         <div class="wrap">
             <div class="hero__grid">
                 <h1 class="display hero__title hero__title--medium">Nothing at this address</h1>

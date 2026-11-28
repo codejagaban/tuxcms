@@ -29,6 +29,7 @@
 
 @section('content')
     <section class="hero hero--page">
+        @include('site.themes.shopfront.partials.sky')
         <div class="wrap">
             <div class="hero__grid">
                 <h1 class="display hero__title hero__title--{{ mb_strlen($job->title) <= 16 ? 'short' : (mb_strlen($job->title) <= 36 ? 'medium' : 'long') }}">{{ $job->title }}</h1>

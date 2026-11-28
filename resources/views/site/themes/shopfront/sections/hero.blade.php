@@ -18,6 +18,8 @@
         <div class="hero__sky" aria-hidden="true">
             <video class="hero__film" src="/themes/shopfront/media/meadow.mp4" poster="/themes/shopfront/media/meadow.jpg" muted loop playsinline preload="metadata"></video>
         </div>
+    @else
+        @include('site.themes.shopfront.partials.sky')
     @endif
     <div class="wrap">
         <div class="hero__grid">

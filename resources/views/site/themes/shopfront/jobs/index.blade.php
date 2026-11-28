@@ -6,6 +6,7 @@
 
 @section('content')
     <section class="hero hero--page">
+        @include('site.themes.shopfront.partials.sky')
         <div class="wrap">
             <div class="hero__grid">
                 <h1 class="display hero__title hero__title--short">Work with us</h1>

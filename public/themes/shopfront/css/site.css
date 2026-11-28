@@ -285,7 +285,7 @@ details[open] > summary .caret { transform: rotate(180deg); }
 }
 
 /* ── Hero ──────────────────────────────────────────────────
-   The title across the top, its words and actions set lower on the right. */
+   Every page opens over the meadow, its title and words centred. */
 .hero { padding: clamp(3.5rem, 8vw, 6.5rem) 0 0; }
 .hero__grid {
   display: grid;
@@ -301,25 +301,25 @@ details[open] > summary .caret { transform: rotate(180deg); }
 .hero__sub { font-size: clamp(1.15rem, 1.6vw, 1.35rem); font-weight: 600; letter-spacing: -0.015em; }
 .hero__say { color: var(--muted); font-size: clamp(1.05rem, 1.35vw, 1.2rem); max-width: 46ch; }
 .hero__do { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; margin-top: 0.4rem; }
-.hero--page .hero__title { grid-column: 1 / span 9; }
 .hero--page .hero__title--medium { font-size: clamp(2.6rem, 6.2vw, 5.9rem); }
 .hero--page .hero__title--long { font-size: clamp(2.3rem, 4.8vw, 4.5rem); }
-.hero--page .hero__aside { grid-column: 8 / -1; }
-.hero--centred .hero__grid { justify-items: center; text-align: center; }
-.hero--centred .hero__title, .hero--centred .hero__aside { grid-column: 2 / span 10; justify-items: center; }
-@media (max-width: 56rem) {
-  .hero__title, .hero--page .hero__title, .hero__aside, .hero--page .hero__aside,
-  .hero--centred .hero__title, .hero--centred .hero__aside { grid-column: 1 / -1; }
-}
+@media (max-width: 56rem) { .hero__title, .hero__aside { grid-column: 1 / -1; } }
 
 /* The front page: the title centred over a meadow under a moving sky, and
    the editor rising out of it. The scene stops two thirds of the way down
    the editor and melts into the page, so there is no edge to see. */
-.hero--front {
+.hero--front, .hero--page {
   --ink: oklch(14.5% 0 0);
   --muted: oklch(30% 0 0);
   --blue-ink: oklch(40% 0.17 255);
   position: relative; isolation: isolate;
+/* Other pages: a shorter scene, still, that fades out below the words. */
+.hero--page { padding-top: clamp(8rem, 13vw, 10.5rem); padding-bottom: clamp(5rem, 10vw, 8rem); }
+/* A page whose hero carries a photograph lets it sit lower, over the fade. */
+.hero--page:has(.frame--banner) { padding-bottom: 0; }
+.hero--page .hero__sky { bottom: 0; background-position: center 18%; }
+.hero--page:has(.frame--banner) .hero__sky { bottom: clamp(6rem, 14vw, 12rem); }
+.hero--page .frame--banner { position: relative; }
   padding-top: clamp(9rem, 16vw, 12rem);
   color: var(--ink);
 }
@@ -330,14 +330,15 @@ details[open] > summary .caret { transform: rotate(180deg); }
   mask-image: linear-gradient(180deg, #000 0, #000 62%, rgb(0 0 0 / .86) 68%, rgb(0 0 0 / .66) 74%, rgb(0 0 0 / .45) 80%, rgb(0 0 0 / .27) 86%, rgb(0 0 0 / .13) 91%, rgb(0 0 0 / .04) 96%, transparent 100%);
 }
 .hero__film { width: 100%; height: 100%; object-fit: cover; display: block; }
-.hero--front .hero__grid { justify-items: center; text-align: center; }
-.hero--front .hero__title { grid-column: 2 / span 10; font-size: clamp(2.7rem, 7vw, 6.75rem); text-shadow: 0 1px 24px oklch(100% 0 0 / .35); }
-.hero--front .hero__aside { grid-column: 3 / span 8; justify-items: center; }
-.hero--front .hero__say { color: oklch(24% 0 0); max-width: 52ch; text-shadow: 0 0 18px oklch(100% 0 0 / .6); }
-.hero--front .hero__do { justify-content: center; }
-.hero--front .link { color: oklch(18% 0 0); padding: 0.75rem 1.1rem; border-radius: 999px; background: oklch(100% 0 0 / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-.hero--front .link:hover { background: oklch(100% 0 0 / .92); }
-@media (max-width: 56rem) { .hero--front .hero__title, .hero--front .hero__aside { grid-column: 1 / -1; } }
+.hero--front .hero__grid, .hero--page .hero__grid { justify-items: center; text-align: center; }
+.hero--front .hero__title { font-size: clamp(2.7rem, 7vw, 6.75rem); }
+.hero--front .hero__title, .hero--page .hero__title { grid-column: 2 / span 10; text-shadow: 0 1px 24px oklch(100% 0 0 / .35); }
+.hero--front .hero__aside, .hero--page .hero__aside { grid-column: 3 / span 8; justify-items: center; }
+.hero--front .hero__say, .hero--page .hero__say { color: oklch(24% 0 0); max-width: 52ch; text-shadow: 0 0 18px oklch(100% 0 0 / .6); }
+.hero--front .hero__do, .hero--page .hero__do { justify-content: center; }
+.hero--front .link, .hero--page .link { color: oklch(18% 0 0); padding: 0.75rem 1.1rem; border-radius: 999px; background: oklch(100% 0 0 / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.hero--front .link:hover, .hero--page .link:hover { background: oklch(100% 0 0 / .92); }
+@media (max-width: 56rem) { .hero--front .hero__title, .hero--front .hero__aside, .hero--page .hero__title, .hero--page .hero__aside { grid-column: 1 / -1; } }
 
 /* ── The studio: the editor, working ───────────────────────
    A copy of the TuxCMS page editor: the bar, the page in its preview, and
