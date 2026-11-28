@@ -14,6 +14,7 @@ server.
 | `PageSection` | One ordered block of a page, typed (`hero`, `features`, `faq` and the rest) with its own JSON data. |
 | `PageRevision` | A snapshot of a page, written as edits are saved so earlier states can be restored. |
 | `JobPost` | A vacancy on the careers pages. |
+| `Post` | A blog post: title, slug, cleaned HTML body, cover image, `blog` tags, status and publish date. A future date schedules it. Soft deletes. |
 | `JobApplication` | An application against a vacancy, with the uploaded CV. |
 | `Enquiry` | A contact form submission. |
 | `MediaLibrary` | Site-wide uploads that belong to no single page. |
@@ -48,7 +49,7 @@ under `/api/v1`. Writes need a Sanctum token.
 `GET search`, `GET form-token`, `POST job-applications`, `POST enquiries`.
 
 **Authenticated:** page writes and `pages/{page}/revisions`; the job posts,
-applications and enquiries lists, CV download and the two `release` endpoints
+the blog's `posts` and `post-tags`; applications and enquiries lists, CV download and the two `release` endpoints
 for submissions the spam filter held by mistake; per-page SEO; settings; media;
 and `site/status` with `site/publish`.
 

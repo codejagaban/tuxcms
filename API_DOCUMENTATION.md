@@ -276,6 +276,10 @@ Published pages whose title, content or excerpt contains `q` (2 to 200
 characters), most recently updated first. `limit` sets the page size, 1 to 100,
 default 15. `meta` echoes the `query`.
 
+`posts` lists up to `limit` published blog posts whose title, excerpt or body
+contains `q`, newest first, each with its `id`, `title`, `slug`, `path`,
+`summary`, `cover_image`, `tags` (names) and `published_at`.
+
 ## Public forms
 
 Both forms are throttled to 5 a minute and share two anti-spam fields:
@@ -371,8 +375,8 @@ through the API.
 ### GET /posts
 
 Newest first, by publish date, or by last edit for drafts. `search` matches the
-title or excerpt; `status` is `draft`, `published` or `scheduled`; `category`
-is a category id; `per_page` is 1 to 50, default 10.
+title or excerpt; `status` is `draft`, `published` or `scheduled`; `tag` is a
+tag's slug; `per_page` is 1 to 50, default 10.
 
 ### GET /posts/{id}
 ### POST /posts
@@ -380,37 +384,28 @@ is a category id; `per_page` is 1 to 50, default 10.
 
 | Field | Rule |
 | --- | --- |
-| `title`, `slug` | Required. The slug is unique, uses letters, numbers, dashes and underscores, and cannot be `page`, `category` or `feed` |
+| `title`, `slug` | Required. The slug is unique, uses letters, numbers, dashes and underscores, and cannot be `page`, `tag` or `feed` |
 | `status` | Required: `draft` or `published` |
-| `body` | Optional HTML. It is cleaned before it is stored: only headings, paragraphs, lists, quotes, links, images and inline emphasis survive |
+| `body` | Optional HTML. It is cleaned before it is stored: only headings, paragraphs, lists, quotes, code blocks, links, images and inline emphasis survive |
 | `excerpt` | Optional, up to 500 characters. Listings fall back to the start of the body |
 | `cover_image`, `cover_image_alt` | Optional image address and its description |
-| `post_category_id` | Optional id of an existing category |
+| `tags` | Optional list of up to 20 names, each up to 50 characters, no two the same. Sent, it replaces the post's tags (an empty list clears them); left out, they are kept |
 | `published_at` | Optional date. One in the future schedules the post |
 | `meta_title`, `meta_description` | Optional; what search engines are shown |
 
 Publishing a post with no `published_at` stamps it with the current time. A
 post is on the site once it is `published`, its date has passed and the site
 has been built. Create answers `201`. The answer includes `is_scheduled` and
-the post's public `path`.
+the post's public `path`, and `tags` as `{ name, slug }` pairs.
 
 ### DELETE /posts/{id}
 
 Answers `204`.
 
-### GET /post-categories
+### GET /post-tags
 
-Every category by name, each with its `posts_count`.
-
-### POST /post-categories
-### PUT /post-categories/{id}
-
-`name` is required. The `slug` is made from the name unless one is sent, and
-must be unique. Create answers `201`.
-
-### DELETE /post-categories/{id}
-
-Answers `204`. Posts in the category are kept, without a category.
+Every blog tag that is on at least one post, by name, each with its `slug` and
+`posts_count`. A tag is made the first time a post is saved with it.
 
 ## Applications and enquiries
 

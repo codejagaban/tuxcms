@@ -86,6 +86,12 @@ static site notices that a `published_at` has matured:
 That runs a build every fifteen minutes, a nightly rebuild at 03:30, and prunes
 held spam at 03:10.
 
+Once a blog post is published the build also writes the blog: a paged listing
+at `/blog/`, a page per post, a page per tag at `/blog/tag/<tag>/` and an RSS
+feed at `/blog/feed.xml`. Posts are written in the dashboard's Blog screen
+with a Tiptap editor, and their HTML is cleaned by Symfony's HTML sanitizer
+before it is stored.
+
 ## Themes
 
 A theme is a directory of Blade views under
