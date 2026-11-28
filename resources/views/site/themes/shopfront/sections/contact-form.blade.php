@@ -14,11 +14,14 @@
     $privacy = collect(Site::legalLinks())->firstWhere('label', 'Privacy');
 @endphp
 @if (count($fields))
+{{-- The contact card of the Automation SaaS template: one large card on a
+     photograph, the form on a pane of frosted glass to the left, and on the
+     right the picture with the address on a glass pill. --}}
 <section class="block" @tuxsection($section)>
-    <div class="wrap split">
-        <div>
+    <div class="wrap">
+        <div class="postbox">
+        <div class="postbox__panel">
             @include('site.themes.shopfront.partials.head', ['side' => true])
-        </div>
 
         <form id="{{ $formId }}" class="form" method="POST"
               action="{{ $ownInbox ? '/api/v1/enquiries' : 'https://api.web3forms.com/submit' }}"
@@ -73,6 +76,13 @@
             </div>
             <p class="form__result" role="status" aria-live="polite" data-result></p>
         </form>
+        </div>
+        <div class="postbox__scene" aria-hidden="true">
+            @if ($where = data_get(Site::contact(), 'address') ?: data_get(Site::contact(), 'email'))
+                <p class="postbox__pin">@include('site.themes.shopfront.partials.glyph', ['name' => 'pin']){{ $where }}</p>
+            @endif
+        </div>
+        </div>
 
         {{-- Sent over fetch so the visitor stays on the page. --}}
         <script>

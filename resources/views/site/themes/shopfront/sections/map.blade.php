@@ -16,7 +16,12 @@
         @include('site.themes.shopfront.partials.head')
         @if ($placed)
         {{-- OpenStreetMap needs no API key and sets no third-party cookies. --}}
+        {{-- As the contact page of the Automation SaaS template: the map in a
+             rounded card, the place on a glass pill over it. --}}
         <div class="map">
+            @if (filled(data_get($d, 'label')))
+                <p class="map__pin" aria-hidden="true">@include('site.themes.shopfront.partials.glyph', ['name' => 'pin']){{ data_get($d, 'label') }}</p>
+            @endif
             <iframe title="{{ data_get($d, 'label', 'Map') }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
                 src="https://www.openstreetmap.org/export/embed.html?bbox={{ urlencode($bbox) }}&layer=mapnik&marker={{ $lat }},{{ $lng }}"></iframe>
         </div>

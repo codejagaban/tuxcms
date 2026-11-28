@@ -798,10 +798,36 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .ways__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 @media (max-width: 56rem) { .ways--pictured { grid-template-columns: minmax(0, 1fr); } }
 
+/* Contact form: the contact card of the Automation SaaS template. One card
+   with 20px corners on a photograph; the form on a pane of frosted glass on
+   the left, and the picture on the right with the address on a glass pill. */
+.postbox {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px;
+  padding: 16px; border-radius: 20px;
+  background: #b9cfe4 url("../media/meadow.jpg") center / cover;
+}
+.postbox__panel {
+  display: grid; gap: 28px; padding: clamp(24px, 3.5vw, 40px); border-radius: 16px;
+  background: oklch(100% 0 0 / .72); color: oklch(14.5% 0 0);
+  --ink: oklch(14.5% 0 0); --ink-2: oklch(27% 0 0); --muted: oklch(40% 0 0); --paper: oklch(100% 0 0); --rule: oklch(88% 0 0);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / .8);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+}
+.postbox__panel .field input, .postbox__panel .field textarea, .postbox__panel .field select { background: oklch(100% 0 0 / .9); }
+.postbox__scene { position: relative; min-height: 320px; border-radius: 16px; box-shadow: inset 0 0 0 1px oklch(100% 0 0 / .45); }
+.postbox__pin, .map__pin {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 32px);
+  padding: 10px 18px; border-radius: 999px;
+  background: oklch(100% 0 0 / .7); color: oklch(14.5% 0 0); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / .8), 0 0 0 1px oklch(100% 0 0 / .4);
+}
+.postbox__pin .glyph, .map__pin .glyph { width: 18px; height: 18px; color: var(--rose); }
+@media (max-width: 52rem) { .postbox { grid-template-columns: minmax(0, 1fr); } .postbox__scene { min-height: 160px; order: -1; } }
+
 /* Forms, as the dashboard's fields. */
 .form { display: grid; gap: 1.1rem; }
-.part--contact-form .form { padding: clamp(1.5rem, 3vw, 2.25rem); border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge); }
-.part--contact-form .field input, .part--contact-form .field textarea, .part--contact-form .field select { background: var(--paper-2); }
 .form--apply { margin-top: 2rem; max-width: 44rem; }
 .form__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
 @media (max-width: 36rem) { .form__pair { grid-template-columns: 1fr; } }
@@ -829,7 +855,8 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .notice { padding: 1.5rem; border-radius: var(--radius); background: var(--paper); box-shadow: var(--edge); color: var(--muted); }
 
 /* Map */
-.map { overflow: hidden; border-radius: var(--radius); box-shadow: var(--edge); background: var(--paper); }
+.map { position: relative; overflow: hidden; border-radius: 20px; background: var(--paper); }
+.map__pin { z-index: 2; pointer-events: none; }
 .map iframe { display: block; width: 100%; height: clamp(18rem, 40vw, 26rem); border: 0; filter: grayscale(1) contrast(1.03); }
 @media (prefers-color-scheme: dark) { .map iframe { filter: grayscale(1) invert(0.92) contrast(0.9); } }
 .place {
