@@ -221,14 +221,50 @@ class DemoContentSeeder extends Seeder
                 'content' => "We spent years building websites for clinics, studios and shops. They all asked for the same thing: to change a price or a photograph without calling anyone.\n\nSo TuxCMS puts the editing on the page itself, and keeps the published site as plain files that are fast, cheap to host and hard to break.",
             ],
             [
+                'key' => 'stats', 'type' => 'stats', 'title' => 'What it adds up to',
+                'data' => [
+                    'items' => [
+                        ['label' => 'Parts in one dashboard', 'value' => '9'],
+                        ['label' => 'Section types built in', 'value' => '11'],
+                        ['label' => 'Roles to share the work', 'value' => '4'],
+                        ['label' => 'Login pages on the public site', 'value' => '0'],
+                    ],
+                ],
+            ],
+            [
+                // The template's vision and mission, each beside a photograph.
+                'key' => 'aims', 'type' => 'features', 'title' => 'Where we are going',
+                'content' => 'Two things we hold every change to.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'compass', 'title' => 'Vision', 'description' => 'Every small business edits its own website, the moment something changes, without asking anyone.', 'image' => $this->photos['identity-on-a-desk']],
+                        ['icon' => 'star', 'title' => 'Mission', 'description' => 'Make the page you edit the page you get, and keep what visitors load fast, cheap and hard to break.', 'image' => $this->photos['laptop-and-notebook']],
+                    ],
+                ],
+            ],
+            [
                 'key' => 'team', 'type' => 'team', 'title' => 'The people',
                 'data' => [
                     'members' => [
                         ['name' => 'Ada Okafor', 'role' => 'Product and design', 'bio' => 'Decides what goes in the dashboard, and mostly what stays out.'],
                         ['name' => 'Tom Reyes', 'role' => 'Engineering', 'bio' => 'Keeps publishing fast. Cares far too much about load times.'],
                         ['name' => 'Sofia Bianchi', 'role' => 'Support', 'bio' => 'Answers every question herself, and turns the common ones into features.'],
+                        ['name' => 'Kwame Mensah', 'role' => 'Themes', 'bio' => 'Draws the themes, and makes sure no editor can break one.'],
+                        ['name' => 'Lena Fischer', 'role' => 'Hosting', 'bio' => 'Runs the hosted plan, its backups and its updates.'],
+                        ['name' => 'Ravi Patel', 'role' => 'Search', 'bio' => 'Looks after the titles, structured data and sitemap every publish writes.'],
                     ],
                 ],
+            ],
+            [
+                'key' => 'integrations', 'type' => 'integrations', 'title' => 'What we build on',
+                'content' => 'Open tools we trust, and the hosts the sites we make end up on.',
+                'data' => ['cta_label' => 'See every feature', 'url' => '/features/', 'items' => $this->integrationItems()],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'Come and say hello',
+                'content' => 'Tell us about the site you want to stop dreading.',
+                'data' => ['primary_cta' => ['label' => 'Get in touch', 'url' => '/contact/']],
             ],
         ], [
             'meta_title' => 'About TuxCMS',
@@ -407,6 +443,21 @@ class DemoContentSeeder extends Seeder
             [
                 'key' => 'map', 'type' => 'map', 'title' => 'Find us',
                 'data' => ['lat' => 51.4626, 'lng' => -0.0361, 'zoom' => 14, 'label' => 'TuxCMS, London'],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Before you write',
+                'data' => [
+                    'items' => [
+                        ['question' => 'How soon will you reply?', 'answer' => 'Within one working day. A person reads every message; nothing goes to a bot.'],
+                        ['question' => 'Can you move my current site over?', 'answer' => 'Yes. Send us its address and we will tell you what moves across as it is and what needs a theme.'],
+                        ['question' => 'Can I try it before I talk to anyone?', 'answer' => 'Yes. The demo dashboard runs this site; sign in and change anything you like.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'Rather try it first?',
+                'content' => 'The demo dashboard edits this very site. No sign-up.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
             ],
         ], [
             'meta_title' => 'Contact | TuxCMS',
