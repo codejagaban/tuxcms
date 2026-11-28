@@ -739,22 +739,25 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .post__fact .glyph { color: var(--amber); }
 .post__go { margin-top: 12px; }
 
-/* FAQ: white cards, each with its mark in a round. */
-.asks { display: grid; gap: 0.6rem; }
-.ask { border-radius: 1rem; background: var(--paper); box-shadow: var(--edge); }
+/* FAQ: the accordion of the Automation SaaS template. White items with 20px
+   corners and 24px in; the question at 20px regular weight, the answer at
+   60% ink; the mark in a soft round that turns ink when open. */
+.asks { display: grid; gap: 16px; }
+.ask { border-radius: 20px; background: var(--paper); padding: 0 24px; }
 .ask summary {
-  display: grid; grid-template-columns: minmax(0, 1fr) 2rem; align-items: center; gap: 1.25rem;
-  padding: 1.1rem 1.1rem 1.1rem 1.4rem; cursor: pointer; list-style: none; font-weight: 600; font-size: 1.05rem;
+  display: grid; grid-template-columns: minmax(0, 1fr) 2.25rem; align-items: center; gap: 1.25rem;
+  padding: 28px 0; cursor: pointer; list-style: none;
+  font: 400 20px/1.4 var(--display); letter-spacing: -0.01em; color: var(--ink);
 }
 .ask summary::-webkit-details-marker { display: none; }
 .ask__mark {
-  display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%;
+  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%;
   background: var(--paper-3); color: var(--ink);
-  transition: transform 0.3s var(--ease), background-color 0.2s ease;
+  transition: transform 0.3s var(--ease), background-color 0.2s ease, color 0.2s ease;
 }
-.ask__mark svg { width: 0.8rem; height: 0.8rem; }
+.ask__mark svg { width: 0.85rem; height: 0.85rem; }
 .ask[open] .ask__mark { transform: rotate(45deg); background: var(--action); color: var(--action-ink); }
-.ask__answer { padding: 0 1.4rem 1.4rem; color: var(--muted); white-space: pre-line; max-width: 62ch; }
+.ask__answer { padding: 0 0 28px; color: color-mix(in oklch, var(--ink) 60%, transparent); white-space: pre-line; max-width: 62ch; }
 
 /* Call to action: a card of the meadow, everything centred. */
 .call__card {
