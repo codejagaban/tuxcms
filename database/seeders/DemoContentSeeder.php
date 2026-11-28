@@ -254,14 +254,19 @@ class DemoContentSeeder extends Seeder
             [
                 // The template's "Everything you need" grid: one wide card, then a row.
                 'key' => 'offerings', 'type' => 'features', 'title' => 'Everything in the dashboard',
-                'content' => 'Each part works on its own, and all of it is in one place.',
+                'content' => 'Nine parts, each with a page of its own. All of them in one place.',
                 'data' => [
-                    'columns' => 1,
+                    'columns' => 3,
                     'items' => [
-                        ['icon' => 'compass', 'title' => 'Live preview editing', 'description' => 'Every editable part of the real page is outlined. Click it and type, and the menu follows the page tree.', 'url' => '/features/editing/', 'link_label' => 'How editing works'],
-                        ['icon' => 'layers', 'title' => 'Revisions', 'description' => 'Each save keeps a copy, so any page can go back to how it was.'],
-                        ['icon' => 'briefcase', 'title' => 'Careers and applications', 'description' => 'Vacancies with closing dates, and applications with their CVs.', 'url' => '/careers/', 'link_label' => 'Open roles'],
-                        ['icon' => 'gauge', 'title' => 'Scheduled publishing', 'description' => 'Date a page for next week and it goes live on the day by itself.', 'url' => '/features/publishing/', 'link_label' => 'How publishing works'],
+                        ['icon' => 'compass', 'title' => 'Editing on the page', 'description' => 'Click the words on your real page and type. Every save is kept as a revision.', 'url' => '/features/editing/', 'link_label' => 'Editing'],
+                        ['icon' => 'zap', 'title' => 'One-button publishing', 'description' => 'The whole site written out as fast static files, now or on a date you set.', 'url' => '/features/publishing/', 'link_label' => 'Publishing'],
+                        ['icon' => 'briefcase', 'title' => 'Careers', 'description' => 'Roles with closing dates, and applications with their CVs.', 'url' => '/features/careers/', 'link_label' => 'Careers'],
+                        ['icon' => 'mail', 'title' => 'An inbox with a spam filter', 'description' => 'Every form message in one place, with sales pitches held back and the reason given.', 'url' => '/features/inbox/', 'link_label' => 'Inbox'],
+                        ['icon' => 'image', 'title' => 'A media library', 'description' => 'Upload a photograph once and use it anywhere, with its alt text beside it.', 'url' => '/features/media-library/', 'link_label' => 'Media library'],
+                        ['icon' => 'search', 'title' => 'Search and SEO', 'description' => 'Titles, descriptions, social cards, structured data and a sitemap for every page.', 'url' => '/features/search-and-seo/', 'link_label' => 'Search and SEO'],
+                        ['icon' => 'layers', 'title' => 'Themes and sections', 'description' => 'Pages built from sections, drawn by a theme editors cannot break.', 'url' => '/features/themes-and-sections/', 'link_label' => 'Themes and sections'],
+                        ['icon' => 'users', 'title' => 'Users and roles', 'description' => 'Invite your team, each with a role that decides what they may change.', 'url' => '/features/users-and-roles/', 'link_label' => 'Users and roles'],
+                        ['icon' => 'shield', 'title' => 'Site settings', 'description' => 'Name, logo, contact details and legal pages, changed once for every page.', 'url' => '/features/site-settings/', 'link_label' => 'Site settings'],
                     ],
                 ],
             ],
@@ -469,6 +474,330 @@ class DemoContentSeeder extends Seeder
             'robots' => 'index, follow',
         ]);
 
+        // A page for each of the CMS's features, under Features.
+        $featurePages = [];
+        $featurePages[] = $this->makePage([
+            'title' => 'Careers',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 2,
+            'excerpt' => 'Post roles, set closing dates and read applications with their CVs.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Hiring, on your own site',
+                'content' => 'Post a role, set the day it closes, and read every application with the CV attached.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'A careers page that runs itself',
+                'data' => ['image' => $this->photos['room-by-the-windows'], 'image_alt' => 'People working beside tall windows'],
+                'content' => "Each open role gets its own page with an application form. When its closing date passes, the page comes down by itself on the next publish.\n\nApplications arrive in the dashboard with the CV attached, and anything that looks like spam is set aside for you to check.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What hiring looks like',
+                'content' => 'Everything from the post to the shortlist.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'briefcase', 'title' => 'Roles with closing dates', 'description' => 'Draft a role, publish it, and it closes on the day you choose.'],
+                        ['icon' => 'pen-tool', 'title' => 'An application form per role', 'description' => 'Name, email, a cover note and a CV, sent straight to the dashboard.'],
+                        ['icon' => 'shield', 'title' => 'Spam set aside', 'description' => 'Sales pitches dressed as applications are held, not emailed, and can be released in one click.'],
+                        ['icon' => 'users', 'title' => 'Every applicant in one list', 'description' => 'Filter by role, open the CV, and see what was held back and why.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Questions about careers',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Where do the CVs go?', 'answer' => 'They are kept in the dashboard with the application, for signed-in staff only.'],
+                        ['question' => 'What happens when a role closes?', 'answer' => 'It leaves the careers page on the next publish. Its applications stay in the dashboard.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Careers | TuxCMS',
+            'meta_description' => 'Post roles with closing dates and read applications with their CVs in the TuxCMS dashboard.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Inbox',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 3,
+            'excerpt' => 'Every contact form message in one place, with spam held back.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Every message, none of the junk',
+                'content' => 'Contact forms land in one inbox. Sales pitches are held back with the reason, never thrown away.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'A spam filter that explains itself',
+                'data' => ['image' => $this->photos['laptop-and-notebook'], 'image_alt' => 'A laptop and an open notebook'],
+                'content' => "The filter judges intent, not single words: a message is only held when it both names something being sold and shows the sender is selling it.\n\nNothing is rejected. A held message is kept with its reason, so a wrong call is one click to undo.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'How it sorts your mail',
+                'content' => 'Three outcomes, each one you can see.',
+                'data' => [
+                    'columns' => 3,
+                    'items' => [
+                        ['icon' => 'mail', 'title' => 'Sent on', 'description' => 'A genuine enquiry is saved and emailed to you as normal.'],
+                        ['icon' => 'search', 'title' => 'Flagged', 'description' => 'An uncertain one is emailed too, marked so you look twice.'],
+                        ['icon' => 'shield', 'title' => 'Held', 'description' => 'A sales pitch is kept in the inbox with the reason and not emailed.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Questions about the inbox',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Can a real message be held by mistake?', 'answer' => 'It can, which is why nothing is deleted. Release it and it is treated like any other.'],
+                        ['question' => 'Does it stop bots?', 'answer' => 'Forms carry a token. A message sent without one, or faster than a person could type it, is held; one from a page left open over a week is flagged.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Inbox | TuxCMS',
+            'meta_description' => 'One inbox for every contact form, with a spam filter that holds sales pitches back and says why.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Media library',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 4,
+            'excerpt' => 'Upload a photograph once and use it on any page.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Every photograph in one place',
+                'content' => 'Upload once, pick it from any page, and keep its alt text beside it.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'Upload once, use anywhere',
+                'data' => ['image' => $this->photos['kit-laid-out'], 'image_alt' => 'Tools and devices laid out in rows'],
+                'content' => "Photographs live in one library instead of being scattered across pages. Pick one in the editor and it drops into the section you are working on.\n\nIts alt text travels with it, so every page that uses it describes it the same way.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What the library keeps',
+                'content' => 'Made for the people who change the pictures.',
+                'data' => [
+                    'columns' => 3,
+                    'items' => [
+                        ['icon' => 'image', 'title' => 'Every upload', 'description' => 'Photographs and files in one list, newest first.'],
+                        ['icon' => 'pen-tool', 'title' => 'Alt text with the file', 'description' => 'Describe a picture once and every page uses that description.'],
+                        ['icon' => 'layers', 'title' => 'One pick per section', 'description' => 'Choose a picture from the library straight from the page you are editing.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Media library | TuxCMS',
+            'meta_description' => 'One media library for every photograph on the site, with alt text kept beside each.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Search and SEO',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 5,
+            'excerpt' => 'Titles, descriptions, social cards and a sitemap for every page.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Found, and shown properly',
+                'content' => 'Set how each page looks in search results and when it is shared, and see it before you publish.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What each page carries',
+                'content' => 'Written out on every publish.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'search', 'title' => 'Search results preview', 'description' => 'Edit the title and description and see the result as a search engine shows it.'],
+                        ['icon' => 'image', 'title' => 'Social cards', 'description' => 'Choose the title, description and picture used when a page is shared.'],
+                        ['icon' => 'code', 'title' => 'Structured data', 'description' => 'Your business, each page, its breadcrumbs and its questions, marked up for search engines.'],
+                        ['icon' => 'compass', 'title' => 'A sitemap and robots file', 'description' => 'Every published page is listed, and drafts never are.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Questions about SEO',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Do I need a plugin?', 'answer' => 'No. Every field is in the page settings, and publishing writes them out.'],
+                        ['question' => 'Can I keep a page out of search?', 'answer' => 'Yes. Set it to noindex and it is left out of the sitemap too.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Search and SEO | TuxCMS',
+            'meta_description' => 'Per-page titles, descriptions, social cards, structured data and a sitemap, written on every publish.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Themes and sections',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 6,
+            'excerpt' => 'Pages built from sections, drawn by a theme you can change.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Pages made of sections',
+                'content' => 'Eleven built-in section types, plus any a theme adds, each one edited where it sits.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'body', 'type' => 'text', 'title' => 'Your design, kept safe',
+                'data' => ['image' => $this->photos['identity-on-a-desk'], 'image_alt' => 'A laptop and a book on a white desk'],
+                'content' => "A theme draws the site; editors fill it in. They change words, pictures and the order of sections, and the design stays exactly as it was made.\n\nA theme can add section types of its own, like the pricing and integrations on this site, and they appear in the editor like any other.",
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'The built-in sections',
+                'content' => 'Mix them in any order on any page.',
+                'data' => [
+                    'columns' => 3,
+                    'items' => [
+                        ['icon' => 'star', 'title' => 'Hero, text and call to action', 'description' => 'The opening, the story and the closing ask.'],
+                        ['icon' => 'layers', 'title' => 'Features, stats and questions', 'description' => 'What you do, what it adds up to, and what people ask.'],
+                        ['icon' => 'users', 'title' => 'Testimonials and team', 'description' => 'The people who use it and the people behind it.'],
+                        ['icon' => 'mail', 'title' => 'Contact, form and map', 'description' => 'How to reach you and where to find you.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Themes and sections | TuxCMS',
+            'meta_description' => 'TuxCMS pages are built from sections, drawn by a theme that editors cannot break.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Users and roles',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 7,
+            'excerpt' => 'Invite your team, each with a role that fits.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'The right access for each person',
+                'content' => 'Invite the people who edit, and give each a role that decides what they may change.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'Four roles',
+                'content' => 'From running the site to reading it.',
+                'data' => [
+                    'columns' => 2,
+                    'items' => [
+                        ['icon' => 'shield', 'title' => 'Admin', 'description' => 'Everything, including settings and the people who sign in.'],
+                        ['icon' => 'pen-tool', 'title' => 'Editor', 'description' => 'Writes, edits and publishes content, and looks after the media.'],
+                        ['icon' => 'users', 'title' => 'Author', 'description' => 'Writes and edits content and adds media, for an editor to publish.'],
+                        ['icon' => 'search', 'title' => 'Subscriber', 'description' => 'Signs in to view, and changes nothing.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Questions about access',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Can I see who changed a page?', 'answer' => 'Yes. Each revision records who saved it and when.'],
+                        ['question' => 'Is the dashboard on the public site?', 'answer' => 'No. The published site is plain files with no login page; the dashboard runs apart from it.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Users and roles | TuxCMS',
+            'meta_description' => 'Invite your team to TuxCMS with roles that decide what each person may change.',
+            'robots' => 'index, follow',
+        ]);
+
+        $featurePages[] = $this->makePage([
+            'title' => 'Site settings',
+            'template' => 'default',
+            'status' => 'published',
+            'parent_id' => $features->id,
+            'show_in_nav' => true,
+            'order' => 8,
+            'excerpt' => 'Name, logo, contact details, social links and legal pages in one place.',
+        ], [
+            [
+                'key' => 'hero', 'type' => 'hero', 'title' => 'Change it once, everywhere',
+                'content' => 'The details every page repeats live in one place: change them there and the whole site follows.',
+                'data' => ['alignment' => 'left', 'primary_cta' => ['label' => 'Try it in the demo', 'url' => '/admin/']],
+            ],
+            [
+                'key' => 'what', 'type' => 'features', 'title' => 'What settings hold',
+                'content' => 'A few fields each, changed once for every page.',
+                'data' => [
+                    'columns' => 3,
+                    'items' => [
+                        ['icon' => 'star', 'title' => 'Site', 'description' => 'The name, tagline, logo and the line in the footer.'],
+                        ['icon' => 'phone', 'title' => 'Contact', 'description' => 'Phone, email and address, used wherever the theme shows them.'],
+                        ['icon' => 'users', 'title' => 'Social', 'description' => 'Links to your profiles, shown with their real marks.'],
+                        ['icon' => 'search', 'title' => 'Search', 'description' => 'The defaults every page starts from.'],
+                        ['icon' => 'mail', 'title' => 'Forms', 'description' => 'Where enquiries and applications are emailed.'],
+                        ['icon' => 'shield', 'title' => 'Legal', 'description' => 'The privacy and terms pages the footer links to.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'cta', 'type' => 'cta', 'title' => 'See it in the dashboard',
+                'content' => 'The demo dashboard runs this site. Sign in and try it.',
+                'data' => ['primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/']],
+            ],
+        ], [
+            'meta_title' => 'Site settings | TuxCMS',
+            'meta_description' => 'One place for the name, logo, contact details, social links, form email and legal pages.',
+            'robots' => 'index, follow',
+        ]);
+
         // Kept out of the menu; the footer links to it through the legal settings.
         $privacy = $this->makePage([
             'title' => 'Privacy',
@@ -531,7 +860,7 @@ class DemoContentSeeder extends Seeder
             'robots' => 'noindex, follow',
         ]);
 
-        return [$home, $about, $features, $editing, $publishing, $contact, $privacy, $release, $stories];
+        return [$home, $about, $features, $editing, $publishing, ...$featurePages, $contact, $privacy, $release, $stories];
     }
 
     /**
