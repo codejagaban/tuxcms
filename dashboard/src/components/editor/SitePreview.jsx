@@ -299,7 +299,12 @@ export default function SitePreview({ path, revision = 0, html = null, mobile = 
             });
           };
 
-          fields.filter((field) => !markedSections.has(field.sectionKey)).forEach((field) => {
+          // A hand-built page prints its section data through markers, and
+          // the rest of its copy is written into the template. Matching text
+          // there would pair that written-in copy with a field the page never
+          // prints, and the edit would be lost, so it is not done at all.
+          const matchByText = !allowOverrides;
+          fields.filter((field) => matchByText && !markedSections.has(field.sectionKey)).forEach((field) => {
             const match = candidates
               .filter((element) => !claimed.has(element) && normalise(element.textContent) === field.value)
               .sort((a, b) => a.children.length - b.children.length)[0];
