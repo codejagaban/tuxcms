@@ -1,5 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+
+// The built-in section types, as the server describes them.
+const BASE_TYPES = Object.entries(JSON.parse(readFileSync(new URL('../../../resources/sections/base.json', import.meta.url), 'utf8')))
+  .map(([type, definition]) => ({ type, source: 'base', ...definition }));
 
 const pageRecord = (id, title, slug, isHomepage = false) => ({
   id,
@@ -71,6 +76,9 @@ async function mockEditor(page) {
     const url = new URL(request.url());
     const path = url.pathname;
 
+    if (path.endsWith('/section-types') && request.method() === 'GET') {
+      return route.fulfill({ json: { data: { theme: url.searchParams.get('template'), types: BASE_TYPES } } });
+    }
     if (path.endsWith('/auth/me')) {
       return route.fulfill({ json: { data: { id: 1, name: 'Editor', email: 'editor@example.com' } } });
     }

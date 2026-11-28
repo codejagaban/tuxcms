@@ -1,22 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion as Motion } from 'motion/react';
 import {
-  Plus, Trash, CaretUp, CaretDown, Eye, EyeSlash, X,
+  Plus, Trash, CaretUp, CaretDown, Eye, EyeSlash,
 } from '../../lib/icons';
-import Input from '../ui/Input';
 import Badge from '../ui/Badge';
-import {
-  SECTION_REGISTRY, SECTION_MENU, sectionLabel, setPath,
-} from '../../lib/editorSchema';
-
-const Field = ({ label, children }) => (
-  <label className="block">
-    <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">{label}</span>
-    {children}
-  </label>
-);
-
-const inputCls = 'field-control text-sm';
+import SchemaFields, { Field, inputCls } from './SchemaFields';
+import { getPath, setPath, shownInPanel } from '../../lib/editorSchema';
 
 /**
  * Right-hand control panel. Three tabs:
@@ -25,12 +14,15 @@ const inputCls = 'field-control text-sm';
  *  - SEO:     search / social metadata
  */
 export default function Inspector({
-  page, selected,
+  page, selected, sectionTypes,
   updatePage, updateSeo, updateSection, updateData,
   addSection, removeSection, moveSection, selectSection,
 }) {
   const [tab, setTab] = useState('page');
   const [addOpen, setAddOpen] = useState(false);
+  // The types this page may hold, from the server: null until they arrive.
+  const types = useMemo(() => new Map((sectionTypes || []).map((type) => [type.type, type])), [sectionTypes]);
+  const labelOf = (type) => types.get(type)?.label || type;
 
   const tabBtn = (id, text) => (
     <button
@@ -74,11 +66,16 @@ export default function Inspector({
             updateSection={updateSection}
             addOpen={addOpen}
             setAddOpen={setAddOpen}
+            sectionTypes={sectionTypes}
+            labelOf={labelOf}
           />
         )}
         {tab === 'section' && (
           <SectionTab
             selected={selected}
+            schema={selected ? types.get(selected.type) : null}
+            loaded={sectionTypes != null}
+            labelOf={labelOf}
             updateSection={updateSection}
             updateData={updateData}
             goToPage={() => setTab('page')}
@@ -92,7 +89,7 @@ export default function Inspector({
 
 function PageTab({
   page, selected, updatePage, addSection, removeSection, moveSection,
-  selectSection, updateSection, addOpen, setAddOpen,
+  selectSection, updateSection, addOpen, setAddOpen, sectionTypes, labelOf,
 }) {
   return (
     <div className="space-y-5">
@@ -162,14 +159,17 @@ function PageTab({
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setAddOpen(false)} />
                 <div className="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-[var(--color-rule-2)] bg-[var(--color-paper)] shadow-lg py-1 max-h-72 overflow-y-auto">
-                  {SECTION_MENU.map((type) => (
+                  {sectionTypes == null && (
+                    <p className="px-3 py-2 text-sm text-[var(--color-muted)]">Loading section types…</p>
+                  )}
+                  {(sectionTypes || []).map((type) => (
                     <button
-                      key={type}
-                      onClick={() => { addSection(type); setAddOpen(false); }}
+                      key={type.type}
+                      onClick={() => { addSection(type.type); setAddOpen(false); }}
                       className="w-full text-left px-3 py-2 hover:bg-[var(--color-paper-2)]"
                     >
-                      <div className="text-sm font-medium text-[var(--color-ink)]">{SECTION_REGISTRY[type].label}</div>
-                      <div className="text-xs text-[var(--color-muted)]">{SECTION_REGISTRY[type].blurb}</div>
+                      <div className="text-sm font-medium text-[var(--color-ink)]">{type.label}</div>
+                      <div className="text-xs text-[var(--color-muted)]">{type.blurb}</div>
                     </button>
                   ))}
                 </div>
@@ -203,10 +203,10 @@ function PageTab({
                 >
                   <span className="w-5 shrink-0 text-center text-xs font-medium text-[var(--color-muted)]">{i + 1}</span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-[var(--color-ink)]" title={s.title || sectionLabel(s.type)}>
-                      {s.title || sectionLabel(s.type)}
+                    <div className="truncate text-sm font-medium text-[var(--color-ink)]" title={s.title || labelOf(s.type)}>
+                      {s.title || labelOf(s.type)}
                     </div>
-                    <div className="text-xs text-[var(--color-muted)]">{sectionLabel(s.type)}</div>
+                    <div className="text-xs text-[var(--color-muted)]">{labelOf(s.type)}</div>
                   </div>
                 </button>
                 {/* The row actions are hidden until the row is hovered or focused, so
@@ -242,7 +242,7 @@ function PageTab({
   );
 }
 
-function SectionTab({ selected, updateSection, updateData, goToPage }) {
+function SectionTab({ selected, schema, loaded, labelOf, updateSection, updateData, goToPage }) {
   if (!selected) {
     return (
       <div className="text-center py-10">
@@ -254,29 +254,21 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
     );
   }
 
-  const d = selected.data || {};
-  const reg = SECTION_REGISTRY[selected.type];
-  const setData = (path, value) => updateData(selected._uid, setPath(d, path, value));
-
-  const listCfg = reg?.list;
-  const listItems = listCfg ? (d[listCfg.path] || []) : null;
-
-  const addItem = () => {
-    updateData(selected._uid, { ...d, [listCfg.path]: [...(d[listCfg.path] || []), listCfg.item()] });
+  const read = (path) => getPath(selected, path);
+  // title and content sit on the section; everything else is in its data.
+  const write = (path, value) => {
+    if (path === 'title' || path === 'content') {
+      updateSection(selected._uid, { [path]: value });
+    } else {
+      updateData(selected._uid, setPath(selected.data || {}, path.replace(/^data\./, ''), value));
+    }
   };
-  const removeItem = (idx) => {
-    updateData(selected._uid, { ...d, [listCfg.path]: (d[listCfg.path] || []).filter((_, i) => i !== idx) });
-  };
-  const setItemProp = (idx, key, value) => {
-    const list = [...(d[listCfg.path] || [])];
-    list[idx] = { ...list[idx], [key]: value };
-    updateData(selected._uid, { ...d, [listCfg.path]: list });
-  };
+  const hasPanelFields = schema && Object.values(schema.fields).some(shownInPanel);
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <Badge variant="primary">{sectionLabel(selected.type)}</Badge>
+        <Badge variant="primary">{labelOf(selected.type)}</Badge>
         <label className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
           <input type="checkbox" className="rounded border-[var(--color-rule)]" checked={!!selected.is_visible} onChange={(e) => updateSection(selected._uid, { is_visible: e.target.checked })} />
           Visible
@@ -287,142 +279,15 @@ function SectionTab({ selected, updateSection, updateData, goToPage }) {
         Text is edited directly on the preview. Structural options are here.
       </p>
 
-      {/* Hero controls */}
-      {selected.type === 'hero' && (
-        <>
-          <Field label="Alignment">
-            <select className={inputCls} value={d.alignment || 'center'} onChange={(e) => setData('alignment', e.target.value)}>
-              <option value="left">Left</option>
-              <option value="center">Center</option>
-            </select>
-          </Field>
-          <Field label="Background image URL">
-            <input className={inputCls} value={d.background_image || ''} onChange={(e) => setData('background_image', e.target.value)} placeholder="https://…" />
-          </Field>
-          <Field label="Feature image URL">
-            <input className={inputCls} value={d.image || ''} onChange={(e) => setData('image', e.target.value)} placeholder="/themes/… or https://…" />
-          </Field>
-          <Field label="Primary button link">
-            <input className={inputCls} value={d.primary_cta?.url || ''} onChange={(e) => setData('primary_cta.url', e.target.value)} placeholder="/contact" />
-          </Field>
-          <Field label="Secondary button link">
-            <input className={inputCls} value={d.secondary_cta?.url || ''} onChange={(e) => setData('secondary_cta.url', e.target.value)} placeholder="/about" />
-          </Field>
-        </>
-      )}
+      {schema && <SchemaFields fields={schema.fields} read={read} write={write} />}
 
-      {selected.type === 'cta' && (
-        <Field label="Button link">
-          <input className={inputCls} value={d.primary_cta?.url || ''} onChange={(e) => setData('primary_cta.url', e.target.value)} placeholder="/contact" />
-        </Field>
-      )}
-
-      {selected.type === 'features' && (
-        <Field label="Columns">
-          <select className={inputCls} value={String(d.columns || 3)} onChange={(e) => setData('columns', Number(e.target.value))}>
-            <option value="2">2 columns</option>
-            <option value="3">3 columns</option>
-          </select>
-        </Field>
-      )}
-
-      {['text', 'contact'].includes(selected.type) && (
-        <>
-          <Field label="Eyebrow text">
-            <input className={inputCls} value={d.eyebrow || ''} onChange={(e) => setData('eyebrow', e.target.value)} />
-          </Field>
-          <Field label="Image URL">
-            <input className={inputCls} value={d.image || ''} onChange={(e) => setData('image', e.target.value)} placeholder="/themes/… or https://…" />
-          </Field>
-          <Field label="Image alt text">
-            <input className={inputCls} value={d.image_alt || ''} onChange={(e) => setData('image_alt', e.target.value)} />
-          </Field>
-        </>
-      )}
-
-      {selected.type === 'contact_form' && (
-        <>
-          <Field label="Web3Forms access key">
-            <input
-              className={inputCls}
-              value={d.access_key || ''}
-              onChange={(e) => setData('access_key', e.target.value)}
-              placeholder="Leave blank to use the site default"
-            />
-          </Field>
-          <Field label="Email subject">
-            <input className={inputCls} value={d.subject || ''} onChange={(e) => setData('subject', e.target.value)} placeholder="New enquiry" />
-          </Field>
-          <Field label="Button label">
-            <input className={inputCls} value={d.button_label || ''} onChange={(e) => setData('button_label', e.target.value)} placeholder="Send message" />
-          </Field>
-          <Field label="Success message">
-            <textarea className={`${inputCls} h-16 resize-none`} value={d.success_message || ''} onChange={(e) => setData('success_message', e.target.value)} />
-          </Field>
-        </>
-      )}
-
-      {selected.type === 'map' && (
-        <>
-          <Field label="Address query">
-            <input className={inputCls} value={d.query || ''} onChange={(e) => setData('query', e.target.value)} placeholder="Street, city, postcode" />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Latitude">
-              <input className={inputCls} type="number" step="any" value={d.lat ?? ''} onChange={(e) => setData('lat', Number(e.target.value))} />
-            </Field>
-            <Field label="Longitude">
-              <input className={inputCls} type="number" step="any" value={d.lng ?? ''} onChange={(e) => setData('lng', Number(e.target.value))} />
-            </Field>
-          </div>
-          <Field label="Zoom">
-            <input className={inputCls} type="number" min="1" max="20" value={d.zoom ?? 14} onChange={(e) => setData('zoom', Number(e.target.value))} />
-          </Field>
-          <Field label="Label">
-            <input className={inputCls} value={d.label || ''} onChange={(e) => setData('label', e.target.value)} placeholder="Our office" />
-          </Field>
-        </>
-      )}
-
-      {/* Repeatable list management */}
-      {listCfg && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
-              {listCfg.label} items ({listItems.length})
-            </h3>
-            <button onClick={addItem} className="inline-flex items-center gap-1 text-sm text-[var(--color-ink)] font-medium">
-              <Plus className="h-4 w-4" weight="bold" /> Add
-            </button>
-          </div>
-          <ul className="space-y-1.5">
-            {listItems.map((item, idx) => (
-              <li key={idx} className="rounded-lg border border-[var(--color-rule-2)] px-2.5 py-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-[var(--color-muted)] w-5">{idx + 1}</span>
-                  <span className="flex-1 text-sm text-[var(--color-ink-2)] truncate">
-                    {item.title || item.question || item.author || item.name || item.label || `${listCfg.label} ${idx + 1}`}
-                  </span>
-                  <button onClick={() => removeItem(idx)} title="Remove" aria-label={`Remove ${listCfg.label} ${idx + 1}`} className="min-h-11 min-w-11 text-[var(--color-muted)] hover:text-[var(--color-ink)]">
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                {selected.type === 'features' && (
-                  <div className="mt-2 grid gap-2">
-                    <input className={inputCls} value={item.icon || ''} onChange={(e) => setItemProp(idx, 'icon', e.target.value)} placeholder="Icon name" aria-label={`${listCfg.label} ${idx + 1} icon name`} />
-                    <input className={inputCls} value={item.image || ''} onChange={(e) => setItemProp(idx, 'image', e.target.value)} placeholder="Image URL" aria-label={`${listCfg.label} ${idx + 1} image URL`} />
-                    <input className={inputCls} value={item.url || ''} onChange={(e) => setItemProp(idx, 'url', e.target.value)} placeholder="Booking or details URL" aria-label={`${listCfg.label} ${idx + 1} link URL`} />
-                    <input className={inputCls} value={item.link_label || ''} onChange={(e) => setItemProp(idx, 'link_label', e.target.value)} placeholder="Link label" aria-label={`${listCfg.label} ${idx + 1} link label`} />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {!listCfg && !['hero', 'cta', 'contact_form', 'map', 'features'].includes(selected.type) && (
+      {schema && !hasPanelFields && (
         <p className="text-sm text-[var(--color-muted)]">This section has no extra options — edit its text on the preview.</p>
+      )}
+      {!schema && loaded && (
+        <p className="text-sm text-[var(--color-muted)]">
+          The theme that draws this page does not provide this type of section, so it cannot be saved here. Remove it, or switch the page back to a template that has it.
+        </p>
       )}
     </div>
   );

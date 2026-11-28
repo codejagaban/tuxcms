@@ -69,6 +69,12 @@ export const pageAPI = {
   preview: (pageId) => api.get(`/pages/${pageId}/preview`, { responseType: 'text' }),
 };
 
+// The section types a page may hold, with their fields, for its template:
+// the built-in ones and those its theme declares.
+export const sectionTypeAPI = {
+  list: (template) => api.get('/section-types', { params: template ? { template } : {} }),
+};
+
 export const jobAPI = {
   list: (params = {}) => api.get('/jobs', { params }),
   get: (id) => api.get(`/jobs/${id}`),

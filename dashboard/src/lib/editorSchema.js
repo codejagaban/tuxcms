@@ -152,3 +152,41 @@ export const setPath = (obj, path, value) => {
   cursor[keys[keys.length - 1]] = value;
   return next;
 };
+
+// ── Section schemas ───────────────────────────────────────
+// The server describes every section type a page may hold, built-in or
+// declared by its theme, with the fields the side panel draws
+// (GET /section-types). These read that description.
+
+// Whether the side panel shows a field. Text edited on the preview is
+// marked `inspector: false`.
+export const shownInPanel = (field) => field.inspector !== false;
+
+// The value at a dotted path (e.g. "data.primary_cta.url") of a section.
+export const getPath = (obj, path) => path.split('.')
+  .reduce((value, key) => (value == null ? undefined : value[key]), obj);
+
+const EMPTY = { boolean: false, number: null, list: [] };
+
+/**
+ * What a new list item, or a new value of a field, starts as: its `default`
+ * when the schema gives one, else empty. A required text field starts as its
+ * own label, so a fresh item can be saved and reads as something to replace.
+ */
+export const newValue = (field) => {
+  if (field.type === 'list') {
+    return typeof field.item === 'string'
+      ? newValue({ type: field.item, label: field.label })
+      : Object.fromEntries(Object.entries(field.item).map(([key, child]) => [
+        key, 'default' in child ? structuredClone(child.default) : emptyFor(child),
+      ]));
+  }
+  return 'default' in field ? structuredClone(field.default) : emptyFor(field);
+};
+
+const emptyFor = (field) => {
+  if (field.type in EMPTY) return structuredClone(EMPTY[field.type]);
+  if (field.type === 'select') return field.options[0]?.value ?? '';
+  if (field.required && ['text', 'textarea', 'richtext'].includes(field.type)) return field.label;
+  return '';
+};

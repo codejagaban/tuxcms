@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest, ClockCounterClockwise } from '../lib/icons';
 import toast from 'react-hot-toast';
-import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
+import { apiErrorMessage, pageAPI, sectionTypeAPI, siteAPI } from '../lib/api';
 import { makeUid, createSection, setPath } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -57,6 +57,9 @@ export default function PageEditor() {
   const [editablePages, setEditablePages] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState(null);
+  // The section types this page may hold, and their fields, as the server
+  // describes them for the page's template.
+  const [sectionTypes, setSectionTypes] = useState(null);
 
   // Every page is edited on the page itself, as the CMS renders it for the
   // editor. That render carries the field markers that say exactly which
@@ -78,6 +81,16 @@ export default function PageEditor() {
       });
     return () => { current = false; };
   }, [previewId, previewRevision]);
+
+  const template = page ? (page.template || 'default') : null;
+  useEffect(() => {
+    if (!template) return undefined;
+    let current = true;
+    sectionTypeAPI.list(template)
+      .then((res) => { if (current) setSectionTypes(res.data.data.types); })
+      .catch((error) => console.error('Could not load the section types:', error));
+    return () => { current = false; };
+  }, [template]);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -448,6 +461,7 @@ export default function PageEditor() {
         <Inspector
           page={page}
           selected={selected}
+          sectionTypes={sectionTypes}
           updatePage={updatePage}
           updateSeo={updateSeo}
           updateSection={updateSection}
