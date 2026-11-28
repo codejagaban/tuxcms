@@ -7,7 +7,7 @@
                 <h1 class="display hero__title hero__title--medium">Nothing at this address</h1>
                 <div class="hero__aside">
                     <div class="hero__say"><p>The page may have moved, or the link may be an old one. Everything here is a step away from the front page.</p></div>
-                    <div class="hero__do"><a href="/" class="button"><span>Back to the front page</span>@include('site.themes.shopfront.partials.arrow')</a></div>
+                    <div class="hero__do"><a href="/" class="button">@include('site.themes.shopfront.partials.chip')<span>Back to the front page</span></a></div>
                 </div>
             </div>
         </div>

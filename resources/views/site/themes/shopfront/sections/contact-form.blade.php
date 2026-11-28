@@ -71,7 +71,7 @@
             @endif
 
             <div>
-                <button type="submit" class="button"><span @field($section, 'data.button_label')>{{ data_get($d, 'button_label', 'Send message') }}</span>@include('site.themes.shopfront.partials.arrow')</button>
+                <button type="submit" class="button">@include('site.themes.shopfront.partials.chip')<span @field($section, 'data.button_label')>{{ data_get($d, 'button_label', 'Send message') }}</span></button>
             </div>
             <p class="form__result" role="status" aria-live="polite" data-result></p>
         </form>

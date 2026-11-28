@@ -10,7 +10,7 @@
                     <p class="call__say" @field($section, 'content')>{{ $section->content }}</p>
                 @endif
                 @if (filled(data_get($primary, 'label')))
-                    <a href="{{ data_get($primary, 'url', '#') }}" class="button"><span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                    <a href="{{ data_get($primary, 'url', '#') }}" class="button">@include('site.themes.shopfront.partials.chip')<span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span></a>
                 @endif
             </div>
         @endif
