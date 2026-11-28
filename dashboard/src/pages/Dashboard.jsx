@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, IconPages, IconPublished, IconDrafts, IconMedia, IconJobs, IconEnquiries, IconApplications } from '../lib/icons';
+import { ArrowUpRight, IconBlog, IconPages, IconPublished, IconDrafts, IconMedia, IconJobs, IconEnquiries, IconApplications } from '../lib/icons';
 import { useAuth } from '../lib/auth';
-import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI, jobAPI } from '../lib/api';
+import { pageAPI, mediaAPI, enquiryAPI, jobApplicationAPI, jobAPI, postAPI } from '../lib/api';
 import PageThumb from '../components/PageThumb';
 import Count from '../components/Count';
 import { Card } from '../components/ui/Card';
@@ -18,6 +18,8 @@ const Dashboard = () => {
   const [held, setHeld] = useState({ enquiries: 0, applications: 0 });
   const [inbox, setInbox] = useState([]);
   const [jobs, setJobs] = useState([]);
+  // Posts waiting to go out: scheduled ones, then drafts.
+  const [waiting, setWaiting] = useState([]);
   const [media, setMedia] = useState([]);
 
   useEffect(() => {
@@ -77,6 +79,17 @@ const Dashboard = () => {
           setJobs(jobsResponse.data.data || []);
         } catch (error) {
           console.error('Error fetching vacancies:', error);
+        }
+
+        try {
+          const [scheduled, drafts] = await Promise.all([
+            postAPI.list({ status: 'scheduled', per_page: 5 }),
+            postAPI.list({ status: 'draft', per_page: 5 }),
+          ]);
+          const soonest = [...(scheduled.data.data || [])].sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
+          setWaiting([...soonest, ...(drafts.data.data || [])].slice(0, 5));
+        } catch (error) {
+          console.error('Error fetching posts:', error);
         }
       } finally {
         setIsLoading(false);
@@ -194,9 +207,9 @@ const Dashboard = () => {
         )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <section>
-          <SectionHead title="Inbox" deck="The latest messages and applications from the site." to="/dashboard/enquiries" />
+          <SectionHead level title="Inbox" deck="The latest messages and applications from the site." to="/dashboard/enquiries" />
           <Card className="overflow-hidden">
             {inbox.length === 0 ? (
               <Empty icon={IconEnquiries} text="Nothing has come in yet." />
@@ -220,7 +233,7 @@ const Dashboard = () => {
         </section>
 
         <section>
-          <SectionHead title="Vacancies" deck="Roles on the careers pages, and those waiting." to="/dashboard/jobs" />
+          <SectionHead level title="Vacancies" deck="Roles on the careers pages, and those waiting." to="/dashboard/jobs" />
           <Card className="overflow-hidden">
             {jobs.length === 0 ? (
               <Empty icon={IconJobs} text="No vacancies yet." />
@@ -238,6 +251,30 @@ const Dashboard = () => {
                 <Badge variant={job.status === 'published' ? 'published' : job.status === 'draft' ? 'draft' : 'default'}>
                   {job.status === 'published' ? 'Open' : job.status}
                 </Badge>
+              </Link>
+            ))}
+          </Card>
+        </section>
+
+        <section className="lg:col-span-2 xl:col-span-1">
+          <SectionHead level title="Blog" deck="Posts scheduled to go out, and drafts." to="/dashboard/blog" />
+          <Card className="overflow-hidden">
+            {waiting.length === 0 ? (
+              <Empty icon={IconBlog} text="Nothing waiting. Every post is out." />
+            ) : waiting.map((post, index) => (
+              <Link
+                key={post.id}
+                to={`/dashboard/blog/${post.id}/edit`}
+                className={`grid grid-cols-[1.125rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-[var(--color-hover)] sm:px-5 ${index ? 'border-t border-[var(--color-rule-2)]' : ''}`}
+              >
+                <IconBlog className="h-[18px] w-[18px] text-[var(--color-blue)]" />
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-semibold tracking-[-0.01em]">{post.title}</h3>
+                  <p className="truncate text-xs text-[var(--color-muted)]">
+                    {post.is_scheduled ? `Goes live ${shortDay(post.published_at)}` : `Edited ${shortDay(post.updated_at)}`}
+                  </p>
+                </div>
+                <Badge variant={post.is_scheduled ? 'pending' : 'draft'}>{post.is_scheduled ? 'Scheduled' : 'Draft'}</Badge>
               </Link>
             ))}
           </Card>
@@ -265,14 +302,18 @@ const Dashboard = () => {
   );
 };
 
+const shortDay = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '');
+
 const deliveryTone = { sent: 'success', failed: 'danger', spam: 'warning' };
 const deliveryLabel = { sent: 'Sent', failed: 'Not delivered', spam: 'Held as spam' };
 
-const SectionHead = ({ title, deck, to }) => (
+// `level` keeps room for a two-line deck, so heads side by side in a row are
+// the same height and the cards under them start on one line.
+const SectionHead = ({ title, deck, to, level = false }) => (
   <div className="mb-3 flex items-end justify-between gap-4">
     <div>
       <h2 className="font-semibold tracking-[-0.02em]" style={{ fontSize: '1.125rem' }}>{title}</h2>
-      <p className="text-sm text-[var(--color-muted)]">{deck}</p>
+      <p className={`text-sm text-[var(--color-muted)] ${level ? 'min-h-10 lg:line-clamp-2' : ''}`}>{deck}</p>
     </div>
     <Link to={to} className="flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-blue)]">
       View all
