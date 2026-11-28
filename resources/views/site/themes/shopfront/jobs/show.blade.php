@@ -28,15 +28,15 @@
 @endpush
 
 @section('content')
-    <section class="sign sign--page">
+    <section class="hero hero--page">
         <div class="wrap">
-            <div class="board sign__board">
-                <h1 class="display sign__title">{{ $job->title }}</h1>
-            </div>
-            <div class="sign__footing">
-                <p class="sign__say">{{ $job->summary }}</p>
-                <div class="sign__do">
-                    <a href="#apply" class="plate"><span>Apply for this role</span>@include('site.themes.shopfront.partials.arrow')</a>
+            <div class="hero__grid">
+                <h1 class="display hero__title hero__title--{{ mb_strlen($job->title) <= 16 ? 'short' : (mb_strlen($job->title) <= 36 ? 'medium' : 'long') }}">{{ $job->title }}</h1>
+                <div class="hero__aside">
+                    @if (filled($job->summary))
+                        <div class="hero__say"><p>{{ $job->summary }}</p></div>
+                    @endif
+                    <div class="hero__do"><a href="#apply" class="button"><span>Apply for this role</span>@include('site.themes.shopfront.partials.arrow')</a></div>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
 
     <article class="block job">
         <div class="wrap">
-            <a class="back" href="/careers/">@include('site.themes.shopfront.partials.arrow')<span>All opportunities</span></a>
+            <a class="back" href="/careers/">@include('site.themes.shopfront.partials.arrow')<span>All roles</span></a>
 
             @if ($facts)
                 <dl class="facts">
@@ -89,7 +89,7 @@
                     <div class="field"><label for="apply-letter">Cover letter</label><textarea id="apply-letter" name="cover_letter" rows="8" required></textarea></div>
                     <div class="field"><label for="apply-cv">CV <small>PDF, DOC or DOCX, up to 5 MB</small></label><input id="apply-cv" type="file" name="cv" accept=".pdf,.doc,.docx" required></div>
 
-                    <div><button type="submit" class="plate"><span>Submit application</span>@include('site.themes.shopfront.partials.arrow')</button></div>
+                    <div><button type="submit" class="button"><span>Submit application</span>@include('site.themes.shopfront.partials.arrow')</button></div>
                     <p class="form__result" role="status" aria-live="polite"></p>
                 </form>
             </section>

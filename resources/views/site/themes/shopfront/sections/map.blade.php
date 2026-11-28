@@ -21,7 +21,7 @@
             @if (filled(data_get($d, 'label')))
                 <p @field($section, 'data.label')>{{ data_get($d, 'label') }}</p>
             @endif
-            <a class="quiet" href="https://www.openstreetmap.org/?mlat={{ $lat }}&mlon={{ $lng }}#map={{ $zoom }}/{{ $lat }}/{{ $lng }}" target="_blank" rel="noopener noreferrer"><span>Open in Maps</span>@include('site.themes.shopfront.partials.arrow')</a>
+            <a class="link" href="https://www.openstreetmap.org/?mlat={{ $lat }}&mlon={{ $lng }}#map={{ $zoom }}/{{ $lat }}/{{ $lng }}" target="_blank" rel="noopener noreferrer"><span>Open in Maps</span>@include('site.themes.shopfront.partials.arrow')</a>
         </div>
     </div>
 </section>

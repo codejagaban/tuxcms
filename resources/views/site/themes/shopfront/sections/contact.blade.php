@@ -1,5 +1,5 @@
 @php
-    $rows = [['phone', 'Phone'], ['email', 'Email'], ['address', 'Address'], ['hours', 'Hours']];
+    $rows = [['email', 'Email'], ['phone', 'Phone'], ['address', 'Address'], ['hours', 'Hours']];
 @endphp
 <section class="block" @tuxsection($section)>
     <div class="wrap split">
@@ -11,7 +11,7 @@
         <dl class="reach">
             @foreach ($rows as [$key, $label])
                 @continue(blank(data_get($d, $key)))
-                <div>
+                <div @class(['reach__row', 'reach__row--big' => in_array($key, ['email', 'phone'], true)])>
                     <dt>{{ $label }}</dt>
                     {{-- A link carries its own marker; otherwise the line itself does. --}}
                     <dd @field($section, in_array($key, ['email', 'phone'], true) ? '' : "data.{$key}")>

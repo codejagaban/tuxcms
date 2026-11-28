@@ -3,16 +3,16 @@
 <section class="block" @tuxsection($section)>
     <div class="wrap">
         @if (filled($section->title))
-            <h2 class="display head" @field($section, 'title')>{{ $section->title }}</h2>
+            <h2 class="display head head--over" @field($section, 'title')>{{ $section->title }}</h2>
         @endif
-        <div class="words">
+        <div @class(['words', 'words--one' => count($items) === 1])>
             @foreach ($items as $i => $item)
                 <figure class="word">
                     <blockquote @field($section, "data.items.{$i}.quote")>{{ data_get($item, 'quote') }}</blockquote>
                     <figcaption>
-                        <div class="word__who" @field($section, "data.items.{$i}.author")>{{ data_get($item, 'author') }}</div>
+                        <span class="word__who" @field($section, "data.items.{$i}.author")>{{ data_get($item, 'author') }}</span>
                         @if (filled(data_get($item, 'role')))
-                            <div class="word__role" @field($section, "data.items.{$i}.role")>{{ data_get($item, 'role') }}</div>
+                            <span class="word__role" @field($section, "data.items.{$i}.role")>{{ data_get($item, 'role') }}</span>
                         @endif
                     </figcaption>
                 </figure>

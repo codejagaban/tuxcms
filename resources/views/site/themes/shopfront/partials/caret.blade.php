@@ -1,0 +1,1 @@
+<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg>

@@ -4,6 +4,7 @@
     $social = Site::socialLinks();
     $legal = Site::legalLinks();
 @endphp
+{{-- The footer stands on the dark stage in light and dark alike. --}}
 <footer class="foot">
     <div class="wrap">
         <div class="foot__grid">
@@ -24,11 +25,11 @@
                 <div>
                     <h2>Get in touch</h2>
                     <ul>
-                        @if (! empty($contact['phone']))
-                            <li><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
-                        @endif
                         @if (! empty($contact['email']))
                             <li><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
+                        @endif
+                        @if (! empty($contact['phone']))
+                            <li><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
                         @endif
                         @if (! empty($contact['address']))
                             <li class="soft">{{ $contact['address'] }}</li>
@@ -56,6 +57,4 @@
             @endif
         </div>
     </div>
-
-    <span class="foot__name" aria-hidden="true">{{ Site::name() }}</span>
 </footer>

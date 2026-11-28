@@ -178,7 +178,7 @@ class ShopfrontThemeTest extends TestCase
         // The photographs reach the page, on the wall of work.
         $home = $this->contents('index.html');
         $this->assertStringContainsString('desk-from-above.jpg', $home);
-        $this->assertStringContainsString('class="works"', $home);
+        $this->assertStringContainsString('class="wall"', $home);
 
         $this->assertFileExists($this->output . '/careers/senior-product-designer/index.html');
         $this->assertFileDoesNotExist($this->output . '/careers/support-lead/index.html');

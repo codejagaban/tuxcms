@@ -10,7 +10,7 @@
             @endif
         </div>
         <div>
-            <div class="prose" @field($section, 'content')>
+            <div class="prose prose--lead" @field($section, 'content')>
                 @include('site.themes.shopfront.partials.paragraphs', ['text' => $section->content])
             </div>
             @if (filled($image))

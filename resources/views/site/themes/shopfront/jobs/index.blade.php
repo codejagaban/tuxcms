@@ -5,10 +5,13 @@
 ])
 
 @section('content')
-    <section class="sign sign--page">
+    <section class="hero hero--page">
         <div class="wrap">
-            <div class="board sign__board">
-                <h1 class="display sign__title">Work with us</h1>
+            <div class="hero__grid">
+                <h1 class="display hero__title hero__title--short">Work with us</h1>
+                <div class="hero__aside">
+                    <div class="hero__say"><p>{{ $jobs->count() === 1 ? 'One role is open' : ($jobs->isEmpty() ? 'No roles are open' : $jobs->count() . ' roles are open') }} at {{ Site::name() }} right now.</p></div>
+                </div>
             </div>
         </div>
     </section>
