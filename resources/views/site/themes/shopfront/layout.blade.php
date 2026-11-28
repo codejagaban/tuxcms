@@ -19,7 +19,7 @@
         <meta name="robots" content="{{ Site::isNoindex() ? 'noindex, nofollow' : 'index, follow' }}">
         <link rel="icon" href="/favicon.ico" sizes="any">
     @endisset
-    <link rel="preload" href="/themes/shopfront/fonts/LeMurmure-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/themes/shopfront/fonts/UncutSans-Variable.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ CssMinifier::themeStylesheet('shopfront') }}">
     @stack('head')
 </head>
