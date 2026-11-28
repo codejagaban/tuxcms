@@ -108,6 +108,34 @@ if (!editing) {
   document.querySelectorAll('[data-studio]').forEach(studio);
 }
 
+// The testimonial slider: one card at a time, the arrows step through them
+// and the count follows. With no script, and in the dashboard's preview,
+// every card shows, one under another.
+if (!editing) {
+  document.querySelectorAll('[data-voices]').forEach((voices) => {
+    const cards = [...voices.querySelectorAll('[data-voice]')];
+    const at = voices.querySelector('[data-voices-at]');
+    if (cards.length < 2) return;
+    let current = 0;
+    const show = (index) => {
+      current = (index + cards.length) % cards.length;
+      cards.forEach((card, i) => {
+        card.classList.toggle('is-on', i === current);
+        card.setAttribute('aria-hidden', String(i !== current));
+      });
+      if (at) at.textContent = String(current + 1);
+      if (!calm) animate(cards[current], { x: [24, 0], filter: ['blur(6px)', 'blur(0px)'] }, { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] });
+    };
+    voices.classList.add('is-sliding');
+    voices.querySelector('[data-voices-prev]')?.addEventListener('click', () => show(current - 1));
+    voices.querySelector('[data-voices-next]')?.addEventListener('click', () => show(current + 1));
+    cards.forEach((card, i) => {
+      card.classList.toggle('is-on', i === 0);
+      card.setAttribute('aria-hidden', String(i !== 0));
+    });
+  });
+}
+
 
 // The front page's scene plays only for visitors who welcome motion, and
 // never in the dashboard's preview. Otherwise its still frame stays.
@@ -140,7 +168,7 @@ if (!calm && !editing) {
   });
 
   // Lists arrive one item after another.
-  const groups = ['.keys > *', '.bento > *', '.bit__log > *', '.bit__stack > *', '.tally__list > *', '.words > *', '.staff > *', '.asks > *', '.roles > *', '.reach > *'];
+  const groups = ['.keys > *', '.bento > *', '.bit__log > *', '.bit__stack > *', '.figures__list > *', '.posts > *', '.ways__list > *', '.asks > *'];
   groups.forEach((selector) => {
     const items = document.querySelectorAll(selector);
     if (!items.length) return;
