@@ -16,8 +16,14 @@ use Illuminate\Support\Facades\View;
  *           "fields": { "<path>": { "type": "text", "label": "Heading" }, ... },
  *           "defaults": { "title": "...", "content": "...", "data": { ... } }
  *         }
+ *       },
+ *       "enquiries": {
+ *         "<kind>": { "label": "Client review", "plural": "Client reviews" }
  *       }
  *     }
+ *
+ * `enquiries` names the kinds of message the site's forms send to the
+ * inbox, as each form's hidden `type`. See App\Support\EnquiryKinds.
  *
  * A field's path is `title`, `content` or `data.<key>[.<key>...]`, the same
  * paths the @field and @image markers name. A field is:
@@ -74,6 +80,58 @@ class ThemeManifest
         $key = $path.'|'.filesize($path).'|'.filemtime($path);
 
         return self::$cache[$key] ??= self::parse($theme, (string) file_get_contents($path));
+    }
+
+    /**
+     * The kinds of enquiry a theme's forms send, keyed by kind, each with a
+     * label for one and for many. A theme with no theme.json declares none.
+     *
+     * @return array<string, array{label: string, plural: string}>
+     */
+    public static function enquiries(?string $theme): array
+    {
+        if ($theme === null || $theme === '' || ! ($path = self::path($theme))) {
+            return [];
+        }
+
+        // Checks the file as a whole first, so a broken one fails the same way.
+        self::sections($theme);
+        $key = 'enquiries|'.$path.'|'.filesize($path).'|'.filemtime($path);
+
+        return self::$cache[$key] ??= self::parseEnquiries($theme, json_decode((string) file_get_contents($path), true)['enquiries'] ?? []);
+    }
+
+    /** @return array<string, array{label: string, plural: string}> */
+    public static function parseEnquiries(string $theme, mixed $kinds): array
+    {
+        if (! is_array($kinds) || array_is_list($kinds) && $kinds !== []) {
+            throw InvalidThemeManifest::for($theme, null, '"enquiries" must be an object keyed by kind.');
+        }
+
+        $checked = [];
+        foreach ($kinds as $kind => $definition) {
+            $kind = (string) $kind;
+            $where = "enquiry kind \"{$kind}\"";
+            if (! preg_match(self::TYPE_NAME, $kind) || strlen($kind) > 40) {
+                throw InvalidThemeManifest::for($theme, null, "{$where}: a kind must be lower case letters, digits and underscores, starting with a letter.");
+            }
+            if (! is_array($definition) || ! is_string($definition['label'] ?? null) || trim($definition['label']) === '') {
+                throw InvalidThemeManifest::for($theme, null, "{$where}: \"label\" is required.");
+            }
+            if (isset($definition['plural']) && (! is_string($definition['plural']) || trim($definition['plural']) === '')) {
+                throw InvalidThemeManifest::for($theme, null, "{$where}: \"plural\" must be text.");
+            }
+            if ($unknown = array_diff(array_keys($definition), ['label', 'plural'])) {
+                throw InvalidThemeManifest::for($theme, null, "{$where} has unknown keys: ".implode(', ', $unknown).'.');
+            }
+
+            $checked[$kind] = [
+                'label' => trim($definition['label']),
+                'plural' => trim($definition['plural'] ?? $definition['label'].'s'),
+            ];
+        }
+
+        return $checked;
     }
 
     /** The theme's theme.json, looked for in every view location so a test can add a theme of its own. */
