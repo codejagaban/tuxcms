@@ -148,4 +148,41 @@ class PreviewMarkersTest extends TestCase
         $this->assertStringContainsString('Made to measure', $html);
         $this->assertStringNotContainsString('data-tuxcms-', $html);
     }
+
+    public function test_a_page_with_no_theme_is_marked_by_the_base_views(): void
+    {
+        // No site theme, and a built-in template: the page renders through
+        // the base views, which must mark their fields like any theme.
+        config(['site.theme' => null]);
+        $page = Page::create(['title' => 'Plain', 'template' => 'landing', 'status' => 'draft']);
+        $types = [
+            'hero' => [], 'text' => [], 'cta' => [], 'contact' => [], 'contact_form' => [],
+            'features' => ['items' => [['title' => 'One', 'description' => 'First']]],
+            'stats' => ['items' => [['value' => '12', 'label' => 'Years']]],
+            'testimonials' => ['items' => [['quote' => 'Lovely', 'author' => 'Ada', 'role' => 'Owner']]],
+            'team' => ['members' => [['name' => 'Tom', 'role' => 'Lead', 'bio' => 'Builds']]],
+            'faq' => ['items' => [['question' => 'Why?', 'answer' => 'Because']]],
+            'map' => ['lat' => 51.5, 'lng' => -0.1],
+        ];
+        $sections = [];
+        foreach (array_keys($types) as $order => $type) {
+            $sections[$type] = $page->sections()->create([
+                'key' => $type, 'type' => $type, 'title' => "The {$type} heading", 'content' => 'Body',
+                'data' => $types[$type], 'order' => $order, 'is_visible' => true,
+            ]);
+        }
+        Sanctum::actingAs(User::factory()->create());
+
+        $html = $this->get("/api/v1/pages/{$page->id}/preview")->assertOk()->getContent();
+
+        foreach ($sections as $type => $section) {
+            $this->assertStringContainsString("data-tuxcms-field=\"{$section->id}:title\"", $html, $type);
+        }
+        $this->assertStringContainsString("data-tuxcms-field=\"{$sections['features']->id}:data.items.0.description\"", $html);
+        $this->assertStringContainsString("data-tuxcms-field=\"{$sections['stats']->id}:data.items.0.value\"", $html);
+        $this->assertStringContainsString("data-tuxcms-field=\"{$sections['team']->id}:data.members.0.bio\"", $html);
+        $this->assertStringContainsString("data-tuxcms-field=\"{$sections['faq']->id}:data.items.0.answer\"", $html);
+        // Rendered by the base views: nothing came from a theme.
+        $this->assertStringNotContainsString('/themes/', $html);
+    }
 }

@@ -7,9 +7,9 @@
     $bbox = implode(',', [$lng - $span, $lat - $span / 2, $lng + $span, $lat + $span / 2]);
 @endphp
 @if ($lat || $lng)
-<section class="mx-auto max-w-4xl px-6 py-14">
+<section class="mx-auto max-w-4xl px-6 py-14" @tuxsection($section)>
     @if (filled($section->title))
-        <h2 class="mb-6 text-2xl font-bold text-gray-900">{{ $section->title }}</h2>
+        <h2 class="mb-6 text-2xl font-bold text-gray-900" @field($section, 'title')>{{ $section->title }}</h2>
     @endif
     {{-- OpenStreetMap needs no API key and sets no third-party cookies. --}}
     <div class="overflow-hidden rounded-xl border border-gray-200">

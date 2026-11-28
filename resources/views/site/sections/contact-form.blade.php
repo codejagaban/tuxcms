@@ -6,9 +6,9 @@
     $fields = data_get($d, 'fields', []);
     $formId = 'form-' . $section->id;
 @endphp
-<section class="mx-auto max-w-xl px-6 py-14">
+<section class="mx-auto max-w-xl px-6 py-14" @tuxsection($section)>
     @if (filled($section->title))
-        <h2 class="mb-6 text-2xl font-bold text-gray-900">{{ $section->title }}</h2>
+        <h2 class="mb-6 text-2xl font-bold text-gray-900" @field($section, 'title')>{{ $section->title }}</h2>
     @endif
 
     @if (blank($accessKey))
@@ -61,7 +61,7 @@
             @endforeach
 
             <button type="submit"
-                class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700" @field($section, 'data.button_label')>
                 {{ data_get($d, 'button_label', 'Send message') }}
             </button>
 
