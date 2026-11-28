@@ -56,33 +56,6 @@ const setNestedValue = (source, path, value) => {
 };
 
 
-// A theme with hand-built pages has text and pictures that belong to no
-// section. Edits to those are kept beside the page as overrides, which the
-// theme applies when it builds. `crystal_overrides` is the name the first
-// such site stored them under; it is still read, and rewritten on save.
-const templateOverrides = (content) => {
-  try {
-    const parsed = JSON.parse(content || '{}');
-    return parsed.template_overrides || parsed.crystal_overrides || {};
-  } catch {
-    return {};
-  }
-};
-
-const withTemplateOverride = (content, kind, key, value) => {
-  let parsed = {};
-  try { parsed = JSON.parse(content || '{}'); } catch { parsed = {}; }
-  const { crystal_overrides: legacy, ...rest } = parsed;
-  const overrides = parsed.template_overrides || legacy || {};
-  return JSON.stringify({
-    ...rest,
-    template_overrides: {
-      ...overrides,
-      [kind]: { ...(overrides[kind] || {}), [key]: value },
-    },
-  });
-};
-
 export default function PageEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -478,12 +451,7 @@ export default function PageEditor() {
                     mobile={device === 'mobile'}
                     sections={page.sections}
                     pages={editablePages}
-                    overrides={templateOverrides(page.content)}
-                    allowOverrides={Boolean(page.supports_overrides)}
                     onEdit={updatePreviewField}
-                    onOverrideEdit={(kind, key, value) => {
-                      mutate((current) => ({ ...current, content: withTemplateOverride(current.content, kind, key, value) }));
-                    }}
                     onSelect={setSelectedUid}
                     onImageEdit={(target, element) => setImageEdit({ target, element })}
                     onPageNavigate={(pageId) => {
@@ -518,15 +486,8 @@ export default function PageEditor() {
         onSelect={(url, alt) => {
           const target = imageEdit?.target;
           if (!target) return;
-          if (target.overrideKey != null) {
-            mutate((current) => ({
-              ...current,
-              content: withTemplateOverride(current.content, 'images', target.overrideKey, { url, alt }),
-            }));
-          } else {
-            updatePreviewField(target.sectionUid, target.field, url);
-            if (target.altField) updatePreviewField(target.sectionUid, target.altField, alt);
-          }
+          updatePreviewField(target.sectionUid, target.field, url);
+          if (target.altField) updatePreviewField(target.sectionUid, target.altField, alt);
           if (imageEdit.element) {
             imageEdit.element.src = url;
             imageEdit.element.alt = alt;

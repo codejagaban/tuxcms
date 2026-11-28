@@ -7,8 +7,7 @@ const normalise = (value = '') => value.replace(/\s+/g, ' ').trim();
 // data-tuxcms-field="12:data.items.0.question" is section 12's question in its
 // first item. Nothing is guessed from the text, so two sections with the same
 // words, or text a template reshapes, cannot be confused. An element with no
-// marker is not edited, unless a theme with hand-built pages offers it as an
-// override (see the end of installEditors).
+// marker is not edited.
 
 // "12:data.items.0.question" to ['12', 'data.items.0.question']. Only the
 // first colon divides them; the path may contain more.
@@ -36,12 +35,8 @@ const isMultiline = (element, value) => (typeof value === 'string' && value.incl
   || element.matches('div, blockquote, section, article')
   || [...element.children].some((child) => child.matches('p, div, ul, ol, blockquote'));
 
-const imagePath = (url = '', base = 'http://localhost') => {
-  try { return new URL(url, base).pathname; } catch { return url; }
-};
-
 /** Show the real generated page and make it editable, so the editor cannot drift from the site. */
-export default function SitePreview({ revision = 0, html, mobile = false, sections = [], pages = [], overrides = {}, allowOverrides = true, onEdit, onOverrideEdit, onSelect, onImageEdit, onPageNavigate }) {
+export default function SitePreview({ revision = 0, html, mobile = false, sections = [], pages = [], onEdit, onSelect, onImageEdit, onPageNavigate }) {
   const frameRef = useRef(null);
   // Markers name a section by its saved id.
   const sectionsById = useMemo(() => new Map(sections
@@ -53,11 +48,6 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
   useEffect(() => {
     const doc = frameRef.current?.contentDocument;
     if (!doc) return;
-    const nodes = [...doc.querySelectorAll('[data-tuxcms-field-key]')];
-    Object.entries(overrides.text || {}).forEach(([index, value]) => {
-      const node = nodes.find((element) => element.dataset.tuxcmsFieldKey === `override:${index}`);
-      if (node && normalise(node.textContent) !== normalise(value)) node.textContent = value;
-    });
     doc.querySelectorAll('[data-tuxcms-field][data-tuxcms-editable]').forEach((node) => {
       const marker = parseMarker(node.dataset.tuxcmsField);
       const section = marker && sectionsById.get(marker[0]);
@@ -69,7 +59,7 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
         node.textContent = value;
       }
     });
-  }, [overrides, sectionsById]);
+  }, [sectionsById]);
 
   // The load event carries the frame that fired it, so the preview is prepared
   // from that element rather than reached for through the ref.
@@ -166,57 +156,6 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
             const section = marker && sectionsById.get(marker[0]);
             if (section) makeMarkedEditable(element, section, marker[1]);
           });
-          const insideMarked = (element) => Boolean(element.closest('[data-tuxcms-field]')
-            || element.querySelector('[data-tuxcms-field]'));
-
-          // Copy written into a hand-built template, with no section data
-          // behind it, is kept as an override by its position on the page.
-          const makeOverrideEditable = (element, index, initialValue) => {
-            if (element.dataset.tuxcmsEditable === 'true') return;
-            element.dataset.tuxcmsEditable = 'true';
-            element.dataset.tuxcmsFieldKey = `override:${index}`;
-            element.contentEditable = 'true';
-            element.setAttribute('role', 'textbox');
-            element.setAttribute('aria-label', `Edit ${element.tagName.toLowerCase()} text`);
-            element.setAttribute('aria-multiline', 'false');
-            element.spellcheck = true;
-            element.addEventListener('pointerdown', () => {
-              // A heading animation may wrap characters in spans. Remove
-              // those wrappers before the browser places the caret so editing
-              // behaves like a normal text field without duplicating content.
-              if (element.children.length) element.textContent = initialValue;
-            });
-            element.addEventListener('click', (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              event.stopImmediatePropagation();
-            });
-            element.addEventListener('keydown', (event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                element.blur();
-              }
-            });
-            element.addEventListener('blur', () => {
-              const value = normalise(element.textContent);
-              if (!value || value === initialValue) return;
-              onOverrideEdit?.('text', index, value);
-            });
-          };
-
-          const templateText = [...doc.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main p, main blockquote, main .features-list-text, main .alt-features-descr, main a span, main .contact-item .ci-text')]
-            .filter((element) => !element.closest('form') && !element.closest('.contact-item a'));
-          templateText.forEach((element, index) => {
-            // Only a theme with hand-built pages applies text overrides when
-            // it builds the page; the API says which.
-            if (!allowOverrides) return;
-            // Never inside or around a marked element: that text is a field,
-            // and nested editable elements would duplicate what is typed.
-            if (insideMarked(element) || normalise(element.textContent).length <= 1) return;
-            const value = normalise(overrides.text?.[index] || element.textContent);
-            if (overrides.text?.[index]) element.textContent = value;
-            makeOverrideEditable(element, index, value);
-          });
         };
 
         // A photo that sits under a heading, a link or a tint never receives
@@ -255,15 +194,14 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
           });
         };
 
-        const claimedImages = new Set();
-
         // Each marked picture opens the picker for exactly the field it names.
         doc.querySelectorAll('[data-tuxcms-image]').forEach((element) => {
           const marker = parseMarker(element.dataset.tuxcmsImage);
           const section = marker && sectionsById.get(marker[0]);
           if (!section) return;
           const [, path] = marker;
-          // The description sits beside the picture: image and image_alt.
+          // The description sits beside the picture, image and image_alt, and
+          // is saved there even if the field does not exist yet.
           const parts = path.split('.');
           const key = parts.pop();
           const parentPath = parts.join('.');
@@ -272,11 +210,10 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
           const image = {
             sectionUid: section._uid,
             field: path,
-            altField: parent && typeof parent === 'object' && Object.hasOwn(parent, altKey) ? `${parentPath}.${altKey}` : null,
+            altField: parentPath ? `${parentPath}.${altKey}` : null,
             url: valueAt(section, path) || element.getAttribute('src') || '',
             alt: (parent && parent[altKey]) || element.getAttribute('alt') || '',
           };
-          claimedImages.add(element);
           element.dataset.tuxcmsImageEditable = 'true';
           element.title = 'Click to replace image';
           element.addEventListener('click', (event) => {
@@ -290,28 +227,6 @@ export default function SitePreview({ revision = 0, html, mobile = false, sectio
             onSelect?.(section._uid);
             onImageEdit?.(image, element);
           });
-        });
-
-        const templateImages = [...doc.querySelectorAll('main img')].filter((element) => {
-          const alt = normalise(element.alt || '');
-          const source = imagePath(element.src, doc.baseURI);
-          return alt && !/(decoration|bg-shape|logo|favicon)/i.test(source);
-        });
-        templateImages.forEach((element, index) => {
-          if (!allowOverrides) return;
-          if (claimedImages.has(element) || element.hasAttribute('data-tuxcms-image')) return;
-          const replacement = overrides.images?.[index];
-          if (replacement?.url) element.src = replacement.url;
-          if (replacement?.alt) element.alt = replacement.alt;
-          element.dataset.tuxcmsImageEditable = 'true';
-          element.title = 'Click to replace image';
-          element.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            onImageEdit?.({ overrideKey: index, url: element.src, alt: element.alt }, element);
-          });
-          addPhotoButton(element, () => onImageEdit?.({ overrideKey: index, url: element.src, alt: element.alt }, element));
         });
 
         // Keep each button on its photo as the page loads images and resizes.
