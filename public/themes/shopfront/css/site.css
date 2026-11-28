@@ -692,19 +692,36 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .figures__of { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; line-height: 24px; max-width: 26ch; }
 @media (max-width: 56rem) { .figures { grid-template-columns: minmax(0, 1fr); } }
 
-/* Testimonials: white cards, the words large, the speaker at the foot. */
-.words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-.words--one { grid-template-columns: minmax(0, 1fr); max-width: 52rem; margin-inline: auto; }
-@media (max-width: 46rem) { .words { grid-template-columns: 1fr; } }
-.word {
-  display: flex; flex-direction: column; gap: 2rem;
-  padding: clamp(1.6rem, 3vw, 2.4rem);
-  border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge);
+/* Testimonials: the slider of the Automation SaaS template. The heading on
+   the left with round arrow buttons and a count; on the right a white card
+   with a hairline edge and 20px corners holding one quote at a time. With
+   no script the cards simply stack. */
+.voices { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 20px 56px; align-items: start; }
+.voices__side { display: grid; gap: 32px; align-content: start; }
+.voices__nav { display: flex; align-items: center; gap: 12px; }
+.voices__arrow {
+  display: grid; place-items: center; width: 52px; height: 40px;
+  border: 1px solid var(--rule); border-radius: 999px; background: transparent; color: var(--ink); cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
-.word blockquote { font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.35; font-weight: 500; letter-spacing: -0.025em; text-wrap: pretty; }
-.word figcaption { margin-top: auto; display: grid; gap: 0.15rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
-.word__who { font-weight: 650; }
-.word__role { color: var(--muted); font-size: 0.95rem; }
+.voices__arrow svg { width: 16px; height: 16px; }
+.voices__arrow:hover { background: var(--action); color: var(--action-ink); border-color: var(--action); }
+.voices__count { margin-left: 12px; font-size: 20px; line-height: 1.5; color: var(--ink); }
+.voices__of { color: color-mix(in oklch, var(--ink) 40%, transparent); font-size: 16px; margin-left: -2px; }
+.voices__track { display: grid; gap: 16px; }
+.voices.is-sliding .voices__track { grid-template-areas: "card"; }
+.voices.is-sliding .voice { grid-area: card; }
+.voices.is-sliding .voice:not(.is-on) { visibility: hidden; }
+.voice {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+  min-height: 357px; padding: 40px;
+  border-radius: 20px; border: 1px solid var(--rule); background: var(--paper);
+}
+.voice blockquote { font: 400 clamp(1.4rem, 2.4vw, 2rem)/1.35 var(--display); letter-spacing: -0.02em; color: var(--ink); text-wrap: pretty; }
+.voice figcaption { display: grid; gap: 2px; }
+.voice__who { font-size: 18px; color: var(--ink); }
+.voice__role { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 16px; }
+@media (max-width: 56rem) { .voices { grid-template-columns: minmax(0, 1fr); } .voice { min-height: 0; padding: 28px; } }
 
 /* Team: a card to a person. */
 .staff { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
