@@ -135,12 +135,19 @@ class BlogBuildTest extends TestCase
         $this->assertFileDoesNotExist($this->site.'/blog/feed.xml');
     }
 
-    public function test_a_theme_without_blog_views_gets_the_plain_blog_in_its_own_layout(): void
+    public function test_each_theme_draws_its_own_blog(): void
     {
         Post::create(['title' => 'A note', 'slug' => 'a-note', 'status' => 'published', 'published_at' => now()->subDay(), 'body' => '<p>Hello.</p>']);
 
-        // Crystal has no blog views, so it gets the plain blog inside its own
-        // layout, never another theme's.
+        // Shopfront ships blog views of its own.
+        config(['site.theme' => 'shopfront']);
+        app(SiteBuilder::class)->build();
+        $this->assertStringContainsString('class="post post--story"', $this->read('blog/index.html'));
+        $this->assertStringContainsString('class="block read"', $this->read('blog/a-note/index.html'));
+        $this->assertStringContainsString('/themes/shopfront/', $this->read('blog/a-note/index.html'));
+
+        // Crystal has none, so it gets the plain blog inside its own layout,
+        // never Shopfront's.
         config(['site.theme' => 'crystal']);
         app(SiteBuilder::class)->build();
         $post = $this->read('blog/a-note/index.html');
