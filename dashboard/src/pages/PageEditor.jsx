@@ -96,9 +96,9 @@ export default function PageEditor() {
   const [device, setDevice] = useState(() => window.innerWidth < 768 ? 'mobile' : 'desktop');
   const [publishing, setPublishing] = useState(false);
   const [previewRevision, setPreviewRevision] = useState(() => Date.now());
-  // Which page the answer below is for, and the markup to show when that
-  // page has no built file (null when it has one).
-  const [preview, setPreview] = useState({ id: null, html: null });
+  // Which page the render below is for, and its markup, or that it could not
+  // be fetched.
+  const [preview, setPreview] = useState({ id: null, html: null, failed: false });
   const [imageEdit, setImageEdit] = useState(null);
   const [editablePages, setEditablePages] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -107,22 +107,23 @@ export default function PageEditor() {
   // Every page is edited on the page itself, as the CMS renders it for the
   // editor. That render carries the field markers that say exactly which
   // element shows which field, and it exists for drafts and scheduled pages,
-  // which have no built page. Only if it cannot be fetched does the editor
-  // fall back to the built page, and to finding fields by their text.
+  // which have no built page.
   const previewId = page?.id;
-  const previewPath = !page ? null
-    : page.is_homepage ? '/' : `/${String(page.path || page.slug || '').replace(/^\/+|\/+$/g, '')}/`;
   // The section shape the preview was last rendered from.
   const renderedShape = useRef('');
   useEffect(() => {
-    if (!previewId || !previewPath) return undefined;
+    if (!previewId) return undefined;
     let current = true;
     pageAPI.preview(previewId)
       .then((res) => res.data)
       .catch(() => null)
-      .then((html) => { if (current) setPreview({ id: previewId, html: typeof html === 'string' ? html : null }); });
+      .then((html) => {
+        if (!current) return;
+        const ok = typeof html === 'string' && html !== '';
+        setPreview({ id: previewId, html: ok ? html : null, failed: !ok });
+      });
     return () => { current = false; };
-  }, [previewId, previewPath, previewRevision]);
+  }, [previewId, previewRevision]);
 
   // ── Load ────────────────────────────────────────────────
   useEffect(() => {
@@ -465,8 +466,13 @@ export default function PageEditor() {
               ) : preview.id !== page.id
                 // Still fetching this page's render.
                 ? <div className="flex h-full min-h-64 items-center justify-center"><Spinner /></div>
-                : <SitePreview
-                    path={previewPath}
+                : preview.failed ? (
+                  <div role="alert" className="flex h-full min-h-64 flex-col items-center justify-center gap-3 p-8 text-center">
+                    <p className="font-medium text-[var(--color-ink)]">The page could not be shown.</p>
+                    <p className="max-w-sm text-sm text-[var(--color-muted)]">Your changes are safe. The panel still edits everything on the page.</p>
+                    <Button variant="secondary" onClick={() => setPreviewRevision(Date.now())}>Try again</Button>
+                  </div>
+                ) : <SitePreview
                     revision={previewRevision}
                     html={preview.html}
                     mobile={device === 'mobile'}

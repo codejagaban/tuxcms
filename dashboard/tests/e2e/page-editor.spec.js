@@ -30,24 +30,27 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
 // up, so the editor must tell them apart by section, not by their words.
 const twinRecord = () => ({
   ...pageRecord(3, 'Twins', 'twins'),
-  marked: true,
+  twins: true,
   sections: [31, 32].map((id, order) => ({
     id, key: `text-${order}`, type: 'text', title: 'Same heading', content: '', data: {}, order, is_visible: true,
   })),
 });
 
-// The page as the editor's preview endpoint renders it. Marked pages carry
-// field markers, as a marked-up theme does; the rest are found by their text.
-// The marked page shows its sections in the opposite order to the list, so
-// matching by text would pair each heading with the wrong section.
+// The page as the editor's preview endpoint renders it, with field markers
+// as a marked-up theme writes them. The twins page shows its sections in the
+// opposite order to the list, so anything pairing headings by their words
+// would pair each with the wrong section.
 const previewBody = (record) => {
-  if (record.marked) {
+  if (record.twins) {
     return `<!doctype html><html data-tuxcms-preview><head></head><body><main>${[...record.sections].reverse()
       .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2></section>`)
       .join('')}</main></body></html>`;
   }
+  // The heading is split a letter at a time, as an animated theme leaves it,
+  // with the hidden copy for screen readers beside it.
   const section = record.sections[0];
-  return `<!doctype html><html><head></head><body><nav><a href="/">Home</a><a href="/about/">About</a></nav><main><h1><span class="visually-hidden">${section.title}</span><span data-splitting="chars" aria-hidden="true"><span>${section.title}</span></span></h1><p>${section.content}</p><img src="${section.data.image}" alt="${section.data.image_alt}"></main></body></html>`;
+  const id = section.id;
+  return `<!doctype html><html data-tuxcms-preview><head></head><body><nav><a href="/">Home</a><a href="/about/">About</a></nav><main><section data-tuxcms-section="${id}"><h1><span class="visually-hidden">${section.title}</span><span data-splitting="chars" aria-hidden="true" data-tuxcms-field="${id}:title">${[...section.title].map((letter) => `<span class="char">${letter}</span>`).join('')}</span></h1><p data-tuxcms-field="${id}:content">${section.content}</p><img src="${section.data.image}" alt="${section.data.image_alt}" data-tuxcms-image="${id}:data.image"></section></main></body></html>`;
 };
 
 async function mockEditor(page) {
@@ -110,13 +113,6 @@ async function mockEditor(page) {
     return route.fulfill({ status: 404, json: { message: 'Unhandled test request' } });
   });
 
-  await page.route(/\/(?:about\/)?\?tuxcms_preview=/, async (route) => {
-    // The built page, which the editor falls back to if the preview
-    // endpoint cannot be reached.
-    const isAbout = new URL(route.request().url()).pathname.startsWith('/about');
-    await route.fulfill({ contentType: 'text/html', body: previewBody(records[isAbout ? 2 : 1]) });
-  });
-
   return { records, saves };
 }
 
@@ -127,7 +123,7 @@ test('inline heading remains single and editable after publishing', async ({ pag
   const preview = page.frameLocator('iframe[title="Website preview"]');
   const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
   await expect(heading).toHaveText('Home heading');
-  await expect(heading).toHaveAttribute('contenteditable', 'true');
+  await expect(heading).toHaveAttribute('contenteditable', /^(plaintext-only|true)$/);
 
   await heading.fill('Edited heading');
   await heading.press('Tab');
@@ -136,7 +132,7 @@ test('inline heading remains single and editable after publishing', async ({ pag
 
   await expect.poll(() => saves.at(-1)?.sections[0].title).toBe('Edited heading');
   await expect(heading).toHaveText('Edited heading');
-  await expect(heading).toHaveAttribute('contenteditable', 'true');
+  await expect(heading).toHaveAttribute('contenteditable', /^(plaintext-only|true)$/);
 
   await heading.fill('Edited again');
   await heading.press('Tab');
@@ -256,14 +252,32 @@ test('marked fields with the same text are edited in their own section', async (
     .toEqual(['Same heading', 'Second heading']);
 });
 
-test('the preview falls back to the built page when it cannot be rendered', async ({ page }) => {
+test('a preview that cannot be rendered offers to try again', async ({ page }) => {
   await mockEditor(page);
-  await page.route('**/api/v1/pages/1/preview', (route) => route.fulfill({ status: 500, body: 'Render failed' }));
+  // Fails once, then works.
+  let failures = 1;
+  await page.route('**/api/v1/pages/1/preview', (route) => (failures-- > 0
+    ? route.fulfill({ status: 500, body: 'Render failed' })
+    : route.fallback()));
   await page.goto('/dashboard/pages/1/edit');
 
+  await expect(page.getByRole('alert')).toContainText('The page could not be shown.');
+  await page.getByRole('button', { name: 'Try again' }).click();
+
   const preview = page.frameLocator('iframe[title="Website preview"]');
-  const heading = preview.locator('h1 [data-tuxcms-editable], h1[data-tuxcms-editable]').first();
-  await expect(heading).toHaveText('Home heading');
+  await expect(preview.locator('[data-tuxcms-field="10:title"]')).toHaveText('Home heading');
+  await expect(preview.locator('[data-tuxcms-field="10:title"]')).toHaveAttribute('data-tuxcms-editable', 'true');
+});
+
+test('an element without a marker is not edited', async ({ page }) => {
+  await mockEditor(page);
+  await page.goto('/dashboard/pages/1/edit');
+
+  // The menu shows a page title, but it is not one of this page's fields.
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  await expect(preview.locator('[data-tuxcms-field="10:title"]')).toHaveAttribute('data-tuxcms-editable', 'true');
+  await expect(preview.locator('nav a').first()).not.toHaveAttribute('data-tuxcms-editable', 'true');
+  await expect(preview.locator('[data-tuxcms-editable]')).toHaveCount(2);
 });
 
 test('an inline edit made after an autosave is kept', async ({ page }) => {
