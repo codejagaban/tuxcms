@@ -5,11 +5,14 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { Skeleton, FormSkeleton } from '../../components/ui/Skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { settingsAPI } from '../../lib/api';
+import { enquiryAPI, settingsAPI } from '../../lib/api';
 
 const Settings = () => {
   // The footer link lists this site's settings hold.
   const [directories, setDirectories] = useState([]);
+  // The kinds of enquiry this site's forms send, each of which can be
+  // emailed to an address of its own.
+  const [enquiryKinds, setEnquiryKinds] = useState([]);
   const [settings, setSettings] = useState({
     site_name: '',
     site_description: '',
@@ -39,9 +42,6 @@ const Settings = () => {
     terms_url: '',
     cookie_url: '',
     enquiry_email: '',
-    enquiry_email_contact: '',
-    enquiry_email_staff_request: '',
-    enquiry_email_registration: '',
     contact_phone_2: '',
     whatsapp_number: '',
     whatsapp_message: '',
@@ -64,8 +64,13 @@ const Settings = () => {
   const fetchSettings = async () => {
     try {
       setIsLoading(true);
-      const response = await settingsAPI.get();
+      const [response, kindsResponse] = await Promise.all([
+        settingsAPI.get(),
+        enquiryAPI.kinds().catch(() => ({ data: { data: [] } })),
+      ]);
       const data = response.data.data || {};
+      const kinds = kindsResponse.data.data || [];
+      setEnquiryKinds(kinds);
 
       setDirectories(directoryKeys(data));
       setSettings({
@@ -99,9 +104,7 @@ const Settings = () => {
         terms_url: data.terms_url || '',
         cookie_url: data.cookie_url || '',
         enquiry_email: data.enquiry_email || '',
-        enquiry_email_contact: data.enquiry_email_contact || '',
-        enquiry_email_staff_request: data.enquiry_email_staff_request || '',
-        enquiry_email_registration: data.enquiry_email_registration || '',
+        ...Object.fromEntries(kinds.map((kind) => [kind.setting, data[kind.setting] || ''])),
         contact_phone_2: data.contact_phone_2 || '',
         whatsapp_number: data.whatsapp_number || '',
         whatsapp_message: data.whatsapp_message || '',
@@ -254,9 +257,7 @@ const Settings = () => {
           { key: 'contact_email', label: 'Contact Email', placeholder: 'contact@example.com', type: 'email' },
           { key: 'hide_contact_email', label: 'Hide contact email on the website', placeholder: 'Type 1 to hide it, leave blank to show it' },
           { key: 'enquiry_email', label: 'Send website enquiries to', placeholder: 'Defaults to the contact email', type: 'email' },
-          { key: 'enquiry_email_contact', label: 'Contact form goes to', placeholder: 'Defaults to the enquiries address', type: 'email' },
-          { key: 'enquiry_email_staff_request', label: 'Staff requests go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
-          { key: 'enquiry_email_registration', label: 'Job applications go to', placeholder: 'Defaults to the enquiries address', type: 'email' },
+          ...enquiryKinds.map((kind) => ({ key: kind.setting, label: `${kind.plural} go to`, placeholder: 'Defaults to the enquiries address', type: 'email' })),
           { key: 'contact_phone', label: 'Contact Phone', placeholder: '+44 20 7946 0000' },
           { key: 'contact_phone_2', label: 'Second Phone', placeholder: 'Optional' },
           {
@@ -271,7 +272,7 @@ const Settings = () => {
         ]}
         settings={settings}
         onChange={handleInputChange}
-        onSave={() => saveGroup('Contact', ['contact_email', 'hide_contact_email', 'enquiry_email', 'enquiry_email_contact', 'enquiry_email_staff_request', 'enquiry_email_registration', 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number', 'whatsapp_number', 'whatsapp_message'])}
+        onSave={() => saveGroup('Contact', ['contact_email', 'hide_contact_email', 'enquiry_email', ...enquiryKinds.map((kind) => kind.setting), 'contact_phone', 'contact_phone_2', 'contact_address', 'company_number', 'whatsapp_number', 'whatsapp_message'])}
         isSaving={savingGroups.Contact}
       />
 

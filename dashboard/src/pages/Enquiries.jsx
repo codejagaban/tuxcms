@@ -14,11 +14,11 @@ const dateTime = (value) => value
 
 const label = (key) => key.replace(/_/g, ' ').replace(/^./, (letter) => letter.toUpperCase());
 
-const FILTERS = [
+// The tabs: everything, one per kind of form this site has (its theme says
+// which), and whatever the spam filter is holding.
+const filtersFor = (kinds) => [
   { value: '', label: 'All' },
-  { value: 'staff_request', label: 'Staff requests' },
-  { value: 'registration', label: 'Registrations' },
-  { value: 'contact', label: 'Enquiries' },
+  ...kinds.map((kind) => ({ value: kind.value, label: kind.plural })),
   { value: 'held', label: 'Held as spam' },
 ];
 
@@ -67,11 +67,11 @@ export default function Enquiries() {
     <div className="space-y-6">
       <div>
         <h1 className="page-heading">Enquiries</h1>
-        <p className="page-deck">Staff requests, candidate registrations and messages from the website. Everything is kept here, including enquiries whose notification email could not be delivered.</p>
+        <p className="page-deck">Messages sent through the website's forms. Everything is kept here, including enquiries whose notification email could not be delivered.</p>
       </div>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filter enquiries">
-        {FILTERS.map((filter) => (
+        {filtersFor(meta.kinds || []).map((filter) => (
           <button
             key={filter.value}
             type="button"

@@ -103,6 +103,8 @@ export const jobApplicationAPI = {
 
 export const enquiryAPI = {
   list: (params = {}) => api.get('/enquiries', { params }),
+  // The kinds of message this site's forms send, as its theme declares them.
+  kinds: () => api.get('/enquiry-kinds'),
   release: (id) => api.post(`/enquiries/${id}/release`),
 };
 
