@@ -127,13 +127,15 @@ is saved, so the editor asks for that first.
 
 The dashboard asks `GET /api/v1/pages/{page}/preview` for the page as the CMS
 renders it, which works for drafts and scheduled pages too, and shows that in
-an iframe. Only if the request fails does it fall back to the built page.
+an iframe. If the request fails, the editor says so and offers to try again.
 `dashboard/src/components/editor/SitePreview.jsx` prepares it:
 
 - It collapses the theme's split-character heading animation back to one plain
   text node, so a heading does not appear to contain its own text twice.
-- It matches each section field value against the DOM and marks the node
-  `data-tuxcms-editable`, then makes it editable in place.
+- It makes each element carrying a field marker (below) editable in place,
+  saving to exactly the section and field the marker names. An element
+  without a marker is not edited, unless it is a hand-built page's written-in
+  copy, offered as an override.
 - Editable text and images carry a resting dashed outline, firming on hover and
   focus, so what can be edited is visible without hunting for it.
 - Outline colour is judged per element against what is actually behind it. A
@@ -152,9 +154,10 @@ the preview itself, or written into it from the panel.
 
 ### Field markers
 
-Matching text is a guess, and it fails on duplicate strings or on any text a
-template reshapes. Templates can instead say exactly which element shows which
-field, with three Blade directives from `App\Support\Preview`:
+The editor used to find editable text by matching each field's value against
+the page, which failed on duplicate strings and on any text a template
+reshapes. Templates instead say exactly which element shows which field, with
+three Blade directives from `App\Support\Preview`:
 
 ```blade
 <section @tuxsection($section)>
@@ -166,20 +169,18 @@ field, with three Blade directives from `App\Support\Preview`:
 They print `data-tuxcms-field="{section id}:{path}"` and its siblings only
 while `PageController::preview()` renders a page, inside `Preview::during()`.
 The static build never switches them on, so the published site carries none;
-where a marker was, a tag keeps a single space. The editor makes each marked element edit
-exactly the field it names. A section with no markers is still found by
-matching its text.
+where a marker was, a tag keeps a single space. The editor makes each marked
+element edit exactly the field it names, and nothing else is guessed: a field
+a template does not mark is edited from the inspector.
 
 Shopfront marks every field it shows. The one exception is a contact form's
 field labels, which carry an "(optional)" note beside the stored text, so they
 are edited from the inspector.
 
 Crystal's hand-built pages print their section data, with the wording they
-used to have written in as the fallback, and mark it. Text matching is
-switched off on hand-built pages: it used to pair written-in copy with an
-unused copy in the section data, so an edit saved but never reached the
-published page. Copy that has no section data at all is still edited through
-overrides, which are kept by position on the page.
+used to have written in as the fallback, and mark it. Copy that has no section
+data at all is edited through overrides, which are kept by position on the
+page.
 
 ## SEO
 
@@ -243,10 +244,10 @@ unset.
 
 Shopfront is the bundled theme and the default in `.env.example`. A theme's
 stylesheet lives at `public/themes/<name>/css/site.css` and is minified beside
-itself when the site is built. Because the live preview finds editable text by
-matching each field's value against one element's text, a theme should put
-each field in its own element and each paragraph of a multi-paragraph field in
-its own `<p>`.
+itself when the site is built. A theme marks each element that shows a field
+with `@field`, and each picture with `@image`; an element should hold exactly
+that field's text, and a field written as several paragraphs is marked on the
+element that wraps them.
 
 `php artisan media:import-theme` copies the photographs a theme's pages use
 into the media library once, so editors can reuse them without hunting through
