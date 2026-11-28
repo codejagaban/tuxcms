@@ -181,7 +181,7 @@ ul, ol { padding: 0; list-style: none; }
    Phosphor's duotone weight is. Where it marks something, an icon takes one
    of the dashboard's four marker colours. */
 .glyph { width: 1.25rem; height: 1.25rem; flex: none; }
-.glyph__lit { fill: #cdf57e; }
+.glyph__lit { fill: currentColor; fill-opacity: 0.18; }
 .social { width: 1.2rem; height: 1.2rem; display: block; }
 
 /* ── Actions ───────────────────────────────────────────────
@@ -557,7 +557,7 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
   .card--12 .bit { flex: none; }
 }
 .card__text { display: grid; gap: 0.55rem; justify-items: start; align-content: start; }
-.card__mark { width: 2.4rem; height: 2.4rem; margin-bottom: 0.75rem; }
+.card__mark { width: 2.4rem; height: 2.4rem; margin-bottom: 0.75rem; color: var(--hue, var(--ink)); }
 .card__name { font: 600 clamp(1.35rem, 2vw, 1.65rem)/1.15 var(--display); letter-spacing: -0.03em; }
 .card__what { color: var(--muted); max-width: 46ch; }
 .card__go { margin-top: 0.3rem; }
@@ -629,23 +629,21 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .wall__what { margin-top: 0.45rem; color: var(--muted); max-width: 44ch; }
 .wall .link { margin-top: auto; padding-top: 1rem; }
 
-/* Stats: a row of cards, the first dark with its figure in lime. */
-.tally__head { max-width: 22ch; margin-inline: auto; text-align: center; }
+/* Stats: a row of cards, counted as the dashboard's Overview counts. */
 .tally__list { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 1rem; margin-top: clamp(2.25rem, 5vw, 3.75rem); }
 .tally__list--3 { --cols: 3; }
 .tally__list--4 { --cols: 4; }
 @media (max-width: 60rem) { .tally__list--3, .tally__list--4 { --cols: 2; } }
 @media (max-width: 26rem) { .tally__list { --cols: 1; } }
 .tally__item {
-  display: flex; flex-direction: column-reverse; justify-content: flex-end;
+  display: flex; flex-direction: column; justify-content: flex-start;
   min-height: clamp(9.5rem, 16vw, 13rem); padding: clamp(1.4rem, 2.4vw, 1.9rem);
   border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge);
 }
-.tally__item:first-child { background: #1a1a1c; color: #fff; box-shadow: none; }
-.tally__item:first-child .tally__n { color: #c9f57a; }
-.tally__item:first-child .tally__of { color: oklch(80% 0 0); }
 .tally__n { font: 600 clamp(3.4rem, 6vw, 5.25rem)/0.95 var(--display); letter-spacing: -0.05em; }
-.tally__of { margin-top: auto; padding-top: 1.5rem; color: var(--muted); max-width: 24ch; }
+.tally__of { display: flex; align-items: baseline; gap: 0.55rem; color: var(--ink-2); font-weight: 500; }
+.tally__dot { width: 0.55rem; height: 0.55rem; flex: none; border-radius: 50%; background: var(--hue); transform: translateY(-0.05em); }
+.tally__n { margin-top: auto; padding-top: 1.75rem; }
 
 /* Testimonials: white cards, the words large, the speaker at the foot. */
 .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -717,7 +715,7 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .reach__row--big { grid-column: 1 / -1; }
 @media (max-width: 36rem) { .reach { grid-template-columns: 1fr; } }
 .reach dt { display: flex; align-items: center; gap: 0.5rem; color: var(--muted); font-size: 0.95rem; }
-.reach__glyph { width: 1.35rem; height: 1.35rem; color: var(--ink); }
+.reach__glyph { width: 1.35rem; height: 1.35rem; color: var(--hue, var(--ink)); }
 .reach dd { margin-top: 0.25rem; font-size: clamp(1.1rem, 1.6vw, 1.3rem); overflow-wrap: anywhere; }
 .reach__row--big dd { font: 600 clamp(1.75rem, 3.6vw, 2.9rem)/1.1 var(--display); letter-spacing: -0.04em; }
 .reach a { text-decoration: none; transition: color 0.18s ease; }
@@ -764,6 +762,14 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .role {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem 2rem;
   padding: clamp(1.3rem, 2.6vw, 1.8rem) clamp(1.3rem, 2.6vw, 2rem);
+.place {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.25rem;
+  padding: clamp(1.4rem, 2.6vw, 2rem); border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge);
+}
+.place > div { flex: 1 1 16rem; }
+.place__glyph { width: 2.25rem; height: 2.25rem; color: var(--rose); }
+.place__name { font-weight: 650; font-size: 1.15rem; }
+.place__where { color: var(--muted); }
   border-radius: var(--radius); background: var(--paper); box-shadow: var(--edge);
   text-decoration: none;
   transition: box-shadow 0.18s ease;

@@ -1,8 +1,9 @@
 {{--
-    Shopfront's own icons. One house style throughout: a 24px grid, a 1.6
-    stroke with round ends in the colour of the text, and one filled part in
-    the theme's lime, the same lime as the button chip. That lime part is what
-    makes them this theme's and nobody else's.
+    Shopfront's own icons, drawn in the dashboard's manner. One house style
+    throughout: a 24px grid, a 1.6 stroke with round ends, and one part washed
+    in a tint of the icon's own colour, as Phosphor's duotone weight is. The
+    colour comes from where the icon sits: ink, or one of the dashboard's four
+    marker colours.
 
     The names cover every icon the editor offers for features, plus the ones
     the theme uses itself. An unknown name falls back to the box.
