@@ -19,6 +19,7 @@ import {
   ArrowUpRight as PArrowUpRight,
   Briefcase as PBriefcase,
   CaretDown as PCaretDown,
+  CalendarBlank as PCalendarBlank,
   CaretLeft as PCaretLeft,
   CaretRight as PCaretRight,
   CaretUp as PCaretUp,
@@ -100,6 +101,7 @@ export const ArrowLeft = icon(PArrowLeft);
 export const ArrowUpRight = icon(PArrowUpRight);
 export const Briefcase = icon(PBriefcase);
 export const CaretDown = icon(PCaretDown);
+export const CalendarBlank = icon(PCalendarBlank);
 export const CaretLeft = icon(PCaretLeft);
 export const CaretRight = icon(PCaretRight);
 export const CaretUp = icon(PCaretUp);

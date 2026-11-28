@@ -196,3 +196,31 @@ test('a new post leaves its address and excerpt to the server', async ({ page })
   // The address the server chose is the one shown from then on.
   await expect(page.locator('input[name="slug"]')).toHaveValue('a-brand-new-post-2');
 });
+
+test('the publish date is a day chosen from a calendar', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-28T12:00:00'));
+  await page.goto('/dashboard/blog/7/edit');
+
+  const field = page.getByRole('button', { name: /^Publish date:/ });
+  await expect(field).toHaveAccessibleName('Publish date: not set');
+  await field.click();
+  const calendar = page.getByRole('dialog', { name: 'Publish date' });
+  await expect(calendar.getByText('November 2026')).toBeVisible();
+
+  // The keys move through the month; Enter chooses.
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await expect(calendar).toBeHidden();
+  await expect(field).toHaveAccessibleName(/December 5, 2026|5 December 2026/);
+  await expect(page.getByText('This date is in the future, so the post goes live that day.')).toBeVisible();
+
+  // Clear takes it back to the day it is published.
+  await field.click();
+  await calendar.getByRole('button', { name: 'Clear', exact: true }).click();
+  await expect(field).toHaveAccessibleName('Publish date: not set');
+
+  await field.click();
+  await calendar.getByRole('button', { name: 'Today', exact: true }).click();
+  await page.getByRole('button', { name: 'Save draft' }).click();
+  await expect.poll(() => saved?.published_at).toBe('2026-11-28');
+});

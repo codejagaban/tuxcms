@@ -10,6 +10,8 @@ import RichTextEditor from '../components/editor/RichTextEditor';
 import MediaPicker from '../components/editor/MediaPicker';
 import TagInput from '../components/editor/TagInput';
 import ViewSwitch from '../components/ui/ViewSwitch';
+import DatePicker from '../components/ui/DatePicker';
+import { dayOf, today } from '../lib/days';
 
 const emptyPost = {
   title: '', slug: '', excerpt: '', body: '', cover_image: '', cover_image_alt: '',
@@ -18,21 +20,11 @@ const emptyPost = {
 
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-// The server speaks in exact moments; a date-and-time field speaks in the
-// editor's own clock. These convert between the two.
-const toLocalInput = (iso) => {
-  if (!iso) return '';
-  const date = new Date(iso);
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-const fromLocalInput = (value) => (value ? new Date(value).toISOString() : null);
-
 const fromServer = (post) => ({
   ...emptyPost,
   ...Object.fromEntries(Object.keys(emptyPost).map((key) => [key, post[key] ?? ''])),
   tags: (post.tags || []).map((tag) => tag.name),
-  published_at: toLocalInput(post.published_at),
+  published_at: dayOf(post.published_at),
 });
 
 const fieldLabel = 'text-sm font-medium text-[var(--color-ink-2)]';
@@ -98,7 +90,7 @@ export default function PostEditor() {
     setForm((current) => ({ ...current, title, ...(slugEdited ? {} : { slug: slugify(title) }) }));
   };
 
-  const scheduled = Boolean(form.published_at) && new Date(form.published_at) > new Date();
+  const scheduled = Boolean(form.published_at) && form.published_at > today();
 
   /** Save with the given status. Going live, or changing a live post, rebuilds the site. */
   const save = async (status) => {
@@ -113,7 +105,7 @@ export default function PostEditor() {
       // makes one from the title that no other post has.
       slug: slugEdited ? form.slug : '',
       status,
-      published_at: fromLocalInput(form.published_at),
+      published_at: form.published_at || null,
     };
 
     try {
@@ -152,7 +144,7 @@ export default function PostEditor() {
     postAPI.preview({
       ...form,
       id: isNew ? undefined : Number(id),
-      published_at: fromLocalInput(form.published_at),
+      published_at: form.published_at || null,
     })
       .then((response) => { if (!cancelled) setPreview({ html: response.data, loading: false, failed: false }); })
       .catch(() => { if (!cancelled) setPreview({ html: '', loading: false, failed: true }); });
@@ -273,15 +265,17 @@ export default function PostEditor() {
           <aside className="space-y-4 lg:sticky lg:top-24" aria-label="Post details">
             <section className="work-surface space-y-4 p-5">
               <h2 className="text-base font-semibold">Publishing</h2>
-              <label className="block">
+              <div>
                 <span className={fieldLabel}>Publish date</span>
-                <input type="datetime-local" name="published_at" value={form.published_at} onChange={change} className="field-control mt-1.5" />
+                <div className="mt-1.5">
+                  <DatePicker label="Publish date" value={form.published_at} onChange={(day) => set('published_at', day)} placeholder="When you publish" />
+                </div>
                 <p className={help}>
                   {scheduled
-                    ? 'This date is in the future, so the post goes live then.'
-                    : 'Leave empty to use the moment you publish. Pick a future date to schedule.'}
+                    ? 'This date is in the future, so the post goes live that day.'
+                    : 'Leave empty to use the day you publish. Pick a future date to schedule.'}
                 </p>
-              </label>
+              </div>
               <label className="block">
                 <span className={fieldLabel}>Web address</span>
                 <div className="mt-1.5 flex items-center gap-1.5">
