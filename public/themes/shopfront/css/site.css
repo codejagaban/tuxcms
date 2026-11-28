@@ -509,6 +509,19 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .head { font-size: clamp(2.4rem, 5vw, 4.25rem); }
 .lede { color: var(--muted); max-width: 44ch; font-size: clamp(1.05rem, 1.4vw, 1.2rem); }
 .head + .lede { margin-top: 1rem; }
+/* Text: after "The team behind smarter automation" in the Automation SaaS
+   template. With a photograph, a 520px-tall picture on the left (a quarter
+   of the width) and the heading and words beside it; without, the heading
+   and the words side by side. */
+.story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 56px; align-items: start; }
+.story--pictured { grid-template-columns: minmax(0, 3fr) minmax(0, 4fr) minmax(0, 5fr); align-items: center; }
+.story__photo { position: relative; margin: 0; height: 520px; border-radius: 20px; overflow: hidden; }
+.story__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.story__head { display: grid; gap: 16px; }
+.story__words { color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 18px; line-height: 1.6; }
+@media (max-width: 64rem) { .story--pictured { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } .story--pictured .story__words { grid-column: 2; } .story__photo { grid-row: span 2; } }
+@media (max-width: 46rem) { .story, .story--pictured { grid-template-columns: minmax(0, 1fr); } .story--pictured .story__words { grid-column: auto; } .story__photo { height: 300px; grid-row: auto; } }
+
 /* A section's head: centred above what it introduces. */
 .head--over { margin-bottom: clamp(2rem, 4.5vw, 3.5rem); text-align: center; }
 .row-head {
