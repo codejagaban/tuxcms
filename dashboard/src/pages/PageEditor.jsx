@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Monitor, DeviceMobile, GlobeHemisphereWest, ClockCounterClockwise } from '../lib/icons';
 import toast from 'react-hot-toast';
 import { apiErrorMessage, pageAPI, siteAPI } from '../lib/api';
-import { makeUid, createSection } from '../lib/editorSchema';
+import { makeUid, createSection, setPath } from '../lib/editorSchema';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
@@ -36,25 +36,6 @@ const keepUids = (previous = [], fresh = []) => withUids(fresh).map((section, in
 const shapeOf = (sections = []) => sections
   .map((section) => `${section.id ?? 'new'}:${section.type}:${section.is_visible !== false}`)
   .join('|');
-
-const setNestedValue = (source, path, value) => {
-  const keys = path.split('.');
-  const root = Array.isArray(source) ? [...source] : { ...(source || {}) };
-  let cursor = root;
-
-  keys.forEach((key, index) => {
-    if (index === keys.length - 1) {
-      cursor[key] = value;
-      return;
-    }
-    const next = cursor[key];
-    cursor[key] = Array.isArray(next) ? [...next] : { ...(next || {}) };
-    cursor = cursor[key];
-  });
-
-  return root;
-};
-
 
 export default function PageEditor() {
   const { id } = useParams();
@@ -165,7 +146,7 @@ export default function PageEditor() {
     mutate((p) => ({
       ...p,
       sections: p.sections.map((section) => section._uid === uid
-        ? { ...section, data: setNestedValue(section.data, field.slice(5), value) }
+        ? { ...section, data: setPath(section.data, field.slice(5), value) }
         : section),
     }));
   };

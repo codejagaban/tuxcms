@@ -130,15 +130,23 @@ export const createSection = (type) => {
   return { ...base, _uid: makeUid(), is_visible: true };
 };
 
+// A copy of one level of the path, ready to take `key`. A list stays a list
+// only for a numeric key: the server sends empty data as [], and a named key
+// set on a list would be lost when the page is sent back.
+const copyFor = (value, key) => {
+  if (Array.isArray(value)) return /^\d+$/.test(key) ? [...value] : { ...value };
+  return { ...(value || {}) };
+};
+
 // Read/write a dotted path (e.g. "primary_cta.label") on a plain object,
 // returning a shallow-cloned object so React state updates stay immutable.
 export const setPath = (obj, path, value) => {
   const keys = path.split('.');
-  const next = Array.isArray(obj) ? [...obj] : { ...(obj || {}) };
+  const next = copyFor(obj, keys[0]);
   let cursor = next;
   for (let i = 0; i < keys.length - 1; i++) {
     const k = keys[i];
-    cursor[k] = Array.isArray(cursor[k]) ? [...cursor[k]] : { ...(cursor[k] || {}) };
+    cursor[k] = copyFor(cursor[k], keys[i + 1]);
     cursor = cursor[k];
   }
   cursor[keys[keys.length - 1]] = value;

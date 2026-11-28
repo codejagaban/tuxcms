@@ -31,8 +31,9 @@ const pageRecord = (id, title, slug, isHomepage = false) => ({
 const twinRecord = () => ({
   ...pageRecord(3, 'Twins', 'twins'),
   twins: true,
+  // The second section has no data yet, which the server sends as [].
   sections: [31, 32].map((id, order) => ({
-    id, key: `text-${order}`, type: 'text', title: 'Same heading', content: '', data: {}, order, is_visible: true,
+    id, key: `text-${order}`, type: 'text', title: 'Same heading', content: '', data: order ? [] : {}, order, is_visible: true,
   })),
 });
 
@@ -43,7 +44,7 @@ const twinRecord = () => ({
 const previewBody = (record) => {
   if (record.twins) {
     return `<!doctype html><html data-tuxcms-preview><head></head><body><main>${[...record.sections].reverse()
-      .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2></section>`)
+      .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2><p data-tuxcms-field="${section.id}:data.note">${section.data.note ?? 'A note'}</p></section>`)
       .join('')}</main></body></html>`;
   }
   // The heading is split a letter at a time, as an animated theme leaves it,
@@ -250,6 +251,19 @@ test('marked fields with the same text are edited in their own section', async (
 
   await expect.poll(() => saves.at(-1)?.sections.map((section) => section.title))
     .toEqual(['Same heading', 'Second heading']);
+});
+
+test('a field is saved into a section that had no data', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/3/edit');
+
+  const note = page.frameLocator('iframe[title="Website preview"]').locator('[data-tuxcms-field="32:data.note"]');
+  await note.fill('Written on the page');
+  await note.press('Tab');
+
+  // Sent as JSON, so a named key set on a list would be dropped.
+  await expect.poll(() => saves.at(-1)?.sections.find((section) => section.id === 32)?.data, { timeout: 10000 })
+    .toEqual({ note: 'Written on the page' });
 });
 
 test('a preview that cannot be rendered offers to try again', async ({ page }) => {
