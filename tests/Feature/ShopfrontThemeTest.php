@@ -205,7 +205,10 @@ class ShopfrontThemeTest extends TestCase
         $this->assertTrue(Page::where('published_at', '>', now())->exists());
 
         $used = \App\Models\PageSection::distinct()->pluck('type')->sort()->values()->all();
-        $every = collect(config('tuxcms.pages.section_types'))->sort()->values()->all();
+        // Every built-in type, and every type Shopfront declares itself.
+        $every = collect(config('tuxcms.pages.section_types'))
+            ->merge(array_keys(\App\Support\ThemeManifest::sections('shopfront')))
+            ->sort()->values()->all();
         $this->assertSame($every, $used);
 
         $this->assertSame(7, \App\Models\MediaLibrary::singleton()->getMedia('library')->count());
@@ -217,6 +220,11 @@ class ShopfrontThemeTest extends TestCase
         $home = $this->contents('index.html');
         $this->assertStringContainsString('class="keys"', $home);
         $this->assertStringContainsString('bit--jobs', $home);
+        // The theme's own section types, from its theme.json.
+        $this->assertStringContainsString('data-plans', $home);
+        $this->assertStringContainsString('Studio', $home);
+        $this->assertStringContainsString('orbit__ring', $home);
+        $this->assertStringContainsString('/themes/shopfront/media/logos/laravel.svg', $home);
         $this->assertStringContainsString('Senior product designer', $home);
         $this->assertStringContainsString('room-by-the-windows.jpg', $home);
         $this->assertStringContainsString('room-by-the-windows.jpg', $this->contents('about/index.html'));

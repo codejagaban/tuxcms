@@ -142,6 +142,42 @@ class DemoContentSeeder extends Seeder
                 ],
             ],
             [
+                // The theme's own section types, declared in its theme.json.
+                'key' => 'pricing', 'type' => 'pricing', 'title' => 'Simple pricing for one site',
+                'content' => 'Sample plans for this demo. Every plan is the whole CMS; you pay for how much help you want with it.',
+                'data' => [
+                    'promises' => ['Free 30-day trial', 'Cancel anytime'],
+                    'plans' => [
+                        ['name' => 'Self-hosted', 'summary' => 'For teams with a developer', 'price' => 'Free', 'period' => '', 'description' => 'Run TuxCMS on your own server. Every feature, no limits, and the published site is yours.', 'features' => ['Every section type and theme', 'Careers and the inbox', 'Unlimited pages and editors', 'Community help'], 'cta_label' => 'Read the setup guide', 'url' => '/features/publishing/'],
+                        ['name' => 'Hosted', 'summary' => 'For one business', 'price' => '£29', 'period' => '/month', 'description' => 'We run it, back it up and keep it updated. You only edit and press Publish.', 'features' => ['Everything in Self-hosted', 'Hosting, backups and updates', 'Your own domain with HTTPS', 'Email support within a day'], 'cta_label' => 'Start the free trial', 'url' => '/contact/'],
+                        ['name' => 'Studio', 'summary' => 'For agencies with clients', 'price' => '£99', 'period' => '/month', 'description' => 'Up to ten client sites, each with its own dashboard, and a theme made for each.', 'features' => ['Everything in Hosted, for ten sites', 'A theme built for each client', 'One login across every site', 'A named person to call'], 'cta_label' => 'Talk to us', 'url' => '/contact/'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'integrations', 'type' => 'integrations', 'title' => 'Works with what you already use',
+                'content' => 'Built on Laravel, sending mail through the usual services, and publishing plain files to any host that serves them.',
+                'data' => [
+                    'cta_label' => 'How publishing works',
+                    'url' => '/features/publishing/',
+                    'items' => [
+                        ['name' => 'Laravel', 'logo' => '/themes/shopfront/media/logos/laravel.svg', 'url' => 'https://laravel.com'],
+                        ['name' => 'PHP', 'logo' => '/themes/shopfront/media/logos/php.svg', 'url' => 'https://www.php.net'],
+                        ['name' => 'MySQL', 'logo' => '/themes/shopfront/media/logos/mysql.svg', 'url' => 'https://www.mysql.com'],
+                        ['name' => 'SQLite', 'logo' => '/themes/shopfront/media/logos/sqlite.svg', 'url' => 'https://sqlite.org'],
+                        ['name' => 'Resend', 'logo' => '/themes/shopfront/media/logos/resend.svg', 'url' => 'https://resend.com'],
+                        ['name' => 'Amazon SES', 'logo' => '/themes/shopfront/media/logos/amazonwebservices.svg', 'url' => 'https://aws.amazon.com/ses/'],
+                        ['name' => 'OpenStreetMap', 'logo' => '/themes/shopfront/media/logos/openstreetmap.svg', 'url' => 'https://www.openstreetmap.org'],
+                        ['name' => 'Netlify', 'logo' => '/themes/shopfront/media/logos/netlify.svg', 'url' => 'https://www.netlify.com'],
+                        ['name' => 'Cloudflare Pages', 'logo' => '/themes/shopfront/media/logos/cloudflarepages.svg', 'url' => 'https://pages.cloudflare.com'],
+                        ['name' => 'GitHub Pages', 'logo' => '/themes/shopfront/media/logos/githubpages.svg', 'url' => 'https://pages.github.com'],
+                        ['name' => 'Vercel', 'logo' => '/themes/shopfront/media/logos/vercel.svg', 'url' => 'https://vercel.com'],
+                        ['name' => 'Nginx', 'logo' => '/themes/shopfront/media/logos/nginx.svg', 'url' => 'https://nginx.org'],
+                        ['name' => 'Apache', 'logo' => '/themes/shopfront/media/logos/apache.svg', 'url' => 'https://httpd.apache.org'],
+                    ],
+                ],
+            ],
+            [
                 'key' => 'team', 'type' => 'team', 'title' => 'Who you will talk to',
                 'content' => 'A small team, and the same people answer the support inbox.',
                 'data' => [
