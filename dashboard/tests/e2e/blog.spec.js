@@ -105,3 +105,18 @@ test('the body editor offers code blocks', async ({ page }) => {
   await expect(body.locator('pre code')).toHaveText('npm run build');
   await expect(page.getByRole('button', { name: 'Code block' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('the blog list can be shown as a gallery, and remembers it', async ({ page }) => {
+  await page.goto('/dashboard/blog');
+
+  await page.getByRole('radio', { name: 'Gallery view' }).click();
+  const card = page.getByRole('listitem').filter({ hasText: 'Firing the new kiln' });
+  await expect(card.getByText('/blog/firing-the-new-kiln/')).toBeVisible();
+  await expect(card.getByText('Studio')).toBeVisible();
+  await expect(card.getByText('Draft')).toBeVisible();
+  // No cover: the title stands in for it.
+  await expect(card.getByText('Firing the new kiln')).toHaveCount(2);
+
+  await page.reload();
+  await expect(page.getByRole('radio', { name: 'Gallery view' })).toHaveAttribute('aria-checked', 'true');
+});

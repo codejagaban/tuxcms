@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { IconBlog, PencilSimple, Plus, Trash } from '../lib/icons';
 import { postAPI, postTagAPI, apiErrorMessage } from '../lib/api';
@@ -9,6 +9,8 @@ import { ListSkeleton } from '../components/ui/Skeleton';
 import Modal, { ModalContent, ModalFooter, ModalHeader, ModalTitle } from '../components/ui/Modal';
 import { Card } from '../components/ui/Card';
 import { Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from '../components/ui/Table';
+import ViewSwitch from '../components/ui/ViewSwitch';
+import { useSavedView } from '../lib/useSavedView';
 
 const FILTERS = [
   { value: '', label: 'All' },
@@ -36,6 +38,7 @@ export default function Blog() {
   const [deleting, setDeleting] = useState(null);
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState([]);
+  const [view, chooseView] = useSavedView('tux_blog_view');
 
   const load = useCallback(async () => {
     try {
@@ -118,6 +121,7 @@ export default function Blog() {
           placeholder="Search posts"
           aria-label="Search posts"
         />
+        <ViewSwitch view={view} onChange={chooseView} id="blog-view" />
       </div>
 
       {loading ? <ListSkeleton rows={5} /> : posts.length === 0 ? (
@@ -128,6 +132,36 @@ export default function Blog() {
             {filtered ? 'Try another filter or search.' : 'Write your first post. The blog appears on your website once one is published.'}
           </p>
         </Card>
+      ) : view === 'gallery' ? (
+        <ul className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(17rem,1fr))]">
+          {posts.map((post) => {
+            const state = statusOf(post);
+            const edit = `/dashboard/blog/${post.id}/edit`;
+            return (
+              <li key={post.id} className="work-surface flex flex-col overflow-hidden">
+                <Link to={edit} aria-label={`Edit ${post.title}`} tabIndex={-1} className="block">
+                  <PostThumb post={post} />
+                </Link>
+                <div className="flex flex-1 items-start justify-between gap-3 px-4 py-3">
+                  <div className="flex min-h-full min-w-0 flex-col">
+                    <Link to={edit} className="block truncate font-medium text-[var(--color-ink)] hover:underline">{post.title}</Link>
+                    <div className="font-data mt-0.5 truncate text-xs text-[var(--color-muted)]">{post.path}</div>
+                    <div className="mt-1.5 truncate text-xs text-[var(--color-ink-2)]">
+                      {post.tags?.length ? post.tags.map((item) => item.name).join(', ') : <span className="text-[var(--color-muted)]">No tags</span>}
+                    </div>
+                    <div className="mt-auto flex items-center gap-2.5 pt-2.5">
+                      <Badge variant={state.variant}>{state.label}</Badge>
+                      <span className="truncate text-xs text-[var(--color-muted)]">{state.when}</span>
+                    </div>
+                  </div>
+                  <Button variant="iconDanger" size="icon" aria-label={`Delete ${post.title}`} title="Delete" onClick={() => setDeleting(post)}>
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       ) : (
         <Card>
           <Table>
@@ -188,6 +222,24 @@ export default function Blog() {
           <Button variant="danger" onClick={remove}>Delete post</Button>
         </ModalFooter>
       </Modal>
+    </div>
+  );
+}
+
+/**
+ * A post's picture for the gallery: its cover, or, without one, its title set
+ * large in the same place, so every card in a row keeps the same shape.
+ */
+function PostThumb({ post }) {
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden bg-[var(--color-paper-3)]">
+      {post.cover_image ? (
+        <img src={post.cover_image} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <div className="absolute inset-0 grid place-items-center p-5 text-center">
+          <div className="line-clamp-3 text-xl font-semibold tracking-[-0.03em] text-[var(--color-ink-2)]">{post.title}</div>
+        </div>
+      )}
     </div>
   );
 }
