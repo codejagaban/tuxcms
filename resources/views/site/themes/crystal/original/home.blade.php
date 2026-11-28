@@ -3,6 +3,8 @@
   $about = $cmsSections->get('about');
   $services = $cmsSections->get('services');
   $salon = $cmsSections->get('salon');
+  $cmsTestimonials = $cmsSections->get('testimonials');
+  $cmsContact = $cmsSections->get('contact');
   $decorateHero = static function (string $title): string {
       $escaped = e($title);
       return preg_replace_callback('/crystal/i', static fn ($match) => '<span class="mark-decoration-3-wrap">'.$match[0].'<b class="mark-decoration-3 wow scalexIn" data-wow-delay="1.1s"></b></span>', $escaped);
@@ -477,18 +479,16 @@
               <!-- Section Text -->
               <div class="col-lg-5 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-40">
                 <div class="w-100">
-                  <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                    Testimonials
+                  <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($cmsTestimonials, 'data.eyebrow')>
+                    {{ $cmsTestimonials?->data['eyebrow'] ?? 'Testimonials' }}
                   </h2>
 
-                  <h3 class="section-title-small mb-30">
-                    Trusted by Homes and Businesses Across the UK
+                  <h3 class="section-title-small mb-30" @field($cmsTestimonials, 'title')>
+                    {{ $cmsTestimonials?->title ?? 'Trusted by Homes and Businesses Across the UK' }}
                   </h3>
 
-                  <p class="section-descr mb-30">
-                    Hear directly from the individuals and businesses who have
-                    experienced the Crystal Service difference—exceptional
-                    cleaning results, professional teams, and reliable service.
+                  <p class="section-descr mb-30" @field($cmsTestimonials, 'content')>
+                    {{ $cmsTestimonials?->content ?? 'Hear directly from the individuals and businesses who have experienced the Crystal Service difference—exceptional cleaning results, professional teams, and reliable service.' }}
                   </p>
 
                   <!-- Numbers -->
@@ -528,17 +528,13 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            We’ve been using Crystal Service Limited for our
-                            office cleaning, and their attention to detail is
-                            outstanding. The team is always punctual, and the
-                            place looks spotless after every visit. Highly
-                            recommend!
+                          <p class="mb-0" @field($cmsTestimonials, 'data.items.0.quote')>
+                            {{ $cmsTestimonials?->data['items'][0]['quote'] ?? 'We’ve been using Crystal Service Limited for our office cleaning, and their attention to detail is outstanding. The team is always punctual, and the place looks spotless after every visit. Highly recommend!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
-                              John M.
-                              <div class="small">Commercial Client</div>
+                              {{ $cmsTestimonials?->data['items'][0]['author'] ?? 'John M.' }}
+                              <div class="small" @field($cmsTestimonials, 'data.items.0.role')>{{ $cmsTestimonials?->data['items'][0]['role'] ?? 'Commercial Client' }}</div>
                             </div>
                           </footer>
                         </blockquote>
@@ -553,16 +549,13 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            I needed an end-of-tenancy clean, and Crystal
-                            Services came to the rescue. They were professional,
-                            worked quickly, and left the place looking brand
-                            new. Got my deposit back without a hitch!
+                          <p class="mb-0" @field($cmsTestimonials, 'data.items.1.quote')>
+                            {{ $cmsTestimonials?->data['items'][1]['quote'] ?? 'I needed an end-of-tenancy clean, and Crystal Services came to the rescue. They were professional, worked quickly, and left the place looking brand new. Got my deposit back without a hitch!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
-                              Sarah P
-                              <div class="small">Tenant</div>
+                              {{ $cmsTestimonials?->data['items'][1]['author'] ?? 'Sarah P' }}
+                              <div class="small" @field($cmsTestimonials, 'data.items.1.role')>{{ $cmsTestimonials?->data['items'][1]['role'] ?? 'Tenant' }}</div>
                             </div>
                           </footer>
                         </blockquote>
@@ -577,16 +570,13 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            The deep cleaning service was a game-changer for our
-                            home. The team was friendly, efficient, and left
-                            every corner of our house looking spotless. We now
-                            use them regularly for our domestic cleaning.
+                          <p class="mb-0" @field($cmsTestimonials, 'data.items.2.quote')>
+                            {{ $cmsTestimonials?->data['items'][2]['quote'] ?? 'The deep cleaning service was a game-changer for our home. The team was friendly, efficient, and left every corner of our house looking spotless. We now use them regularly for our domestic cleaning.' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
-                              Emily R.
-                              <div class="small">Homeowner</div>
+                              {{ $cmsTestimonials?->data['items'][2]['author'] ?? 'Emily R.' }}
+                              <div class="small" @field($cmsTestimonials, 'data.items.2.role')>{{ $cmsTestimonials?->data['items'][2]['role'] ?? 'Homeowner' }}</div>
                             </div>
                           </footer>
                         </blockquote>
@@ -601,16 +591,13 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            As an Airbnb host, cleanliness is a top priority for
-                            me. Crystal Service Limited provides timely and
-                            thorough cleans between guests, which has improved
-                            my guest reviews significantly. Highly reliable!
+                          <p class="mb-0" @field($cmsTestimonials, 'data.items.3.quote')>
+                            {{ $cmsTestimonials?->data['items'][3]['quote'] ?? 'As an Airbnb host, cleanliness is a top priority for me. Crystal Service Limited provides timely and thorough cleans between guests, which has improved my guest reviews significantly. Highly reliable!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
-                              David A.
-                              <div class="small">Airbnb Host</div>
+                              {{ $cmsTestimonials?->data['items'][3]['author'] ?? 'David A.' }}
+                              <div class="small" @field($cmsTestimonials, 'data.items.3.role')>{{ $cmsTestimonials?->data['items'][3]['role'] ?? 'Airbnb Host' }}</div>
                             </div>
                           </footer>
                         </blockquote>
@@ -773,17 +760,16 @@
           <div class="container">
             <div class="row mb-50 mb-sm-30">
               <div class="col-md-8 offset-md-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Let Us Handle the Dirty Work
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($cmsContact, 'data.eyebrow')>
+                  {{ $cmsContact?->data['eyebrow'] ?? 'Let Us Handle the Dirty Work' }}
                 </h2>
-                <h3 class="section-title mb-0">
-                  Book us today for a professional cleaning and enjoy a spotless
-                  space. Fast, and reliable service tailored to your needs.
+                <h3 class="section-title mb-0" @field($cmsContact, 'title')>
+                  {{ $cmsContact?->title ?? 'Book us today for a professional cleaning and enjoy a spotless space. Fast, and reliable service tailored to your needs.' }}
                 </h3>
                 <div class="mt-10">
                   <a href="/contact/"
                     class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mt-40 mb-xs-10">
-                    <span>Book a cleaning session</span>
+                    <span @field($cmsContact, 'data.primary_cta.label')>{{ $cmsContact?->data['primary_cta']['label'] ?? 'Book a cleaning session' }}</span>
                   </a>
                 </div>
               </div>

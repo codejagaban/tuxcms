@@ -1,3 +1,4 @@
+@php($cmsBook = $cmsSections->get('book'))
 @php($hero = $cmsSections->get('hero'))
 @php($salonServices = $cmsSections->get('salon-services'))
 <!DOCTYPE html>
@@ -304,14 +305,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Braiding</h4>
-                        <p class="services-5-text mb-0">
-                          From box braids and cornrows to knotless and feed-in styles, our braiding is done with care and precision. We keep tension gentle on your scalp so every braid is neat, comfortable and protective — a style that lasts for weeks while keeping your natural hair healthy underneath.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.0.title')>{{ $salonServices?->data['items'][0]['title'] ?? 'Braiding' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.0.description')>
+                          {{ $salonServices?->data['items'][0]['description'] ?? 'From box braids and cornrows to knotless and feed-in styles, our braiding is done with care and precision. We keep tension gentle on your scalp so every braid is neat, comfortable and protective — a style that lasts for weeks while keeping your natural hair healthy underneath.' }}
                         </p>
                         <a
                           href="/contact/?service=Braiding#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.0.link_label')>{{ $salonServices?->data['items'][0]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -336,14 +337,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Sew-in</h4>
-                        <p class="services-5-text mb-0">
-                          Our sew-in weaves are professionally installed on a secure braided foundation for a flawless, natural-looking finish. Whether you want extra length, fuller volume or a whole new look, we blend the weave seamlessly with your own hair and make sure it sits comfortably from day one.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.1.title')>{{ $salonServices?->data['items'][1]['title'] ?? 'Sew-in' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.1.description')>
+                          {{ $salonServices?->data['items'][1]['description'] ?? 'Our sew-in weaves are professionally installed on a secure braided foundation for a flawless, natural-looking finish. Whether you want extra length, fuller volume or a whole new look, we blend the weave seamlessly with your own hair and make sure it sits comfortably from day one.' }}
                         </p>
                         <a
                           href="/contact/?service=Sew-in#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.1.link_label')>{{ $salonServices?->data['items'][1]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -368,14 +369,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Dreadlocks</h4>
-                        <p class="services-5-text mb-0">
-                          Starting your loc journey or maintaining mature locs? We offer starter locs, root maintenance and styling, all done with healthy hair practices. We help you choose the right size and pattern for your hair type, and keep your locs clean, strong and well-shaped as they grow.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.2.title')>{{ $salonServices?->data['items'][2]['title'] ?? 'Dreadlocks' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.2.description')>
+                          {{ $salonServices?->data['items'][2]['description'] ?? 'Starting your loc journey or maintaining mature locs? We offer starter locs, root maintenance and styling, all done with healthy hair practices. We help you choose the right size and pattern for your hair type, and keep your locs clean, strong and well-shaped as they grow.' }}
                         </p>
                         <a
                           href="/contact/?service=Dreadlocks#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.2.link_label')>{{ $salonServices?->data['items'][2]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -400,14 +401,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Re-locking</h4>
-                        <p class="services-5-text mb-0">
-                          Regular retwisting keeps your locs looking sharp. We carefully re-lock the new growth at your roots so every loc stays neat and uniform, without over-twisting — protecting your edges and encouraging strong, healthy growth between appointments.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.3.title')>{{ $salonServices?->data['items'][3]['title'] ?? 'Re-locking' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.3.description')>
+                          {{ $salonServices?->data['items'][3]['description'] ?? 'Regular retwisting keeps your locs looking sharp. We carefully re-lock the new growth at your roots so every loc stays neat and uniform, without over-twisting — protecting your edges and encouraging strong, healthy growth between appointments.' }}
                         </p>
                         <a
                           href="/contact/?service=Re-locking#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.3.link_label')>{{ $salonServices?->data['items'][3]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -432,14 +433,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Relaxing</h4>
-                        <p class="services-5-text mb-0">
-                          Our relaxer treatments are applied with care to smooth and soften your natural texture while keeping your hair healthy. We assess your hair first, choose the right strength for you, and finish with a deep condition, leaving your hair silky, manageable and full of movement.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.4.title')>{{ $salonServices?->data['items'][4]['title'] ?? 'Relaxing' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.4.description')>
+                          {{ $salonServices?->data['items'][4]['description'] ?? 'Our relaxer treatments are applied with care to smooth and soften your natural texture while keeping your hair healthy. We assess your hair first, choose the right strength for you, and finish with a deep condition, leaving your hair silky, manageable and full of movement.' }}
                         </p>
                         <a
                           href="/contact/?service=Relaxing#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.4.link_label')>{{ $salonServices?->data['items'][4]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -464,14 +465,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Washing &amp; setting</h4>
-                        <p class="services-5-text mb-0">
-                          A thorough cleanse, deep condition and professional set, tailored to your hair. Whether you prefer rollers, a sleek blow-dry or a bouncy curled finish, you leave with fresh, healthy-looking hair that holds its shape for days.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.5.title')>{{ $salonServices?->data['items'][5]['title'] ?? 'Washing & setting' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.5.description')>
+                          {{ $salonServices?->data['items'][5]['description'] ?? 'A thorough cleanse, deep condition and professional set, tailored to your hair. Whether you prefer rollers, a sleek blow-dry or a bouncy curled finish, you leave with fresh, healthy-looking hair that holds its shape for days.' }}
                         </p>
                         <a
                           href="/contact/?service=Washing%20%26%20setting#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.5.link_label')>{{ $salonServices?->data['items'][5]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -496,14 +497,14 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Natural weaving</h4>
-                        <p class="services-5-text mb-0">
-                          Our natural weaving blends quality extensions with your own hair for a look that is full, flowing and completely believable. We match texture and colour carefully and install with a technique that protects your natural hair, so you get a beautiful style without the damage.
+                        <h4 class="services-5-title" @field($salonServices, 'data.items.6.title')>{{ $salonServices?->data['items'][6]['title'] ?? 'Natural weaving' }}</h4>
+                        <p class="services-5-text mb-0" @field($salonServices, 'data.items.6.description')>
+                          {{ $salonServices?->data['items'][6]['description'] ?? 'Our natural weaving blends quality extensions with your own hair for a look that is full, flowing and completely believable. We match texture and colour carefully and install with a technique that protects your natural hair, so you get a beautiful style without the damage.' }}
                         </p>
                         <a
                           href="/contact/?service=Natural%20weaving#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
-                          ><span>Book this style</span></a
+                          ><span @field($salonServices, 'data.items.6.link_label')>{{ $salonServices?->data['items'][6]['link_label'] ?? 'Book this style' }}</span></a
                         >
                       </div>
                     </div>
@@ -551,7 +552,7 @@
                   <a
                     href="/contact/"
                     class="btn btn-mod btn-w btn-large btn-round mb-xs-10"
-                    >Book an appointment</a
+                     @field($cmsBook, 'data.primary_cta.label')>{{ $cmsBook?->data['primary_cta']['label'] ?? 'Book an appointment' }}</a
                   >
                 </div>
               </div>

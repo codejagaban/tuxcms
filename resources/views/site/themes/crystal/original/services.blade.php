@@ -301,21 +301,15 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Commercial Cleaning</h4>
-                        <p class="services-5-text mb-0">
-                          We understand the importance of a clean and organized
-                          workspace for productivity and employee well-being.
-                          Our commercial cleaning service caters to offices,
-                          retail spaces, and other commercial properties. We
-                          work around your schedule to ensure minimal
-                          disruption, providing daily, weekly, or one-time deep
-                          cleans.
+                        <h4 class="services-5-title" @field($services, 'data.items.0.title')>{{ $services?->data['items'][0]['title'] ?? 'Commercial Cleaning' }}</h4>
+                        <p class="services-5-text mb-0" @field($services, 'data.items.0.description')>
+                          {{ $services?->data['items'][0]['description'] ?? 'We understand the importance of a clean and organized workspace for productivity and employee well-being. Our commercial cleaning service caters to offices, retail spaces, and other commercial properties. We work around your schedule to ensure minimal disruption, providing daily, weekly, or one-time deep cleans.' }}
                         </p>
                         <a
                           href="/contact/?service=Commercial%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.0.link_label')>{{ $services?->data['items'][0]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>
@@ -340,19 +334,15 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Upholstery Cleaning</h4>
-                        <p class="services-5-text mb-0">
-                          Our upholstery cleaning service uses advanced
-                          techniques to remove stains, dirt, and allergens from
-                          your furniture, leaving it looking fresh and extending
-                          its lifespan. Whether it’s fabric or leather, our team
-                          carefully handles each piece to maintain its quality.
+                        <h4 class="services-5-title" @field($services, 'data.items.1.title')>{{ $services?->data['items'][1]['title'] ?? 'Upholstery Cleaning' }}</h4>
+                        <p class="services-5-text mb-0" @field($services, 'data.items.1.description')>
+                          {{ $services?->data['items'][1]['description'] ?? 'Our upholstery cleaning service uses advanced techniques to remove stains, dirt, and allergens from your furniture, leaving it looking fresh and extending its lifespan. Whether it’s fabric or leather, our team carefully handles each piece to maintain its quality.' }}
                         </p>
                         <a
                           href="/contact/?service=Carpet%20%26%20Upholstery%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.1.link_label')>{{ $services?->data['items'][1]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>
@@ -377,22 +367,17 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">
-                          End-of-Tenancy Cleaning
+                        <h4 class="services-5-title" @field($services, 'data.items.2.title')>
+                          {{ $services?->data['items'][2]['title'] ?? 'End-of-Tenancy Cleaning' }}
                         </h4>
-                        <p class="services-5-text mb-0">
-                          Moving out? Our end-of-tenancy cleaning service is
-                          designed to help tenants leave their property in
-                          pristine condition, ensuring the return of their
-                          security deposit. We clean every corner of the
-                          property, including carpets, bathrooms, kitchens, and
-                          windows, to meet landlord or agent expectations.
+                        <p class="services-5-text mb-0" @field($services, 'data.items.2.description')>
+                          {{ $services?->data['items'][2]['description'] ?? 'Moving out? Our end-of-tenancy cleaning service is designed to help tenants leave their property in pristine condition, ensuring the return of their security deposit. We clean every corner of the property, including carpets, bathrooms, kitchens, and windows, to meet landlord or agent expectations.' }}
                         </p>
                         <a
                           href="/contact/?service=End-of-Tenancy%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.2.link_label')>{{ $services?->data['items'][2]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>
@@ -417,19 +402,15 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Airbnb Cleaning</h4>
-                        <p class="services-5-text mb-0">
-                          Make a lasting impression on your guests with our
-                          specialized Airbnb cleaning service. We provide quick
-                          and thorough cleans between guest stays, ensuring your
-                          property is always guest-ready with fresh linens,
-                          clean bathrooms, and a spotless living area.
+                        <h4 class="services-5-title" @field($services, 'data.items.3.title')>{{ $services?->data['items'][3]['title'] ?? 'Airbnb Cleaning' }}</h4>
+                        <p class="services-5-text mb-0" @field($services, 'data.items.3.description')>
+                          {{ $services?->data['items'][3]['description'] ?? 'Make a lasting impression on your guests with our specialized Airbnb cleaning service. We provide quick and thorough cleans between guest stays, ensuring your property is always guest-ready with fresh linens, clean bathrooms, and a spotless living area.' }}
                         </p>
                         <a
                           href="/contact/?service=Airbnb%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.3.link_label')>{{ $services?->data['items'][3]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>
@@ -453,20 +434,15 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Deep Cleaning</h4>
-                        <p class="services-5-text mb-0">
-                          Our deep cleaning service is perfect for homes or
-                          offices that need more than just a surface clean. We
-                          tackle those hard-to-reach areas, scrubbing floors,
-                          disinfecting surfaces, and removing built-up grime
-                          from kitchens, bathrooms, and other high-traffic
-                          spaces.
+                        <h4 class="services-5-title" @field($services, 'data.items.4.title')>{{ $services?->data['items'][4]['title'] ?? 'Deep Cleaning' }}</h4>
+                        <p class="services-5-text mb-0" @field($services, 'data.items.4.description')>
+                          {{ $services?->data['items'][4]['description'] ?? 'Our deep cleaning service is perfect for homes or offices that need more than just a surface clean. We tackle those hard-to-reach areas, scrubbing floors, disinfecting surfaces, and removing built-up grime from kitchens, bathrooms, and other high-traffic spaces.' }}
                         </p>
                         <a
                           href="/contact/?service=Deep%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.4.link_label')>{{ $services?->data['items'][4]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>
@@ -490,22 +466,17 @@
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">
-                          After Builders Cleaning
+                        <h4 class="services-5-title" @field($services, 'data.items.5.title')>
+                          {{ $services?->data['items'][5]['title'] ?? 'After Builders Cleaning' }}
                         </h4>
-                        <p class="services-5-text mb-0">
-                          Renovations can leave a mess behind. Our
-                          after-builders cleaning service ensures that your
-                          property is spotless once construction or renovations
-                          are completed. We remove dust, debris, and other
-                          post-construction residues, leaving your space ready
-                          for use.
+                        <p class="services-5-text mb-0" @field($services, 'data.items.5.description')>
+                          {{ $services?->data['items'][5]['description'] ?? 'Renovations can leave a mess behind. Our after-builders cleaning service ensures that your property is spotless once construction or renovations are completed. We remove dust, debris, and other post-construction residues, leaving your space ready for use.' }}
                         </p>
                         <a
                           href="/contact/?service=After%20Builders%20Cleaning#contact_form"
                           class="btn btn-mod btn-color btn-small btn-round btn-hover-anim me-1 mt-10 mb-xs-10"
                         >
-                          <span>Book this service</span>
+                          <span @field($services, 'data.items.5.link_label')>{{ $services?->data['items'][5]['link_label'] ?? 'Book this service' }}</span>
                         </a>
                       </div>
                     </div>

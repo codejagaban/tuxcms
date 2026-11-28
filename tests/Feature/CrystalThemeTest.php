@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\Site\SiteBuilder;
+use App\Support\Preview;
 use Database\Seeders\Clients\Crystal\CrystalContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
@@ -162,5 +163,88 @@ class CrystalThemeTest extends TestCase
         $this->assertStringContainsString('href="/privacy/"', $html);
         $this->assertStringNotContainsString('javascript:alert(1)', $html);
         $this->assertStringNotContainsString('>Terms</a>', $html);
+    }
+
+    public function test_copy_on_the_hand_built_pages_comes_from_the_section_data(): void
+    {
+        // Each of these used to be written into the template, so an edit to
+        // the section data saved but never reached the published page.
+        $home = Page::where('is_homepage', true)->sole();
+        $testimonials = $home->sections()->where('key', 'testimonials')->sole();
+        $data = $testimonials->data;
+        $data['items'][0]['quote'] = 'Edited quote from the dashboard.';
+        $data['items'][0]['author'] = 'Edited Author';
+        $testimonials->update(['title' => 'Edited testimonials heading', 'data' => $data]);
+
+        $services = Page::where('slug', 'services')->sole()->sections()->where('key', 'services')->sole();
+        $data = $services->data;
+        $data['items'][2]['link_label'] = 'Edited third button';
+        $services->update(['data' => $data]);
+
+        app(SiteBuilder::class)->build();
+
+        $built = File::get($this->output.'/index.html');
+        $this->assertStringContainsString('Edited testimonials heading', $built);
+        $this->assertStringContainsString('Edited quote from the dashboard.', $built);
+        $this->assertStringContainsString('Edited Author', $built);
+
+        // Each card's button belongs to that card: only the third changed.
+        $servicesPage = File::get($this->output.'/services/index.html');
+        $this->assertSame(1, substr_count($servicesPage, 'Edited third button'));
+        $this->assertSame(5, substr_count($servicesPage, 'Book this service'));
+    }
+
+    public function test_no_section_text_is_shown_on_a_hand_built_page_without_a_marker(): void
+    {
+        // Text a template writes in by hand, with an unused copy in the
+        // section data, is what lost edits. Anything a page shows from its
+        // data must be marked, so the editor saves it where it is printed.
+        // Two kinds are left alone on purpose: a testimonial's author shares
+        // its element with the role, and the contact form's service options
+        // live inside a drop-down.
+        $allowed = '/^(data\.items\.\d+\.author|data\.services\.\d+)$/';
+        $ignored = '/(^|\.)(url|href|icon|alignment|columns|type|name|query|image|background_image|[a-z_]+_alt|alt)$/';
+        $builder = app(SiteBuilder::class);
+        $unmarked = [];
+
+        foreach (Page::with('sections')->get() as $page) {
+            $html = Preview::during(fn () => $builder->renderPage($page));
+            preg_match_all('/data-tuxcms-field="([^"]+)"/', $html, $matches);
+            $marked = array_flip($matches[1]);
+            // The complete text of every element in the page's content, as the
+            // editor reads it, so a piece inside a longer phrase is not mistaken
+            // for this one. The menu and footer are the site's, not the page's.
+            $texts = [];
+            $dom = new \DOMDocument;
+            @$dom->loadHTML('<?xml encoding="utf-8"?>'.$html);
+            foreach ($dom->getElementsByTagName('main')->item(0)?->getElementsByTagName('*') ?? [] as $element) {
+                $texts[trim(preg_replace('/\s+/u', ' ', $element->textContent))] = true;
+            }
+
+            foreach ($page->sections as $section) {
+                $walk = function ($value, string $path) use (&$walk, &$unmarked, $page, $section, $marked, $texts, $allowed, $ignored) {
+                    if (is_array($value)) {
+                        foreach ($value as $key => $child) {
+                            $walk($child, "{$path}.{$key}");
+                        }
+
+                        return;
+                    }
+                    $value = is_string($value) ? trim(preg_replace('/\s+/', ' ', $value)) : '';
+                    if (mb_strlen($value) < 4 || preg_match($ignored, $path) || preg_match($allowed, $path)
+                        || isset($marked["{$section->id}:{$path}"])) {
+                        return;
+                    }
+                    if (isset($texts[$value])) {
+                        $unmarked[] = "{$page->slug}: {$section->key}/{$path}";
+                    }
+                };
+                $walk($section->title, 'title');
+                $walk($section->content, 'content');
+                $walk($section->data ?? [], 'data');
+            }
+        }
+
+        $this->assertSame([], $unmarked, 'Shown on the page but not marked: '.implode(', ', $unmarked));
     }
 }
