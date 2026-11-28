@@ -108,6 +108,13 @@ if (!editing) {
   document.querySelectorAll('[data-studio]').forEach(studio);
 }
 
+// The front page's scene plays only for visitors who welcome motion, and
+// never in the dashboard's preview. Otherwise its still frame stays.
+const film = document.querySelector('.hero__film');
+if (film && !calm && !editing) {
+  film.play().catch(() => {});
+}
+
 if (!calm && !editing) {
   // The hero arrives: its title settles into place and the rest follows.
   const hero = document.querySelector('.hero');
@@ -139,7 +146,7 @@ if (!calm && !editing) {
       const hide = y > last && y > 400 && !open;
       if (hide !== hidden && Math.abs(y - last) > 6) {
         hidden = hide;
-        animate(bar, { y: hide ? '-110%' : '0%' }, { type: 'spring', stiffness: 260, damping: 32 });
+        animate(bar, { y: hide ? '-160%' : '0%' }, { type: 'spring', stiffness: 260, damping: 32 });
       }
       last = y;
     }, { passive: true });

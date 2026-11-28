@@ -10,6 +10,15 @@
     $hasAside = filled(data_get($d, 'subheading')) || filled($section->content) || filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label'));
 @endphp
 <section @class(['hero', 'hero--front' => $front, 'hero--page' => ! $front, 'hero--centred' => $centred]) @tuxsection($section)>
+    @if ($front)
+        {{-- A meadow under a moving sky, behind the title and the editor. Its
+             foot melts into the page. Decorative, so it is hidden from
+             assistive technology; the still frame stands in until it plays,
+             and for anyone who asks for less motion. --}}
+        <div class="hero__sky" aria-hidden="true">
+            <video class="hero__film" src="/themes/shopfront/media/meadow.mp4" poster="/themes/shopfront/media/meadow.jpg" muted loop playsinline preload="metadata"></video>
+        </div>
+    @endif
     <div class="wrap">
         <div class="hero__grid">
             @if (filled($section->title))
@@ -29,7 +38,7 @@
                     @if (filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label')))
                         <div class="hero__do">
                             @if (filled(data_get($primary, 'label')))
-                                <a href="{{ data_get($primary, 'url', '#') }}" class="button"><span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                                <a href="{{ data_get($primary, 'url', '#') }}" class="button">@include('site.themes.shopfront.partials.chip')<span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span></a>
                             @endif
                             @if (filled(data_get($secondary, 'label')))
                                 <a href="{{ data_get($secondary, 'url', '#') }}" class="link"><span @field($section, 'data.secondary_cta.label')>{{ data_get($secondary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>

@@ -96,7 +96,6 @@
 }
 
 /* The stage: dark surfaces in either mode. */
-.part--front + .part:not(.part--stats),
 .part--cta,
 .foot {
   --paper: oklch(19.5% 0 0);
@@ -188,6 +187,7 @@ ul, ol { padding: 0; list-style: none; }
   transition: background-color 0.18s ease;
 }
 .button:hover { background: #2b2b2f; }
+.button:disabled { opacity: 0.55; cursor: default; }
 .button__chip {
   position: relative; overflow: hidden;
   display: grid; place-items: center; flex: none;
@@ -210,7 +210,6 @@ ul, ol { padding: 0; list-style: none; }
 .button:hover .button__chip::after { transform: translate(0, 0); }
 .part--cta .button, .foot .button { background: #fff; color: #1a1a1c; }
 .part--cta .button:hover { background: oklch(90% 0 0); }
-.button:disabled { opacity: 0.55; cursor: default; }
 
 .arrow { width: 0.85em; height: 0.85em; flex: none; transition: transform 0.25s var(--ease); }
 a:hover > .arrow, button:hover > .arrow { transform: translate(2px, -2px); }
@@ -309,6 +308,33 @@ details[open] > summary .caret { transform: rotate(180deg); }
   .hero__title, .hero--page .hero__title, .hero__aside, .hero--page .hero__aside,
   .hero--centred .hero__title, .hero--centred .hero__aside { grid-column: 1 / -1; }
 }
+
+/* The front page: the title centred over a meadow under a moving sky, and
+   the editor rising out of it. The scene stops two thirds of the way down
+   the editor and melts into the page, so there is no edge to see. */
+.hero--front {
+  --ink: oklch(14.5% 0 0);
+  --muted: oklch(30% 0 0);
+  --blue-ink: oklch(40% 0.17 255);
+  position: relative; isolation: isolate;
+  padding-top: clamp(9rem, 16vw, 12rem);
+  color: var(--ink);
+}
+.hero__sky {
+  position: absolute; inset: 0 0 clamp(8rem, 16vw, 13rem); z-index: -1;
+  overflow: hidden; background: #b9cfe4 url("../media/meadow.jpg") center / cover;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 62%, rgb(0 0 0 / .86) 68%, rgb(0 0 0 / .66) 74%, rgb(0 0 0 / .45) 80%, rgb(0 0 0 / .27) 86%, rgb(0 0 0 / .13) 91%, rgb(0 0 0 / .04) 96%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 62%, rgb(0 0 0 / .86) 68%, rgb(0 0 0 / .66) 74%, rgb(0 0 0 / .45) 80%, rgb(0 0 0 / .27) 86%, rgb(0 0 0 / .13) 91%, rgb(0 0 0 / .04) 96%, transparent 100%);
+}
+.hero__film { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero--front .hero__grid { justify-items: center; text-align: center; }
+.hero--front .hero__title { grid-column: 2 / span 10; font-size: clamp(2.7rem, 7vw, 6.75rem); text-shadow: 0 1px 24px oklch(100% 0 0 / .35); }
+.hero--front .hero__aside { grid-column: 3 / span 8; justify-items: center; }
+.hero--front .hero__say { color: oklch(24% 0 0); max-width: 52ch; text-shadow: 0 0 18px oklch(100% 0 0 / .6); }
+.hero--front .hero__do { justify-content: center; }
+.hero--front .link { color: oklch(18% 0 0); padding: 0.75rem 1.1rem; border-radius: 999px; background: oklch(100% 0 0 / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.hero--front .link:hover { background: oklch(100% 0 0 / .92); }
+@media (max-width: 56rem) { .hero--front .hero__title, .hero--front .hero__aside { grid-column: 1 / -1; } }
 
 /* ── The studio: the editor, working ───────────────────────
    A copy of the TuxCMS page editor: the bar, the page in its preview, and
@@ -452,9 +478,6 @@ details[open] > summary .caret { transform: rotate(180deg); }
 }
 @media (max-width: 26rem) { .studio__state span { display: none; } .studio__state { padding: 0.3rem; } }
 
-/* The front hero hangs the studio over the seam into the stage below. */
-.part--front:not(:last-child) .studio { margin-bottom: calc(-1 * var(--lap)); }
-.part--front + .part > .block { padding-top: calc(var(--lap) + var(--section)); }
 
 /* ── Photographs ─────────────────────────────────────────── */
 .frame { position: relative; margin: 0; overflow: hidden; border-radius: var(--radius); background: var(--paper-3); aspect-ratio: 3 / 2; }
@@ -466,7 +489,6 @@ details[open] > summary .caret { transform: rotate(180deg); }
 
 /* ── Sections ────────────────────────────────────────────── */
 .block { padding: var(--section) 0 0; }
-.part--front + .part > .block,
 .part--stats > .block,
 .part--cta > .block { padding-bottom: var(--section); }
 
