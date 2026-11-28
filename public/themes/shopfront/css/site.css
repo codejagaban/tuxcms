@@ -780,16 +780,23 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
   mask-image: linear-gradient(180deg, transparent 0, rgb(0 0 0 / .1) 12%, rgb(0 0 0 / .3) 26%, rgb(0 0 0 / .55) 40%, rgb(0 0 0 / .8) 55%, #000 72%);
 }
 
-/* Contact details */
-.reach { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem); padding: clamp(1.5rem, 3vw, 2.25rem); border-radius: 1.25rem; background: var(--paper); box-shadow: var(--edge); }
-.reach__row--big { grid-column: 1 / -1; }
-@media (max-width: 36rem) { .reach { grid-template-columns: 1fr; } }
-.reach dt { display: flex; align-items: center; gap: 0.5rem; color: var(--muted); font-size: 0.95rem; }
-.reach__glyph { width: 1.35rem; height: 1.35rem; color: var(--hue, var(--ink)); }
-.reach dd { margin-top: 0.25rem; font-size: clamp(1.1rem, 1.6vw, 1.3rem); overflow-wrap: anywhere; }
-.reach__row--big dd { font: 600 clamp(1.75rem, 3.6vw, 2.9rem)/1.1 var(--display); letter-spacing: -0.04em; }
-.reach a { text-decoration: none; transition: color 0.18s ease; }
-.reach a:hover { color: var(--blue-ink); }
+/* Contact details: the benefit cards of the Automation SaaS template. Small
+   white cards with 20px corners, the icon in a soft 48px square at the top
+   and the detail at the foot; a photograph, when there is one, as a tall
+   card beside them. */
+.ways { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.ways--pictured { grid-template-columns: minmax(0, 9fr) minmax(0, 3fr); }
+.ways__list { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 16px; }
+.way { display: flex; flex-direction: column; justify-content: space-between; gap: 40px; min-height: 200px; padding: 24px; border-radius: 20px; background: var(--paper); }
+.way__tile { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--paper-3); }
+.way__glyph { width: 24px; height: 24px; color: var(--hue, var(--ink)); }
+.way__label { margin-top: auto; color: color-mix(in oklch, var(--ink) 60%, transparent); font-size: 14px; }
+.way__value { font: 400 20px/1.4 var(--display); letter-spacing: -0.01em; color: var(--ink); overflow-wrap: anywhere; }
+.way__value a { text-decoration: none; }
+.way__value a:hover { color: var(--blue-ink); }
+.ways__photo { position: relative; margin: 0; min-height: 260px; border-radius: 20px; overflow: hidden; }
+.ways__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 56rem) { .ways--pictured { grid-template-columns: minmax(0, 1fr); } }
 
 /* Forms, as the dashboard's fields. */
 .form { display: grid; gap: 1.1rem; }
