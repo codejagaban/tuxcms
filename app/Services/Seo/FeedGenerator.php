@@ -40,8 +40,8 @@ class FeedGenerator
             if ($post->published_at) {
                 $lines[] = '    <pubDate>'.$post->published_at->toRssString().'</pubDate>';
             }
-            if ($post->category) {
-                $lines[] = '    <category>'.$x($post->category->name).'</category>';
+            foreach ($post->tagNames() as $tag) {
+                $lines[] = '    <category>'.$x($tag).'</category>';
             }
             $lines[] = '    <description>'.$x($post->summary(300)).'</description>';
             $lines[] = '  </item>';

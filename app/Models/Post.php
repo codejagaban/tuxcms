@@ -8,17 +8,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Tags\HasTags;
 
 class Post extends Model
 {
-    use SoftDeletes;
+    use HasTags, SoftDeletes;
+
+    /** The tag type that keeps blog tags apart from any other tags. */
+    public const TAG_TYPE = 'blog';
 
     /** Posts shown on each page of the blog listing. */
     public const PER_PAGE = 9;
 
     protected $fillable = [
         'title', 'slug', 'excerpt', 'body', 'cover_image', 'cover_image_alt',
-        'post_category_id', 'author_id', 'status', 'published_at',
+        'author_id', 'status', 'published_at',
         'meta_title', 'meta_description',
     ];
 
@@ -45,9 +49,10 @@ class Post extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    public function category(): BelongsTo
+    /** The post's tags, by name. */
+    public function tagNames(): array
     {
-        return $this->belongsTo(PostCategory::class, 'post_category_id');
+        return $this->tags->where('type', self::TAG_TYPE)->pluck('name')->values()->all();
     }
 
     /** Published, and not scheduled for later. */

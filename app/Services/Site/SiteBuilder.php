@@ -182,7 +182,7 @@ class SiteBuilder
     }
 
     /**
-     * The blog: a paged listing, a page per post, a paged listing per category
+     * The blog: a paged listing, a page per post, a paged listing per tag
      * and the RSS feed. A site with no published posts has no blog at all, so
      * nothing is written and the menu shows no link to it.
      *
@@ -198,15 +198,16 @@ class SiteBuilder
         $navigation = $this->navigation->build(currentPath: '/blog/');
         $shared = ['navigation' => $navigation, 'buildYear' => date('Y')];
 
-        // Only categories with something to read are offered to visitors.
-        $categories = $posts->pluck('category')->filter()->unique('id')->sortBy('name')->values();
+        // Only tags on a published post are offered to visitors.
+        $tags = $posts->flatMap(fn (Post $post) => $post->tags->where('type', Post::TAG_TYPE))
+            ->unique('id')->sortBy(fn ($tag) => mb_strtolower($tag->name))->values();
 
-        $listings = [['base' => '/blog/', 'posts' => $posts, 'category' => null]];
-        foreach ($categories as $category) {
+        $listings = [['base' => '/blog/', 'posts' => $posts, 'tag' => null]];
+        foreach ($tags as $tag) {
             $listings[] = [
-                'base' => '/blog/category/'.$category->slug.'/',
-                'posts' => $posts->where('post_category_id', $category->id)->values(),
-                'category' => $category,
+                'base' => '/blog/tag/'.$tag->slug.'/',
+                'posts' => $posts->filter(fn (Post $post) => $post->tags->contains('id', $tag->id))->values(),
+                'tag' => $tag,
             ];
         }
 
@@ -219,16 +220,16 @@ class SiteBuilder
                 $address = fn (int $n) => $n === 1 ? $listing['base'] : $listing['base'].'page/'.$n.'/';
                 $relative = ltrim($address($number), '/').'index.html';
 
-                $name = $listing['category']?->name;
+                $name = $listing['tag']?->name;
                 $written[$relative] = $this->write($temp, $relative, View::make($this->themeView('blog.index'), $shared + [
                     'page' => $this->blogPage(
                         title: ($name ? $name.' | Blog' : 'Blog').($number > 1 ? ' | Page '.$number : ''),
-                        description: $name ? 'Posts about '.$name.' from '.Site::name().'.' : 'News and writing from '.Site::name().'.',
+                        description: $name ? 'Posts tagged '.$name.' from '.Site::name().'.' : 'News and writing from '.Site::name().'.',
                         path: $address($number),
                     ),
                     'posts' => $chunk->values(),
-                    'category' => $listing['category'],
-                    'categories' => $categories,
+                    'tag' => $listing['tag'],
+                    'tags' => $tags,
                     'path' => $address($number),
                     'pageNumber' => $number,
                     'lastPage' => $last,
@@ -288,7 +289,7 @@ class SiteBuilder
     /** Published posts, newest first. */
     private function publishedPosts(): Collection
     {
-        return Post::published()->with(['category', 'author'])
+        return Post::published()->with(['tags', 'author'])
             ->orderByDesc('published_at')->orderByDesc('id')->get();
     }
 

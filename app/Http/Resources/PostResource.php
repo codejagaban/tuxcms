@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,12 +18,8 @@ class PostResource extends JsonResource
             'body' => $this->body,
             'cover_image' => $this->cover_image,
             'cover_image_alt' => $this->cover_image_alt,
-            'post_category_id' => $this->post_category_id,
-            'category' => $this->whenLoaded('category', fn () => $this->category ? [
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-                'slug' => $this->category->slug,
-            ] : null),
+            'tags' => $this->whenLoaded('tags', fn () => $this->tags->where('type', Post::TAG_TYPE)
+                ->map(fn ($tag) => ['name' => $tag->name, 'slug' => $tag->slug])->values()->all()),
             'author' => $this->whenLoaded('author', fn () => $this->author?->name),
             'status' => $this->status,
             'is_scheduled' => $this->isScheduled(),

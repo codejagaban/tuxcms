@@ -21,9 +21,9 @@
             @if ($post->author)
                 · {{ $post->author->name }}
             @endif
-            @if ($post->category)
-                · <a href="/blog/category/{{ $post->category->slug }}/" class="hover:text-gray-900">{{ $post->category->name }}</a>
-            @endif
+            @foreach ($post->tags->where('type', \App\Models\Post::TAG_TYPE) as $tag)
+                {{ $loop->first ? '·' : ',' }} <a href="/blog/tag/{{ $tag->slug }}/" class="hover:text-gray-900">{{ $tag->name }}</a>
+            @endforeach
             · {{ $post->readingMinutes() }} min read
         </p>
 

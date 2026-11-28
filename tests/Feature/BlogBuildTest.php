@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use App\Models\Post;
-use App\Models\PostCategory;
 use App\Models\User;
 use App\Services\Site\SiteBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,18 +42,18 @@ class BlogBuildTest extends TestCase
         $this->assertStringNotContainsString('/blog/', $this->read('sitemap.xml'));
     }
 
-    public function test_publishing_builds_the_listing_the_post_and_its_category(): void
+    public function test_publishing_builds_the_listing_the_post_and_its_tags(): void
     {
         Page::factory()->homepage()->create();
         $author = User::factory()->create(['name' => 'Ada Writer']);
-        $news = PostCategory::create(['name' => 'News', 'slug' => 'news']);
-        PostCategory::create(['name' => 'Empty', 'slug' => 'empty']);
-        Post::create([
+        $shop = Post::create([
             'title' => 'Opening the new shop', 'slug' => 'opening-the-new-shop', 'status' => 'published',
             'published_at' => now()->subDay(), 'excerpt' => 'We have moved.', 'author_id' => $author->id,
-            'post_category_id' => $news->id, 'cover_image' => '/storage/1/shop.jpg', 'cover_image_alt' => 'The shop front',
+            'cover_image' => '/storage/1/shop.jpg', 'cover_image_alt' => 'The shop front',
             'body' => '<h2>Why we moved</h2><p>More room.</p><script>alert(1)</script>',
         ]);
+        $shop->syncTagsWithType(['News', 'Shop floor'], Post::TAG_TYPE);
+        Post::create(['title' => 'Still a draft', 'slug' => 'still-a-draft', 'status' => 'draft'])->syncTagsWithType(['Empty'], Post::TAG_TYPE);
         Post::create(['title' => 'An older note', 'slug' => 'an-older-note', 'status' => 'published', 'published_at' => now()->subWeek(), 'body' => '<p>Older.</p>']);
 
         $result = app(SiteBuilder::class)->build();
@@ -63,8 +62,9 @@ class BlogBuildTest extends TestCase
         $listing = $this->read('blog/index.html');
         $this->assertStringContainsString('Opening the new shop', $listing);
         $this->assertStringContainsString('We have moved.', $listing);
-        $this->assertStringContainsString('href="/blog/category/news/"', $listing);
-        $this->assertStringNotContainsString('/blog/category/empty/', $listing);
+        $this->assertStringContainsString('href="/blog/tag/news/"', $listing);
+        $this->assertStringContainsString('href="/blog/tag/shop-floor/"', $listing);
+        $this->assertStringNotContainsString('/blog/tag/empty/', $listing);
         $this->assertLessThan(strpos($listing, 'An older note'), strpos($listing, 'Opening the new shop'));
         $this->assertStringNotContainsString('Older posts', $listing);
 
@@ -78,10 +78,12 @@ class BlogBuildTest extends TestCase
         $this->assertStringContainsString('alt="The shop front"', $post);
         $this->assertStringContainsString('href="/blog/an-older-note/"', $post);
 
-        $category = $this->read('blog/category/news/index.html');
-        $this->assertStringContainsString('Opening the new shop', $category);
-        $this->assertStringNotContainsString('An older note', $category);
-        $this->assertFileDoesNotExist($this->site.'/blog/category/empty/index.html');
+        $this->assertStringContainsString('href="/blog/tag/shop-floor/"', $post);
+
+        $tag = $this->read('blog/tag/news/index.html');
+        $this->assertStringContainsString('Opening the new shop', $tag);
+        $this->assertStringNotContainsString('An older note', $tag);
+        $this->assertFileDoesNotExist($this->site.'/blog/tag/empty/index.html');
 
         // The menu links to the blog, and marks it as the current place there.
         $this->assertStringContainsString('href="/blog/"', $this->read('index.html'));
@@ -90,7 +92,7 @@ class BlogBuildTest extends TestCase
         $sitemap = $this->read('sitemap.xml');
         $this->assertStringContainsString('https://example.test/blog/</loc>', $sitemap);
         $this->assertStringContainsString('https://example.test/blog/opening-the-new-shop/</loc>', $sitemap);
-        $this->assertStringContainsString('https://example.test/blog/category/news/</loc>', $sitemap);
+        $this->assertStringContainsString('https://example.test/blog/tag/news/</loc>', $sitemap);
 
         $feed = $this->read('blog/feed.xml');
         $this->assertNotFalse(simplexml_load_string($feed));

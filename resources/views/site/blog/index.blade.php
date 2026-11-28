@@ -6,13 +6,13 @@
 
 @section('content')
     <section class="mx-auto max-w-3xl px-6 pb-20 pt-14">
-        <h1 class="text-4xl font-bold text-gray-900">{{ $category ? $category->name : 'Blog' }}</h1>
+        <h1 class="text-4xl font-bold text-gray-900">{{ $tag ? $tag->name : 'Blog' }}</h1>
 
-        @if ($categories->isNotEmpty())
-            <nav class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label="Blog categories">
-                <a href="/blog/" class="{{ $category ? 'text-gray-600 hover:text-gray-900' : 'font-semibold text-gray-900' }}" @if (! $category) aria-current="page" @endif>All posts</a>
-                @foreach ($categories as $shelf)
-                    <a href="/blog/category/{{ $shelf->slug }}/" class="{{ $category?->id === $shelf->id ? 'font-semibold text-gray-900' : 'text-gray-600 hover:text-gray-900' }}" @if ($category?->id === $shelf->id) aria-current="page" @endif>{{ $shelf->name }}</a>
+        @if ($tags->isNotEmpty())
+            <nav class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label="Blog tags">
+                <a href="/blog/" class="{{ $tag ? 'text-gray-600 hover:text-gray-900' : 'font-semibold text-gray-900' }}" @if (! $tag) aria-current="page" @endif>All posts</a>
+                @foreach ($tags as $shelf)
+                    <a href="/blog/tag/{{ $shelf->slug }}/" class="{{ $tag?->id === $shelf->id ? 'font-semibold text-gray-900' : 'text-gray-600 hover:text-gray-900' }}" @if ($tag?->id === $shelf->id) aria-current="page" @endif>{{ $shelf->name }}</a>
                 @endforeach
             </nav>
         @endif
@@ -28,8 +28,8 @@
                         @endif
                         <p class="text-sm text-gray-500">
                             <time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->format('j F Y') }}</time>
-                            @if ($post->category && ! $category)
-                                · {{ $post->category->name }}
+                            @if ($names = $post->tagNames())
+                                · {{ implode(', ', $names) }}
                             @endif
                         </p>
                         <h2 class="mt-2 text-2xl font-bold text-gray-900">

@@ -9,11 +9,11 @@ use App\Models\MediaLibrary;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Post;
-use App\Models\PostCategory;
 use App\Models\Seo;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -1044,18 +1044,15 @@ class DemoContentSeeder extends Seeder
      * @param array<int, JobPost> $jobs
      */
     /**
-     * A blog in every state the dashboard shows: published posts in two
-     * categories, one scheduled for next week and one still a draft.
+     * A blog in every state the dashboard shows: tagged published posts, one
+     * scheduled for next week and one still a draft.
      */
     private function seedPosts(): array
     {
-        $notes = PostCategory::updateOrCreate(['slug' => 'studio-notes'], ['name' => 'Studio notes']);
-        $work = PostCategory::updateOrCreate(['slug' => 'client-work'], ['name' => 'Client work']);
-
         $posts = [
             [
                 'slug' => 'what-a-booking-flow-taught-us', 'title' => 'What a booking flow taught us about patience',
-                'status' => 'published', 'published_at' => now()->subDays(3), 'post_category_id' => $work->id,
+                'status' => 'published', 'published_at' => now()->subDays(3), 'tags' => ['Client work', 'Research'],
                 'cover_image' => $this->photos['laptop-and-notebook'], 'cover_image_alt' => 'A laptop and an open notebook on a desk',
                 'excerpt' => 'We spent four months on Fathom\'s booking flow. Most of what worked came from slowing down.',
                 'body' => '<p>When Fathom asked us to rebuild how people book a trip, the brief was one line long: fewer people should give up halfway. Four months later the number who finish a booking is up by a third.</p>'
@@ -1066,7 +1063,7 @@ class DemoContentSeeder extends Seeder
             ],
             [
                 'slug' => 'a-brand-book-people-read', 'title' => 'A brand book people actually read',
-                'status' => 'published', 'published_at' => now()->subDays(12), 'post_category_id' => $work->id,
+                'status' => 'published', 'published_at' => now()->subDays(12), 'tags' => ['Client work', 'Brand'],
                 'cover_image' => $this->photos['printed-pages'], 'cover_image_alt' => 'Printed pages laid out on a table',
                 'excerpt' => 'Overlap\'s guidelines are twelve pages long. That was the hardest part.',
                 'body' => '<p>Most brand guidelines are written once and opened never. Overlap wanted theirs used by the people who make things every day, most of whom are not designers.</p>'
@@ -1076,7 +1073,7 @@ class DemoContentSeeder extends Seeder
             ],
             [
                 'slug' => 'how-we-run-a-first-week', 'title' => 'How we run the first week of a project',
-                'status' => 'published', 'published_at' => now()->subDays(20), 'post_category_id' => $notes->id,
+                'status' => 'published', 'published_at' => now()->subDays(20), 'tags' => ['Studio notes', 'Process'],
                 'cover_image' => $this->photos['studio-table'], 'cover_image_alt' => 'People working around a studio table',
                 'excerpt' => 'Five days, one room, and a rule against slides.',
                 'body' => '<p>The first week decides how the rest of a project feels. We spend it in one room with the client, and we do not make slides.</p>'
@@ -1085,29 +1082,34 @@ class DemoContentSeeder extends Seeder
             ],
             [
                 'slug' => 'eleven-years-in', 'title' => 'Eleven years in',
-                'status' => 'published', 'published_at' => now()->subDays(34), 'post_category_id' => $notes->id,
+                'status' => 'published', 'published_at' => now()->subDays(34), 'tags' => ['Studio notes'],
                 'excerpt' => 'A short note on staying small.',
                 'body' => '<p>Lumen Studio turned eleven this month. We are nine people, the same size we were at six.</p><p>Staying small was a choice. It means the person you meet first is the person who does the work, and that we say no more often than we would like.</p><p>Thank you to everyone who has trusted us with something they care about.</p>',
             ],
             [
                 'slug' => 'opening-our-doors-in-spring', 'title' => 'Opening our doors in spring',
-                'status' => 'published', 'published_at' => now()->addDays(7), 'post_category_id' => $notes->id,
+                'status' => 'published', 'published_at' => now()->addDays(7), 'tags' => ['Studio notes'],
                 'cover_image' => $this->photos['room-by-the-windows'], 'cover_image_alt' => 'A bright room with tall windows',
                 'excerpt' => 'We are holding an open studio day. This post is scheduled, so it is not on the site yet.',
                 'body' => '<p>For one day in spring the studio is open to anyone who wants to see how we work. Details will follow here.</p>',
             ],
             [
                 'slug' => 'notes-on-pricing', 'title' => 'Notes on pricing our work',
-                'status' => 'draft', 'published_at' => null, 'post_category_id' => null,
+                'status' => 'draft', 'published_at' => null, 'tags' => [],
                 'excerpt' => 'An unfinished draft.',
                 'body' => '<p>A draft that is still being written. Drafts are never built into the site.</p>',
             ],
         ];
 
-        return array_map(fn (array $post) => Post::updateOrCreate(
-            ['slug' => $post['slug']],
-            [...$post, 'author_id' => $this->author->id],
-        ), $posts);
+        return array_map(function (array $post) {
+            $saved = Post::updateOrCreate(
+                ['slug' => $post['slug']],
+                [...Arr::except($post, 'tags'), 'author_id' => $this->author->id],
+            );
+            $saved->syncTagsWithType($post['tags'], Post::TAG_TYPE);
+
+            return $saved;
+        }, $posts);
     }
 
     private function seedInbox(array $jobs): void

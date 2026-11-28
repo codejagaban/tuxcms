@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 class PostRequest extends FormRequest
 {
     /** Addresses under /blog/ that belong to the listing, not to a post. */
-    public const RESERVED_SLUGS = ['page', 'category', 'feed'];
+    public const RESERVED_SLUGS = ['page', 'tag', 'feed'];
 
     public function authorize(): bool
     {
@@ -26,7 +26,8 @@ class PostRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'string', 'max:2048'],
             'cover_image_alt' => ['nullable', 'string', 'max:255'],
-            'post_category_id' => ['nullable', 'integer', Rule::exists('post_categories', 'id')],
+            'tags' => ['sometimes', 'array', 'max:20'],
+            'tags.*' => ['string', 'max:50', 'distinct:ignore_case'],
             'status' => ['required', Rule::in(['draft', 'published'])],
             'published_at' => ['nullable', 'date'],
             'meta_title' => ['nullable', 'string', 'max:255'],

@@ -44,14 +44,16 @@ class SitemapGenerator
             }
         }
 
-        $posts = Post::published()->with('category')->orderByDesc('published_at')->get();
+        $posts = Post::published()->with('tags')->orderByDesc('published_at')->get();
         if ($posts->isNotEmpty()) {
             $lines[] = $this->url('/blog/', $posts->max('updated_at'));
             foreach ($posts as $post) {
                 $lines[] = $this->url($post->path(), $post->updated_at);
             }
-            foreach ($posts->groupBy(fn (Post $post) => $post->category?->slug)->forget('') as $slug => $inCategory) {
-                $lines[] = $this->url('/blog/category/'.$slug.'/', $inCategory->max('updated_at'));
+            $tags = $posts->flatMap(fn (Post $post) => $post->tags->where('type', Post::TAG_TYPE))->unique('id');
+            foreach ($tags as $tag) {
+                $tagged = $posts->filter(fn (Post $post) => $post->tags->contains('id', $tag->id));
+                $lines[] = $this->url('/blog/tag/'.$tag->slug.'/', $tagged->max('updated_at'));
             }
         }
 

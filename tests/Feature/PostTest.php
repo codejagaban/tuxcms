@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Post;
-use App\Models\PostCategory;
 use App\Models\User;
 use App\Support\PublishState;
 use App\Support\RichText;
@@ -19,7 +18,7 @@ class PostTest extends TestCase
     {
         $this->getJson('/api/v1/posts')->assertUnauthorized();
         $this->postJson('/api/v1/posts', [])->assertUnauthorized();
-        $this->getJson('/api/v1/post-categories')->assertUnauthorized();
+        $this->getJson('/api/v1/post-tags')->assertUnauthorized();
     }
 
     public function test_editor_can_create_publish_and_delete_a_post(): void
@@ -61,7 +60,7 @@ class PostTest extends TestCase
         $this->postJson('/api/v1/posts', $this->payload())->assertCreated();
 
         $this->postJson('/api/v1/posts', $this->payload())->assertUnprocessable()->assertJsonValidationErrors('slug');
-        $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'category'])->assertUnprocessable()->assertJsonValidationErrors('slug');
+        $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'tag'])->assertUnprocessable()->assertJsonValidationErrors('slug');
         $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'page'])->assertUnprocessable()->assertJsonValidationErrors('slug');
     }
 
@@ -105,25 +104,28 @@ class PostTest extends TestCase
         $this->assertSame('Written by hand.', (new Post(['excerpt' => ' Written by hand. ', 'body' => '<p>Body</p>']))->summary());
     }
 
-    public function test_categories_can_be_managed_and_filter_posts(): void
+    public function test_posts_are_tagged_and_filtered_by_tag(): void
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $news = $this->postJson('/api/v1/post-categories', ['name' => 'Company News'])->assertCreated()
-            ->assertJsonPath('data.slug', 'company-news')->json('data.id');
-        $this->postJson('/api/v1/post-categories', ['name' => 'Company news'])->assertUnprocessable();
+        $id = $this->postJson('/api/v1/posts', [...$this->payload(), 'tags' => ['Company News', ' Design ']])->assertCreated()
+            ->assertJsonPath('data.tags', [['name' => 'Company News', 'slug' => 'company-news'], ['name' => 'Design', 'slug' => 'design']])
+            ->json('data.id');
+        $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'second', 'title' => 'Second', 'tags' => ['Design']])->assertCreated();
+        $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'third', 'title' => 'Third', 'tags' => ['a', 'A']])
+            ->assertUnprocessable()->assertJsonValidationErrors('tags.1');
 
-        $this->postJson('/api/v1/posts', [...$this->payload(), 'post_category_id' => $news])->assertCreated()
-            ->assertJsonPath('data.category.name', 'Company News');
-        $this->postJson('/api/v1/posts', [...$this->payload(), 'slug' => 'second', 'title' => 'Second'])->assertCreated();
+        $this->getJson('/api/v1/posts?tag=company-news')->assertJsonPath('meta.total', 1);
+        $this->getJson('/api/v1/posts?tag=design')->assertJsonPath('meta.total', 2);
+        $this->getJson('/api/v1/post-tags')->assertJsonPath('data', [
+            ['name' => 'Company News', 'slug' => 'company-news', 'posts_count' => 1],
+            ['name' => 'Design', 'slug' => 'design', 'posts_count' => 2],
+        ]);
 
-        $this->getJson('/api/v1/posts?category='.$news)->assertJsonPath('meta.total', 1);
-        $this->getJson('/api/v1/post-categories')->assertJsonPath('data.0.posts_count', 1);
-
-        $this->deleteJson('/api/v1/post-categories/'.$news)->assertNoContent();
-        $this->assertSame(2, Post::count());
-        $this->assertNull(Post::where('slug', 'a-first-post')->first()->post_category_id);
-        $this->assertSame(0, PostCategory::count());
+        // Saving without tags leaves them alone; an empty list clears them.
+        $this->putJson('/api/v1/posts/'.$id, $this->payload())->assertOk()->assertJsonCount(2, 'data.tags');
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'tags' => []])->assertOk()->assertJsonCount(0, 'data.tags');
+        $this->getJson('/api/v1/post-tags')->assertJsonCount(1, 'data');
     }
 
     public function test_saving_a_post_marks_the_site_as_changed(): void

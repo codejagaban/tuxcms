@@ -8,13 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('post_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
-        });
-
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
@@ -24,7 +17,6 @@ return new class extends Migration
             $table->longText('body')->nullable();
             $table->string('cover_image')->nullable();
             $table->string('cover_image_alt')->nullable();
-            $table->foreignId('post_category_id')->nullable()->constrained('post_categories')->nullOnDelete();
             $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('status', ['draft', 'published'])->default('draft');
             // A date in the future schedules the post.
@@ -40,6 +32,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('posts');
-        Schema::dropIfExists('post_categories');
     }
 };
