@@ -1,10 +1,7 @@
 @php
     $items = data_get($d, 'items', []);
-    // With photographs the list becomes a wall; without, a grid of panels.
+    // With photographs the list becomes a wall; without, a bento of cards.
     $pictured = collect($items)->contains(fn ($item) => filled(data_get($item, 'image')));
-    $columns = (int) data_get($d, 'columns', 0);
-    $columns = in_array($columns, [2, 3, 4], true) ? $columns : (count($items) % 3 === 0 ? 3 : 2);
-    $columns = min($columns, max(1, count($items)));
     // The dashboard's own marker colours, taken in turn.
     $hues = ['blue', 'green', 'amber', 'rose'];
 @endphp
@@ -43,17 +40,24 @@
                 @endforeach
             </ul>
         @else
-            <ul class="tiles tiles--{{ $columns }}">
+            {{-- A bento of cards, wide and narrow in turn, each with a piece of
+                 the product at its foot. An odd card out takes the full row. --}}
+            @php $spans = [5, 7, 7, 5]; @endphp
+            <ul class="bento">
                 @foreach ($items as $i => $item)
-                    <li class="tile tile--{{ $hues[$i % count($hues)] }}">
-                        @include('site.partials.icon', ['name' => data_get($item, 'icon', 'box'), 'class' => 'tile__mark'])
-                        <h3 class="tile__name" @field($section, "data.items.{$i}.title")>{{ data_get($item, 'title') }}</h3>
-                        @if (filled(data_get($item, 'description')))
-                            <p class="tile__what" @field($section, "data.items.{$i}.description")>{{ data_get($item, 'description') }}</p>
-                        @endif
-                        @if (filled(data_get($item, 'url')) && filled(data_get($item, 'link_label')))
-                            <a class="link tile__go" href="{{ data_get($item, 'url') }}"><span @field($section, "data.items.{$i}.link_label")>{{ data_get($item, 'link_label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
-                        @endif
+                    @php $span = ($i === count($items) - 1 && $i % 2 === 0) ? 12 : $spans[$i % 4]; @endphp
+                    <li class="card card--{{ $span }} card--{{ $hues[$i % count($hues)] }}">
+                        <div class="card__text">
+                            @include('site.partials.icon', ['name' => data_get($item, 'icon', 'box'), 'class' => 'card__mark'])
+                            <h3 class="card__name" @field($section, "data.items.{$i}.title")>{{ data_get($item, 'title') }}</h3>
+                            @if (filled(data_get($item, 'description')))
+                                <p class="card__what" @field($section, "data.items.{$i}.description")>{{ data_get($item, 'description') }}</p>
+                            @endif
+                            @if (filled(data_get($item, 'url')) && filled(data_get($item, 'link_label')))
+                                <a class="link card__go" href="{{ data_get($item, 'url') }}"><span @field($section, "data.items.{$i}.link_label")>{{ data_get($item, 'link_label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                            @endif
+                        </div>
+                        @include('site.themes.shopfront.partials.fragment', ['item' => $item])
                     </li>
                 @endforeach
             </ul>

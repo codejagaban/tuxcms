@@ -160,7 +160,7 @@ if (!calm && !editing) {
   });
 
   // Lists arrive one item after another.
-  const groups = ['.tiles > *', '.wall > *', '.tally__list > *', '.words > *', '.staff > *', '.asks > *', '.roles > *', '.reach > *'];
+  const groups = ['.bento > *', '.bit__log > *', '.bit__stack > *', '.wall > *', '.tally__list > *', '.words > *', '.staff > *', '.asks > *', '.roles > *', '.reach > *'];
   groups.forEach((selector) => {
     const items = document.querySelectorAll(selector);
     if (!items.length) return;
