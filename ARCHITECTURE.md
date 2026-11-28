@@ -51,9 +51,11 @@ build wrote, with a hash. Files that are no longer produced are removed; files
 the build never wrote are never touched. That is what keeps `site:build` from
 deleting the dashboard, the compiled CSS or the media symlink.
 
-**It refuses reserved slugs.** `config/site.php` lists `admin`, `api`, `build`,
-`storage` and `up`. Each is a real directory in the document root, so a page at
-`/admin` would otherwise write `admin/index.html` straight over the dashboard.
+**It refuses reserved slugs.** `config/site.php` lists `admin`, `api`, `blog`,
+`build`, `storage` and `up`. Most are real directories in the document root, so
+a page at `/admin` would otherwise write `admin/index.html` straight over the
+dashboard; `blog` is where the build writes the blog, which would write over
+the page.
 
 A build emits a page per published page, the careers listing and a page per
 published vacancy, `sitemap.xml`, `robots.txt`, `llms.txt` and `404.html`.

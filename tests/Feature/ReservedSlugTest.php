@@ -31,6 +31,13 @@ class ReservedSlugTest extends TestCase
         $this->assertDatabaseMissing('pages', ['slug' => 'admin']);
     }
 
+    public function test_the_blog_address_is_kept_for_the_blog(): void
+    {
+        $this->postJson('/api/v1/pages', ['title' => 'Blog'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['slug' => 'The slug "blog" is reserved by the CMS. Choose another.']);
+    }
+
     public function test_it_rejects_a_title_that_would_generate_a_reserved_slug(): void
     {
         $this->postJson('/api/v1/pages', ['title' => 'Admin'])
