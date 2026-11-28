@@ -1,0 +1,665 @@
+{
+  "hero": {
+    "label": "Hero",
+    "blurb": "Large banner with heading and call-to-action.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Headline",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Supporting text",
+        "inspector": false
+      },
+      "data.subheading": {
+        "type": "text",
+        "label": "Eyebrow text",
+        "inspector": false
+      },
+      "data.alignment": {
+        "type": "select",
+        "label": "Alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          }
+        ]
+      },
+      "data.background_image": {
+        "type": "text",
+        "label": "Background image URL",
+        "placeholder": "https://…"
+      },
+      "data.image": {
+        "type": "text",
+        "label": "Feature image URL",
+        "placeholder": "/themes/… or https://…"
+      },
+      "data.primary_cta.label": {
+        "type": "text",
+        "label": "Primary button label",
+        "inspector": false
+      },
+      "data.primary_cta.url": {
+        "type": "url",
+        "label": "Primary button link",
+        "placeholder": "/contact"
+      },
+      "data.secondary_cta.label": {
+        "type": "text",
+        "label": "Secondary button label",
+        "inspector": false
+      },
+      "data.secondary_cta.url": {
+        "type": "url",
+        "label": "Secondary button link",
+        "placeholder": "/about"
+      }
+    },
+    "defaults": {
+      "title": "Your headline goes here",
+      "content": "A short supporting sentence that explains the value.",
+      "data": {
+        "subheading": "Eyebrow text",
+        "alignment": "center",
+        "background_image": "",
+        "image": "",
+        "primary_cta": {
+          "label": "Get started",
+          "url": "/contact"
+        },
+        "secondary_cta": {
+          "label": "Learn more",
+          "url": "/about"
+        }
+      }
+    }
+  },
+  "text": {
+    "label": "Text",
+    "blurb": "A rich text content block.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Text",
+        "inspector": false
+      },
+      "data.eyebrow": {
+        "type": "text",
+        "label": "Eyebrow text"
+      },
+      "data.image": {
+        "type": "text",
+        "label": "Image URL",
+        "placeholder": "/themes/… or https://…"
+      },
+      "data.image_alt": {
+        "type": "text",
+        "label": "Image alt text"
+      }
+    },
+    "defaults": {
+      "title": "Section heading",
+      "content": "Write your content here. Click to edit this text directly.",
+      "data": {
+        "eyebrow": "",
+        "image": "",
+        "image_alt": ""
+      }
+    }
+  },
+  "features": {
+    "label": "Features",
+    "blurb": "A grid of feature cards (icon, title, description).",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.columns": {
+        "type": "select",
+        "label": "Columns",
+        "options": [
+          {
+            "value": 2,
+            "label": "2 columns"
+          },
+          {
+            "value": 3,
+            "label": "3 columns"
+          }
+        ]
+      },
+      "data.items": {
+        "type": "list",
+        "label": "Feature",
+        "item": {
+          "icon": {
+            "type": "text",
+            "label": "Icon name",
+            "default": "star"
+          },
+          "title": {
+            "type": "text",
+            "label": "Title",
+            "inspector": false,
+            "default": "New feature"
+          },
+          "description": {
+            "type": "textarea",
+            "label": "Description",
+            "inspector": false,
+            "default": "Describe the benefit here."
+          },
+          "image": {
+            "type": "text",
+            "label": "Image URL"
+          },
+          "url": {
+            "type": "url",
+            "label": "Link URL",
+            "placeholder": "Booking or details URL"
+          },
+          "link_label": {
+            "type": "text",
+            "label": "Link label"
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "What we offer",
+      "content": "",
+      "data": {
+        "columns": 3,
+        "items": [
+          {
+            "icon": "sparkles",
+            "title": "Feature one",
+            "description": "Describe the benefit here.",
+            "image": "",
+            "url": "",
+            "link_label": ""
+          },
+          {
+            "icon": "zap",
+            "title": "Feature two",
+            "description": "Describe the benefit here.",
+            "image": "",
+            "url": "",
+            "link_label": ""
+          },
+          {
+            "icon": "shield",
+            "title": "Feature three",
+            "description": "Describe the benefit here.",
+            "image": "",
+            "url": "",
+            "link_label": ""
+          }
+        ]
+      }
+    }
+  },
+  "stats": {
+    "label": "Stats",
+    "blurb": "A row of numbers / counters.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.items": {
+        "type": "list",
+        "label": "Stat",
+        "item": {
+          "value": {
+            "type": "text",
+            "label": "Value",
+            "inspector": false,
+            "default": "0"
+          },
+          "label": {
+            "type": "text",
+            "label": "Label",
+            "inspector": false,
+            "default": "New stat"
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "By the numbers",
+      "content": "",
+      "data": {
+        "items": [
+          {
+            "value": "100+",
+            "label": "Projects"
+          },
+          {
+            "value": "4.9/5",
+            "label": "Rating"
+          },
+          {
+            "value": "10",
+            "label": "Years"
+          }
+        ]
+      }
+    }
+  },
+  "testimonials": {
+    "label": "Testimonials",
+    "blurb": "Quotes from customers.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.items": {
+        "type": "list",
+        "label": "Quote",
+        "item": {
+          "quote": {
+            "type": "textarea",
+            "label": "Quote",
+            "inspector": false,
+            "default": "A short, specific quote."
+          },
+          "author": {
+            "type": "text",
+            "label": "Author",
+            "inspector": false,
+            "default": "Full Name"
+          },
+          "role": {
+            "type": "text",
+            "label": "Role",
+            "inspector": false,
+            "default": "Title, Company"
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "What people say",
+      "content": "",
+      "data": {
+        "items": [
+          {
+            "quote": "A glowing quote about the work.",
+            "author": "Full Name",
+            "role": "Title, Company"
+          }
+        ]
+      }
+    }
+  },
+  "team": {
+    "label": "Team",
+    "blurb": "People cards with name, role and bio.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.members": {
+        "type": "list",
+        "label": "Member",
+        "item": {
+          "name": {
+            "type": "text",
+            "label": "Name",
+            "inspector": false,
+            "default": "Full Name"
+          },
+          "role": {
+            "type": "text",
+            "label": "Role",
+            "inspector": false,
+            "default": "Role"
+          },
+          "bio": {
+            "type": "textarea",
+            "label": "Bio",
+            "inspector": false,
+            "default": "One line about this person."
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "The team",
+      "content": "",
+      "data": {
+        "members": [
+          {
+            "name": "Full Name",
+            "role": "Role",
+            "bio": "One line about this person."
+          }
+        ]
+      }
+    }
+  },
+  "faq": {
+    "label": "FAQ",
+    "blurb": "Question and answer pairs.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.items": {
+        "type": "list",
+        "label": "Question",
+        "item": {
+          "question": {
+            "type": "text",
+            "label": "Question",
+            "inspector": false,
+            "default": "A common question?"
+          },
+          "answer": {
+            "type": "textarea",
+            "label": "Answer",
+            "inspector": false,
+            "default": "A clear, helpful answer."
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "Frequently asked questions",
+      "content": "",
+      "data": {
+        "items": [
+          {
+            "question": "A common question?",
+            "answer": "A clear, helpful answer."
+          }
+        ]
+      }
+    }
+  },
+  "cta": {
+    "label": "Call to action",
+    "blurb": "A focused prompt with a button.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Text",
+        "inspector": false
+      },
+      "data.primary_cta.label": {
+        "type": "text",
+        "label": "Button label",
+        "inspector": false
+      },
+      "data.primary_cta.url": {
+        "type": "url",
+        "label": "Button link",
+        "placeholder": "/contact"
+      }
+    },
+    "defaults": {
+      "title": "Ready to get started?",
+      "content": "A single sentence nudging the visitor to act.",
+      "data": {
+        "primary_cta": {
+          "label": "Get in touch",
+          "url": "/contact"
+        }
+      }
+    }
+  },
+  "contact": {
+    "label": "Contact details",
+    "blurb": "Email, phone, address and hours.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.email": {
+        "type": "text",
+        "label": "Email",
+        "inspector": false
+      },
+      "data.phone": {
+        "type": "text",
+        "label": "Phone",
+        "inspector": false
+      },
+      "data.address": {
+        "type": "textarea",
+        "label": "Address",
+        "inspector": false
+      },
+      "data.hours": {
+        "type": "text",
+        "label": "Hours",
+        "inspector": false
+      },
+      "data.eyebrow": {
+        "type": "text",
+        "label": "Eyebrow text"
+      },
+      "data.image": {
+        "type": "text",
+        "label": "Image URL",
+        "placeholder": "/themes/… or https://…"
+      },
+      "data.image_alt": {
+        "type": "text",
+        "label": "Image alt text"
+      }
+    },
+    "defaults": {
+      "title": "Contact details",
+      "content": "",
+      "data": {
+        "email": "hello@example.com",
+        "phone": "+1 555 000 0000",
+        "address": "123 Example St, City",
+        "hours": "Mon–Fri, 9:00–17:00",
+        "eyebrow": "",
+        "image": "",
+        "image_alt": ""
+      }
+    }
+  },
+  "contact_form": {
+    "label": "Contact form",
+    "blurb": "A contact form powered by Web3Forms.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "content": {
+        "type": "textarea",
+        "label": "Intro",
+        "inspector": false
+      },
+      "data.access_key": {
+        "type": "text",
+        "label": "Web3Forms access key",
+        "placeholder": "Leave blank to use the site default"
+      },
+      "data.subject": {
+        "type": "text",
+        "label": "Email subject",
+        "placeholder": "New enquiry"
+      },
+      "data.button_label": {
+        "type": "text",
+        "label": "Button label",
+        "placeholder": "Send message"
+      },
+      "data.success_message": {
+        "type": "textarea",
+        "label": "Success message"
+      },
+      "data.fields": {
+        "type": "list",
+        "label": "Field",
+        "item": {
+          "name": {
+            "type": "text",
+            "label": "Name",
+            "inspector": false,
+            "default": "field"
+          },
+          "label": {
+            "type": "text",
+            "label": "Label",
+            "inspector": false,
+            "default": "New field"
+          },
+          "type": {
+            "type": "text",
+            "label": "Type",
+            "inspector": false,
+            "default": "text"
+          },
+          "required": {
+            "type": "boolean",
+            "label": "Required",
+            "inspector": false,
+            "default": false
+          }
+        }
+      }
+    },
+    "defaults": {
+      "title": "Send a message",
+      "content": "",
+      "data": {
+        "access_key": "",
+        "subject": "New enquiry",
+        "button_label": "Send message",
+        "success_message": "Thanks — we'll be in touch shortly.",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Name",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "email",
+            "label": "Email",
+            "type": "email",
+            "required": true
+          },
+          {
+            "name": "message",
+            "label": "Message",
+            "type": "textarea",
+            "required": true
+          }
+        ]
+      }
+    }
+  },
+  "map": {
+    "label": "Map",
+    "blurb": "An embedded location map.",
+    "fields": {
+      "title": {
+        "type": "text",
+        "label": "Heading",
+        "inspector": false
+      },
+      "data.query": {
+        "type": "text",
+        "label": "Address query",
+        "placeholder": "Street, city, postcode"
+      },
+      "data.lat": {
+        "type": "number",
+        "label": "Latitude"
+      },
+      "data.lng": {
+        "type": "number",
+        "label": "Longitude"
+      },
+      "data.zoom": {
+        "type": "number",
+        "label": "Zoom"
+      },
+      "data.label": {
+        "type": "text",
+        "label": "Label",
+        "placeholder": "Our office"
+      }
+    },
+    "defaults": {
+      "title": "Find us",
+      "content": "",
+      "data": {
+        "lat": 51.5074,
+        "lng": -0.1278,
+        "zoom": 14,
+        "label": "Our office",
+        "query": ""
+      }
+    }
+  }
+}

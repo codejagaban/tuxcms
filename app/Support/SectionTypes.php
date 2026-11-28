@@ -16,6 +16,42 @@ class SectionTypes
         return config('tuxcms.pages.section_types', []);
     }
 
+    /**
+     * The built-in types described the way theme.json describes a theme's:
+     * label, blurb, fields and defaults. They live in
+     * resources/sections/base.json, which is also where a new section's
+     * defaults come from, so the editor and the tests read one source.
+     *
+     * @return array<string, array{label: string, blurb: string, fields: array, defaults: array}>
+     */
+    public static function baseSchema(): array
+    {
+        static $schema;
+
+        return $schema ??= collect(json_decode((string) file_get_contents(resource_path('sections/base.json')), true, flags: JSON_THROW_ON_ERROR))
+            ->map(fn ($definition, $type) => ThemeManifest::type('(built-in)', $type, $definition))
+            ->all();
+    }
+
+    /**
+     * Every type a page drawn by this theme may hold, built-in first, each
+     * with its schema and where it comes from.
+     *
+     * @return array<int, array{type: string, source: string, label: string, blurb: string, fields: array, defaults: array}>
+     */
+    public static function schema(?string $theme): array
+    {
+        $types = [];
+        foreach (self::baseSchema() as $type => $definition) {
+            $types[] = ['type' => $type, 'source' => 'base', ...$definition];
+        }
+        foreach (ThemeManifest::sections($theme) as $type => $definition) {
+            $types[] = ['type' => $type, 'source' => 'theme', ...$definition];
+        }
+
+        return $types;
+    }
+
     /** @return array<int, string> every type a page drawn by this theme (or by the base views) may hold */
     public static function allowed(?string $theme): array
     {

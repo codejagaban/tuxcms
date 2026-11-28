@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\SearchController;
+use App\Http\Controllers\Api\V1\SectionTypeController;
 use App\Http\Controllers\Api\V1\SeoController;
 use App\Http\Controllers\Api\V1\SettingController;
 use App\Http\Controllers\Api\V1\SiteBuildController;
@@ -54,6 +55,9 @@ Route::prefix('v1')->group(function () {
         Route::get('pages/{page}/preview', [PageController::class, 'preview']);
         Route::put('pages/{page}', [PageController::class, 'update']);
         Route::delete('pages/{page}', [PageController::class, 'destroy']);
+
+        // The section types a page may hold, and their fields, for its template.
+        Route::get('section-types', [SectionTypeController::class, 'index']);
 
         // Jobs
         Route::get('jobs', [JobPostController::class, 'index']);

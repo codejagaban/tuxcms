@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\View;
  *     label        what the editor calls it
  *     required     true when a page cannot be saved without it
  *     options      select only: the choices, as strings or {value, label}
+ *                  (a value may be a number)
  *     item         list only: an object of fields, or the name of a scalar type
  *     placeholder  optional hint in the editor's input
  *     default      optional value a new list item starts with
@@ -243,8 +244,9 @@ class ThemeManifest
             if (is_string($option)) {
                 return ['value' => $option, 'label' => $option];
             }
-            if (is_array($option) && is_string($option['value'] ?? null)) {
-                return ['value' => $option['value'], 'label' => is_string($option['label'] ?? null) ? $option['label'] : $option['value']];
+            // A value may be a number, for a choice stored as one (a column count, say).
+            if (is_array($option) && (is_string($option['value'] ?? null) || is_int($option['value'] ?? null) || is_float($option['value'] ?? null))) {
+                return ['value' => $option['value'], 'label' => is_string($option['label'] ?? null) ? $option['label'] : (string) $option['value']];
             }
             throw $fail();
         }, $options);
