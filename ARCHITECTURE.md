@@ -249,6 +249,13 @@ with `@field`, and each picture with `@image`; an element should hold exactly
 that field's text, and a field written as several paragraphs is marked on the
 element that wraps them.
 
+`tests/Feature/ThemeMarkerContractTest.php` holds every theme to this. It
+renders every section type, with the defaults a new section starts with
+(`dashboard/src/lib/sectionDefaults.json`, which the editor reads too), through
+each installed theme and the base views, and fails naming the theme, section
+type, view and field for any field shown without its marker. Text a view
+deliberately leaves to the panel is listed in the test with its reason.
+
 `php artisan media:import-theme` copies the photographs a theme's pages use
 into the media library once, so editors can reuse them without hunting through
 the filesystem.

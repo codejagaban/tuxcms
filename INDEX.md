@@ -96,5 +96,8 @@ at 03:30 and the spam prune at 03:10.
 output, page paths and reserved slugs, revisions, SEO, navigation, enquiries,
 job posts and applications, settings, media and theme imports.
 
+`ThemeMarkerContractTest` checks that every installed theme and the base views
+mark every field they show.
+
 `dashboard/tests/e2e` holds the Playwright specs for the page editor and the
 applications screen, including an axe accessibility check.
