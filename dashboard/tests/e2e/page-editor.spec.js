@@ -6,6 +6,31 @@ import AxeBuilder from '@axe-core/playwright';
 const BASE_TYPES = Object.entries(JSON.parse(readFileSync(new URL('../../../resources/sections/base.json', import.meta.url), 'utf8')))
   .map(([type, definition]) => ({ type, source: 'base', ...definition }));
 
+// A type a theme declares in its theme.json, as the server passes it on for
+// a page that theme draws.
+const THEME_TYPES = {
+  schematest: [{
+    type: 'offers',
+    source: 'theme',
+    label: 'Offers',
+    blurb: 'Priced offers with what each includes.',
+    fields: {
+      title: { type: 'text', label: 'Heading' },
+      'data.items': {
+        type: 'list',
+        label: 'Offer',
+        item: {
+          name: { type: 'text', label: 'Name', required: true },
+          price: { type: 'text', label: 'Price', required: true },
+          features: { type: 'list', label: 'Included', item: 'text' },
+          url: { type: 'url', label: 'Booking link' },
+        },
+      },
+    },
+    defaults: { title: 'Offers', content: '', data: { items: [] } },
+  }],
+};
+
 const pageRecord = (id, title, slug, isHomepage = false) => ({
   id,
   title,
@@ -47,6 +72,13 @@ const twinRecord = () => ({
 // opposite order to the list, so anything pairing headings by their words
 // would pair each with the wrong section.
 const previewBody = (record) => {
+  if (record.template === 'schematest') {
+    return `<!doctype html><html data-tuxcms-preview><head></head><body><main>${record.sections
+      .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2>${(section.data.items || [])
+        .map((item, index) => `<article><h3 data-tuxcms-field="${section.id}:data.items.${index}.name">${item.name}</h3><p data-tuxcms-field="${section.id}:data.items.${index}.price">${item.price}</p></article>`)
+        .join('')}</section>`)
+      .join('')}</main></body></html>`;
+  }
   if (record.twins) {
     return `<!doctype html><html data-tuxcms-preview><head></head><body><main>${[...record.sections].reverse()
       .map((section) => `<section data-tuxcms-section="${section.id}"><h2 data-tuxcms-field="${section.id}:title">${section.title}</h2><p data-tuxcms-field="${section.id}:data.note">${section.data.note ?? 'A note'}</p></section>`)
@@ -64,6 +96,7 @@ async function mockEditor(page) {
     1: pageRecord(1, 'Home', 'home', true),
     2: pageRecord(2, 'About', 'about'),
     3: twinRecord(),
+    4: { ...pageRecord(4, 'Prices', 'prices'), template: 'schematest', sections: [] },
   };
   const saves = [];
 
@@ -77,7 +110,8 @@ async function mockEditor(page) {
     const path = url.pathname;
 
     if (path.endsWith('/section-types') && request.method() === 'GET') {
-      return route.fulfill({ json: { data: { theme: url.searchParams.get('template'), types: BASE_TYPES } } });
+      const template = url.searchParams.get('template');
+      return route.fulfill({ json: { data: { theme: template, types: [...BASE_TYPES, ...(THEME_TYPES[template] || [])] } } });
     }
     if (path.endsWith('/auth/me')) {
       return route.fulfill({ json: { data: { id: 1, name: 'Editor', email: 'editor@example.com' } } });
@@ -344,4 +378,41 @@ test('a new page asks to be saved before it can be edited on the page', async ({
   await expect(page.getByText('The page appears here once it is saved.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save page' })).toBeVisible();
   await expect(page.locator('iframe[title="Website preview"]')).toHaveCount(0);
+});
+
+test('a section type the theme declares is added, edited in the panel and on the page, and kept', async ({ page }) => {
+  const { saves } = await mockEditor(page);
+  await page.goto('/dashboard/pages/4/edit');
+
+  // Offered by the page's theme, beside the built-in types.
+  await page.getByRole('button', { name: 'Add' }).click();
+  await page.getByRole('button', { name: /^Offers/ }).click();
+  await page.getByRole('tab', { name: 'Section' }).click();
+
+  // Its list is drawn from the schema: add an item and name it in the panel.
+  await page.getByRole('button', { name: 'Add Offer', exact: true }).click();
+  await page.getByLabel('Offer 1 Name', { exact: true }).fill('Starter');
+  await page.getByRole('button', { name: 'Add Offer 1 Included' }).click();
+  await page.getByLabel('Offer 1 Included 1', { exact: true }).fill('One call');
+
+  await expect.poll(() => saves.at(-1)?.sections[0], { timeout: 10000 }).toMatchObject({
+    type: 'offers',
+    title: 'Offers',
+    data: { items: [{ name: 'Starter', price: 'Price', features: ['One call'], url: '' }] },
+  });
+
+  // Saved, the page is drawn again with the new section, and its text is
+  // edited where it is shown.
+  const preview = page.frameLocator('iframe[title="Website preview"]');
+  const price = preview.locator('[data-tuxcms-field="400:data.items.0.price"]');
+  await expect(price).toHaveAttribute('data-tuxcms-editable', 'true');
+  await price.fill('£40');
+  await price.press('Tab');
+  await expect.poll(() => saves.at(-1)?.sections[0].data.items[0].price, { timeout: 10000 }).toBe('£40');
+
+  await page.reload();
+  await expect(preview.locator('[data-tuxcms-field="400:data.items.0.price"]')).toHaveText('£40');
+  await page.getByRole('tab', { name: 'Section' }).click();
+  await expect(page.getByLabel('Offer 1 Name', { exact: true })).toHaveValue('Starter');
+  await expect(page.getByLabel('Offer 1 Included 1', { exact: true })).toHaveValue('One call');
 });

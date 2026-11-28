@@ -82,14 +82,22 @@ export default function PageEditor() {
     return () => { current = false; };
   }, [previewId, previewRevision]);
 
+  // Which types a page may hold depends on the theme that draws it, so the
+  // list is fetched again when the template changes. The template is typed
+  // by hand, so wait until it settles; a name that is not a template yet
+  // keeps the list that was last good.
   const template = page ? (page.template || 'default') : null;
   useEffect(() => {
     if (!template) return undefined;
     let current = true;
-    sectionTypeAPI.list(template)
-      .then((res) => { if (current) setSectionTypes(res.data.data.types); })
-      .catch((error) => console.error('Could not load the section types:', error));
-    return () => { current = false; };
+    const timer = window.setTimeout(() => {
+      sectionTypeAPI.list(template)
+        .then((res) => { if (current) setSectionTypes(res.data.data.types); })
+        .catch((error) => {
+          if (error.response?.status !== 422) console.error('Could not load the section types:', error);
+        });
+    }, 300);
+    return () => { current = false; window.clearTimeout(timer); };
   }, [template]);
 
   // ── Load ────────────────────────────────────────────────
@@ -100,8 +108,11 @@ export default function PageEditor() {
         setLoading(true);
 
         if (isNew) {
-          const hero = createSection('hero');
+          // A new page starts with a hero, made from the types it may hold.
+          const types = (await sectionTypeAPI.list('default')).data.data.types;
+          const hero = createSection('hero', types);
           if (active) {
+            setSectionTypes(types);
             setPage({ title: 'Untitled page', slug: '', status: 'draft', template: 'default', is_homepage: false, excerpt: '', content: '', seo: {}, sections: [hero] });
             setSelectedUid(hero._uid);
           }
@@ -165,7 +176,7 @@ export default function PageEditor() {
   };
 
   const addSection = (type) => {
-    const s = createSection(type);
+    const s = createSection(type, sectionTypes);
     mutate((p) => ({ ...p, sections: [...p.sections, s] }));
     setSelectedUid(s._uid);
   };
