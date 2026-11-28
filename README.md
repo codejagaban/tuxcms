@@ -92,13 +92,16 @@ A theme is a directory of Blade views under
 `resources/views/site/themes/<name>` with its static assets in
 `public/themes/<name>`. Set `SITE_THEME` to choose one.
 
-Shopfront is the theme a new install starts with. Its colours are the
-dashboard's own paper and ink, light or dark to match the visitor's device, and
-its titles sit on sign boards set in Le Murmure (SIL Open Font License,
-bundled). It renders every section type, the careers pages and the 404, and its
-contact form delivers to the Enquiries inbox in the dashboard. Photographs are
-shown in black and white, and features that carry photographs become a wall of
-work.
+Shopfront is the theme a new install starts with, and the demo uses it as
+TuxCMS's own product site. It is drawn with the dashboard's own tokens: the
+same paper and ink, light or dark to match the visitor's device, Uncut Sans and
+Geist Mono (both SIL Open Font License, bundled), and the dashboard's marker
+colours. Its front page shows a working copy of the page editor holding that
+very page: the words in its preview can be typed over, it switches between
+desktop and phone widths, and Publish runs a mock build. Nothing in it is
+saved. The theme renders every section type, the careers pages and the 404,
+and its contact form delivers to the Enquiries inbox in the dashboard.
+Features that carry photographs become a wall.
 
 Its motion is written with [Motion](https://motion.dev) in
 `resources/js/themes/shopfront.js` and bundled into the theme with
@@ -116,10 +119,10 @@ bin/demo.sh
 ```
 
 It serves the site, the dashboard at `/admin` and the API on one port, 8090.
-The demo content uses every part of the CMS: all the section types, nested
-service pages, photographs in the media library, a draft and a scheduled page,
-vacancies in each status, and an inbox with messages the spam filter is
-holding. Its uploads go to a directory of their own as well.
+The demo content is TuxCMS's own website and uses every part of the CMS: all
+the section types, nested feature pages, photographs in the media library, a
+draft and a scheduled page, vacancies in each status, and an inbox with
+messages the spam filter is holding. Its uploads go to a directory of their own as well.
 
 ## Tests
 
