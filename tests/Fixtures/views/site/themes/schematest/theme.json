@@ -1,0 +1,27 @@
+{
+  "sections": {
+    "offers": {
+      "label": "Offers",
+      "blurb": "Priced offers with what each includes.",
+      "fields": {
+        "title": { "type": "text", "label": "Heading" },
+        "data.intro": { "type": "textarea", "label": "Intro" },
+        "data.layout": { "type": "select", "label": "Layout", "options": ["grid", "list"] },
+        "data.items": {
+          "type": "list",
+          "label": "Offer",
+          "item": {
+            "name": { "type": "text", "label": "Name", "required": true },
+            "price": { "type": "text", "label": "Price", "required": true },
+            "features": { "type": "list", "label": "Included", "item": "text" },
+            "seats": { "type": "number", "label": "Seats" },
+            "featured": { "type": "boolean", "label": "Featured" },
+            "url": { "type": "url", "label": "Booking link" },
+            "image": { "type": "image", "label": "Photo" }
+          }
+        }
+      },
+      "defaults": { "title": "Offers", "data": { "intro": "", "layout": "grid", "items": [] } }
+    }
+  }
+}

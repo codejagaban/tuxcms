@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Page;
 use App\Models\Setting;
+use Illuminate\Support\Facades\View;
 
 /**
  * Site-wide context for the public site.
@@ -18,13 +19,21 @@ class Site
      * Adding a theme folder is all it takes for its name to be accepted as a
      * page template and for its pages to be edited on the live preview.
      *
+     * Every view location is searched, not only resources/views, so a test
+     * that adds a location of its own can install a fixture theme.
+     *
      * @return array<int, string>
      */
     public static function themes(): array
     {
-        $directories = glob(resource_path('views/site/themes/*'), GLOB_ONLYDIR) ?: [];
+        $themes = [];
+        foreach (View::getFinder()->getPaths() as $root) {
+            foreach (glob($root.'/site/themes/*', GLOB_ONLYDIR) ?: [] as $directory) {
+                $themes[] = basename($directory);
+            }
+        }
 
-        return array_values(array_map('basename', $directories));
+        return array_values(array_unique($themes));
     }
 
     /** Every template a page may use: the built-in layouts plus the themes. */
