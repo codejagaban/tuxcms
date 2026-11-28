@@ -268,9 +268,12 @@ the live preview.
 A view is resolved in order: the page's own template if it names a theme, then
 `SITE_THEME`, then the unthemed views in `resources/views/site`. There are no
 unthemed careers views, so those fall back to Shopfront when `SITE_THEME` is
-unset or the theme has none of its own. The blog has unthemed views in
-`resources/views/site/blog`, which every theme uses until it supplies its own
-`blog/index.blade.php` and `blog/show.blade.php`. No bundled theme does yet.
+unset or the theme has none of its own. The blog is different: each theme
+draws its own with `blog/index.blade.php` and `blog/show.blade.php`, as
+Shopfront does, and a theme without them gets the plain views in
+`resources/views/site/blog` set inside its own `layout.blade.php`. Those plain
+views take their font and colours from the theme, so the blog still matches
+the site, and they never borrow another theme's blog.
 
 Shopfront is the bundled theme and the default in `.env.example`. A theme's
 stylesheet lives at `public/themes/<name>/css/site.css` and is minified beside
