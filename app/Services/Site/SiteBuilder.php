@@ -7,8 +7,11 @@ use App\Models\Page;
 use App\Services\Seo\LlmsTxtGenerator;
 use App\Services\Seo\RobotsGenerator;
 use App\Services\Seo\SitemapGenerator;
+use App\Support\Preview;
 use App\Support\Site;
+use App\Support\ThemeManifest;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 
@@ -82,11 +85,32 @@ class SiteBuilder
 
         $page->load(['sections' => fn ($q) => $q->visible()->orderBy('order'), 'seo', 'media', 'parent']);
 
+        if (Preview::active()) {
+            $this->warnOfUndrawnThemeTypes($page);
+        }
+
         return View::make($this->themeView('page', $page->template), [
             'page' => $page,
             'navigation' => $this->navigation->build($page),
             'buildYear' => date('Y'),
         ])->render();
+    }
+
+    /**
+     * A theme that declares a section type in theme.json but ships no view
+     * for it draws the section with its fallback. That is safe, but almost
+     * certainly not what the theme meant, so say so while it is edited.
+     */
+    private function warnOfUndrawnThemeTypes(Page $page): void
+    {
+        $theme = Site::pageTheme($page->template);
+        $declared = ThemeManifest::sections($theme);
+
+        foreach ($page->sections->pluck('type')->unique() as $type) {
+            if (isset($declared[$type]) && ! View::exists("site.themes.{$theme}.sections.".str_replace('_', '-', $type))) {
+                Log::warning("Theme \"{$theme}\" declares the section type \"{$type}\" in theme.json but has no sections/".str_replace('_', '-', $type).'.blade.php; it is drawn with the fallback.');
+            }
+        }
     }
 
     /**
