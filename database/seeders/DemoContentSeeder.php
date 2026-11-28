@@ -104,9 +104,9 @@ class DemoContentSeeder extends Seeder
                 'data' => [
                     'columns' => 2,
                     'items' => [
-                        ['icon' => 'layers', 'title' => 'Pages from sections', 'description' => 'Build a page from eleven section types and reorder them by dragging. Nest pages under each other and the menu follows.', 'url' => '/features/editing/', 'link_label' => 'Editing'],
+                        ['icon' => 'layers', 'title' => 'Pages from sections', 'description' => 'Build a page from eleven section types and reorder them by dragging. Nest pages under each other and the menu follows.', 'url' => '/features/themes-and-sections/', 'link_label' => 'Themes and sections'],
                         ['icon' => 'zap', 'title' => 'Static, so it is fast', 'description' => 'Publishing writes every page out as HTML. Visitors never wait on a database, and there is nothing on the server to break into.', 'url' => '/features/publishing/', 'link_label' => 'Publishing'],
-                        ['icon' => 'shield', 'title' => 'An inbox that filters spam', 'description' => 'Contact forms and job applications land in the dashboard. Anything that looks like spam is held back for you to check.'],
+                        ['icon' => 'shield', 'title' => 'An inbox that filters spam', 'description' => 'Contact forms and job applications land in the dashboard. Anything that looks like spam is held back for you to check.', 'url' => '/features/inbox/', 'link_label' => 'Inbox'],
                     ],
                 ],
             ],
@@ -119,9 +119,9 @@ class DemoContentSeeder extends Seeder
                     'columns' => 1,
                     'items' => [
                         ['icon' => 'compass', 'title' => 'Services, page by page', 'description' => 'A page for each thing you sell, grouped under one heading in the menu.', 'url' => '/features/', 'link_label' => 'All features'],
-                        ['icon' => 'briefcase', 'title' => 'A careers page', 'description' => 'Post a role, set a closing date and read applications with their CVs attached.', 'url' => '/careers/', 'link_label' => 'Open roles'],
-                        ['icon' => 'image', 'title' => 'A media library', 'description' => 'Upload a photograph once and use it on any page, with its alt text kept beside it.'],
-                        ['icon' => 'search', 'title' => 'Search that works', 'description' => 'Titles, descriptions and structured data are written for every page as it is published.'],
+                        ['icon' => 'briefcase', 'title' => 'A careers page', 'description' => 'Post a role, set a closing date and read applications with their CVs attached.', 'url' => '/features/careers/', 'link_label' => 'Careers'],
+                        ['icon' => 'image', 'title' => 'A media library', 'description' => 'Upload a photograph once and use it on any page, with its alt text kept beside it.', 'url' => '/features/media-library/', 'link_label' => 'Media library'],
+                        ['icon' => 'search', 'title' => 'Search that works', 'description' => 'Titles, descriptions and structured data are written for every page as it is published.', 'url' => '/features/search-and-seo/', 'link_label' => 'Search and SEO'],
                     ],
                 ],
             ],
