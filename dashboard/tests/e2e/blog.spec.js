@@ -251,3 +251,35 @@ test('an earlier version of a post is restored into the editor', async ({ page }
   // Restored, not saved: it is saved like any other change.
   expect(saved).toBeNull();
 });
+
+test('a new draft saves itself once it has a title, and keeps what is typed meanwhile', async ({ page }) => {
+  await page.goto('/dashboard/blog/create');
+
+  const title = page.getByRole('textbox', { name: 'Post title' });
+  await title.fill('A brand new post');
+  await expect.poll(() => created, { timeout: 8000 }).toMatchObject({ title: 'A brand new post', status: 'draft' });
+  await expect(page).toHaveURL(/\/dashboard\/blog\/8\/edit$/);
+  await expect(page.getByRole('status')).toHaveText(/Saved at/);
+
+  // Writing carries on in the same editor, and later saves update the post.
+  await page.getByLabel('Post body').click();
+  await page.keyboard.type('First words of the post.');
+  await expect.poll(() => updates.at(-1), { timeout: 8000 }).toMatchObject({ autosave: true, status: 'draft' });
+  expect(updates.at(-1).body).toContain('First words of the post.');
+  await expect(title).toHaveValue('A brand new post');
+  expect(created).not.toBeNull();
+});
+
+test('a published post waits for Update instead of saving itself', async ({ page }) => {
+  await page.route('**/api/v1/posts/7', async (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ json: { data: { ...post, status: 'published', published_at: '2026-11-20T09:00:00Z' } } });
+    }
+    return route.fallback();
+  });
+  await page.goto('/dashboard/blog/7/edit');
+
+  await page.getByRole('textbox', { name: 'Post title' }).fill('Changed on a live post');
+  await page.waitForTimeout(4000);
+  expect(saved).toBeNull();
+});

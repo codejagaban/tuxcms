@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, ArrowUpRight, ClockCounterClockwise, DeviceMobile, Eye, GlobeHemisphereWest, Image as ImageIcon, Monitor, PencilSimpleLine, Trash } from '../lib/icons';
@@ -47,6 +47,11 @@ export default function PostEditor() {
   const [pickingCover, setPickingCover] = useState(false);
   const [mode, setMode] = useState('write');
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [autosaved, setAutosaved] = useState({ state: 'idle', at: null });
+  // The post's id as soon as it exists, before the address catches up, and
+  // the autosave under way, which a save the editor asks for waits on.
+  const postId = useRef(id || null);
+  const pending = useRef(null);
   const [device, setDevice] = useState(() => (window.innerWidth < 768 ? 'phone' : 'desktop'));
   const [preview, setPreview] = useState({ html: '', loading: false, failed: false });
 
@@ -59,7 +64,9 @@ export default function PostEditor() {
   }, []);
 
   useEffect(() => {
-    if (isNew) return;
+    // A post this editor has just created is already in the form; loading it
+    // again would replace what was typed since.
+    if (isNew || (String(postId.current) === String(id) && !loading)) return;
     let cancelled = false;
     (async () => {
       try {
@@ -74,7 +81,7 @@ export default function PostEditor() {
       }
     })();
     return () => { cancelled = true; };
-  }, [id, isNew, navigate]);
+  }, [id, isNew, navigate, loading]);
 
   // Leaving the tab with unsaved writing asks first.
   useEffect(() => {
@@ -100,6 +107,7 @@ export default function PostEditor() {
 
     setBusy(status === 'draft' ? 'draft' : 'publish');
     setErrors({});
+    await pending.current;
     const payload = {
       ...form,
       title: form.title.trim(),
@@ -111,8 +119,9 @@ export default function PostEditor() {
     };
 
     try {
-      const response = isNew ? await postAPI.create(payload) : await postAPI.update(id, payload);
+      const response = postId.current ? await postAPI.update(postId.current, payload) : await postAPI.create(payload);
       const post = response.data.data;
+      postId.current = post.id;
       const wasLive = live?.status === 'published';
       setForm(fromServer(post)); setSaved(fromServer(post)); setLive(post); setSlugEdited(true);
 
@@ -136,6 +145,44 @@ export default function PostEditor() {
       setBusy('');
     }
   };
+
+  // A draft saves itself a few seconds after the writing stops, and a new
+  // one does once it has a title, so nothing written is lost. A published
+  // post does not: a saved change would go live with the next build, so it
+  // waits for Update.
+  useEffect(() => {
+    if (!dirty || busy || loading || live?.status === 'published' || !form.title.trim()) return undefined;
+    const timer = setTimeout(() => {
+      const sent = form;
+      const payload = { ...sent, title: sent.title.trim(), slug: slugEdited ? sent.slug : '', status: 'draft', published_at: sent.published_at || null };
+      setAutosaved((current) => ({ ...current, state: 'saving' }));
+      pending.current = (postId.current
+        ? postAPI.update(postId.current, { ...payload, autosave: true })
+        : postAPI.create(payload))
+        .then((response) => {
+          const post = response.data.data;
+          const first = !postId.current;
+          postId.current = post.id;
+          // What was sent is now saved. The server's own copy is not taken
+          // back into the form, so nothing typed meanwhile is lost; only the
+          // address it chose is.
+          const kept = { ...sent, slug: post.slug };
+          setSaved(kept);
+          setForm((current) => ({ ...current, slug: post.slug }));
+          setSlugEdited(true);
+          setLive(post);
+          setErrors({});
+          setAutosaved({ state: 'saved', at: new Date() });
+          if (first) navigate(`/dashboard/blog/${post.id}/edit`, { replace: true });
+        })
+        .catch((error) => {
+          setErrors(error.response?.data?.errors || {});
+          setAutosaved((current) => ({ ...current, state: 'failed' }));
+        })
+        .finally(() => { pending.current = null; });
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [form, dirty, busy, loading, live, slugEdited, navigate]);
 
   // Preview draws the post as the site would, from the form as it is now,
   // so it shows unsaved writing too. It is fetched again each time it opens.
@@ -184,7 +231,14 @@ export default function PostEditor() {
               : <Badge variant={live?.status === 'published' ? 'published' : 'draft'}>{live?.status === 'published' ? 'Published' : 'Draft'}</Badge>}
             {dirty && <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-warn)]" title="Unsaved changes" />}
           </div>
-          <div className="font-data truncate text-[var(--color-muted)]">/blog/{form.slug || '…'}/</div>
+          <div className="flex min-w-0 items-center gap-2 text-[var(--color-muted)]">
+            <span className="font-data truncate">/blog/{form.slug || '…'}/</span>
+            <span className="shrink-0 text-xs" role="status" aria-live="polite">
+              {autosaved.state === 'saving' && 'Saving…'}
+              {autosaved.state === 'saved' && !dirty && `Saved at ${autosaved.at.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`}
+              {autosaved.state === 'failed' && <span className="text-[var(--color-danger)]">Not saved</span>}
+            </span>
+          </div>
         </div>
         <ViewSwitch
           id="post-mode"
