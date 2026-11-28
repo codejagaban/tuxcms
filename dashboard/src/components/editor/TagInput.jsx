@@ -11,13 +11,20 @@ export default function TagInput({ value, onChange, suggestions = [], label = 'T
   const inputId = useId();
   const taken = new Set(value.map((tag) => tag.toLowerCase()));
 
-  const add = (raw) => {
-    const tag = raw.trim().replace(/\s+/g, ' ').slice(0, 50);
+  /** Add one or more typed tags in a single change. */
+  const add = (...raws) => {
     setDraft('');
-    if (!tag || taken.has(tag.toLowerCase()) || value.length >= max) return;
-    // A tag already in use keeps the spelling it was first given.
-    const known = suggestions.find((existing) => existing.toLowerCase() === tag.toLowerCase());
-    onChange([...value, known || tag]);
+    const next = [...value];
+    const seen = new Set(taken);
+    for (const raw of raws) {
+      const tag = raw.trim().replace(/\s+/g, ' ').slice(0, 50);
+      if (!tag || seen.has(tag.toLowerCase()) || next.length >= max) continue;
+      // A tag already in use keeps the spelling it was first given.
+      const known = suggestions.find((existing) => existing.toLowerCase() === tag.toLowerCase());
+      next.push(known || tag);
+      seen.add(tag.toLowerCase());
+    }
+    if (next.length !== value.length) onChange(next);
   };
 
   const remove = (tag) => onChange(value.filter((existing) => existing !== tag));
@@ -45,8 +52,12 @@ export default function TagInput({ value, onChange, suggestions = [], label = 'T
         disabled={value.length >= max}
         onChange={(event) => {
           const next = event.target.value;
-          if (next.includes(',')) next.split(',').slice(0, -1).forEach(add);
-          else setDraft(next);
+          if (!next.includes(',')) { setDraft(next); return; }
+          // Everything before the last comma is done; what follows is still being typed.
+          const parts = next.split(',');
+          const rest = parts.pop();
+          add(...parts);
+          setDraft(rest.trimStart());
         }}
         onKeyDown={(event) => {
           if (event.key === 'Enter') { event.preventDefault(); add(draft); }
