@@ -27,18 +27,6 @@ class Site
         return array_values(array_map('basename', $directories));
     }
 
-    /**
-     * Whether a theme has hand-built pages, kept in an `original` folder
-     * beside its views. Text and pictures on those belong to no section, so
-     * edits to them are stored beside the page as overrides.
-     */
-    public static function hasHandBuiltPages(?string $theme): bool
-    {
-        return $theme !== null && $theme !== ''
-            && in_array($theme, self::themes(), true)
-            && is_dir(resource_path("views/site/themes/{$theme}/original"));
-    }
-
     /** Every template a page may use: the built-in layouts plus the themes. */
     public static function templates(): array
     {

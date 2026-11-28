@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Site\SiteBuilder;
 use App\Support\Preview;
 use Database\Seeders\Clients\Crystal\CrystalContentSeeder;
+use Database\Seeders\Clients\Crystal\MoveOverridesIntoPageCopy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -82,24 +83,52 @@ class CrystalThemeTest extends TestCase
         $this->assertStringContainsString('This sentence came from the dashboard.', $html);
     }
 
-    public function test_crystal_theme_build_includes_template_content_overrides(): void
+    public function test_copy_written_into_the_templates_is_edited_through_the_page_copy(): void
     {
-        $services = Page::where('slug', 'services')->sole();
-        $services->update([
-            'content' => json_encode([
-                'crystal_overrides' => [
-                    'text' => [2 => 'A template section edited in the dashboard'],
-                    'images' => [0 => ['url' => '/storage/edited-service.jpg', 'alt' => 'Edited service image']],
-                ],
-            ]),
-        ]);
+        $copy = Page::where('slug', 'services')->sole()->sections()->where('key', 'copy')->sole();
+        $copy->update(['data' => [
+            'now_offering_professional_hairdressing' => 'Edited written-in copy',
+            'deep_cleaning_service_photo' => '/storage/edited-service.jpg',
+            'deep_cleaning_service_photo_alt' => 'Edited service image',
+        ]]);
 
         app(SiteBuilder::class)->build();
 
         $html = File::get($this->output.'/services/index.html');
-        $this->assertStringContainsString('A template section edited in the dashboard', $html);
-        $this->assertStringContainsString('edited-service.jpg', $html);
-        $this->assertStringContainsString('Edited service image', $html);
+        $this->assertStringContainsString('Edited written-in copy', $html);
+        $this->assertStringNotContainsString('Now offering professional hairdressing', $html);
+        $this->assertStringContainsString('src="/storage/edited-service.jpg"', $html);
+        $this->assertStringContainsString('alt="Edited service image"', $html);
+        // Untouched pieces keep the wording written into the template.
+        $this->assertStringContainsString('Salon &amp; Hairdressing', $html);
+    }
+
+    public function test_stored_overrides_move_into_the_page_copy(): void
+    {
+        // As an editor left them before the copy had fields of its own, by
+        // position on the published page. Position 999 holds no piece.
+        $services = Page::where('slug', 'services')->sole();
+        $services->update(['content' => json_encode(['crystal_overrides' => [
+            'text' => [21 => 'Moved from an override', 999 => 'Nowhere to go'],
+            'images' => [4 => ['url' => '/storage/moved.jpg', 'alt' => 'Moved image']],
+        ]])]);
+
+        $this->seed(MoveOverridesIntoPageCopy::class);
+        $this->seed(MoveOverridesIntoPageCopy::class); // Running it again changes nothing.
+
+        $copy = $services->sections()->where('key', 'copy')->sole();
+        $this->assertSame([
+            'now_offering_professional_hairdressing' => 'Moved from an override',
+            'deep_cleaning_service_photo' => '/storage/moved.jpg',
+            'deep_cleaning_service_photo_alt' => 'Moved image',
+        ], $copy->data);
+        $this->assertSame(['unmoved_overrides' => ['text' => [999 => 'Nowhere to go']]], json_decode($services->fresh()->content, true));
+
+        app(SiteBuilder::class)->build();
+        $html = File::get($this->output.'/services/index.html');
+        $this->assertStringContainsString('Moved from an override', $html);
+        $this->assertStringContainsString('src="/storage/moved.jpg"', $html);
+        $this->assertStringNotContainsString('data-crystal-overrides', $html);
     }
 
     public function test_crystal_footer_uses_configured_contact_and_social_settings(): void

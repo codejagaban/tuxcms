@@ -1,3 +1,4 @@
+@php($pageCopy = $cmsSections->get('copy'))
 @php($cmsBook = $cmsSections->get('book'))
 @php($hero = $cmsSections->get('hero'))
 @php($salonServices = $cmsSections->get('salon-services'))
@@ -271,8 +272,8 @@
               <div
                 class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center"
               >
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Salon &amp; Hairdressing
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.salon_hairdressing')>
+                  {{ $pageCopy?->data['salon_hairdressing'] ?? 'Salon & Hairdressing' }}
                 </h2>
                 <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp" @field($salonServices, 'title')>
                   {{ $salonServices?->title ?? 'Our hairdressing services' }}
@@ -297,11 +298,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/braiding.jpg"
+                        src="{{ $pageCopy?->data['braiding_photo'] ?? '/themes/crystal/images/salon/braiding.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Braiding"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['braiding_photo_alt'] ?? 'Braiding' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.braiding_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -329,11 +330,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/sew-in.jpg"
+                        src="{{ $pageCopy?->data['sew_in_photo'] ?? '/themes/crystal/images/salon/sew-in.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Sew-in"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['sew_in_photo_alt'] ?? 'Sew-in' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.sew_in_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -361,11 +362,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/dreadlocks.jpg"
+                        src="{{ $pageCopy?->data['dreadlocks_photo'] ?? '/themes/crystal/images/salon/dreadlocks.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Dreadlocks"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['dreadlocks_photo_alt'] ?? 'Dreadlocks' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.dreadlocks_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -393,11 +394,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/re-locking.jpg"
+                        src="{{ $pageCopy?->data['re_locking_photo'] ?? '/themes/crystal/images/salon/re-locking.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Re-locking"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['re_locking_photo_alt'] ?? 'Re-locking' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.re_locking_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -425,11 +426,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/relaxing.jpg"
+                        src="{{ $pageCopy?->data['relaxing_photo'] ?? '/themes/crystal/images/salon/relaxing.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Relaxing"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['relaxing_photo_alt'] ?? 'Relaxing' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.relaxing_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -457,11 +458,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/washing-and-setting.jpg"
+                        src="{{ $pageCopy?->data['washing_setting_photo'] ?? '/themes/crystal/images/salon/washing-and-setting.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Washing & setting"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['washing_setting_photo_alt'] ?? 'Washing & setting' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.washing_setting_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -489,11 +490,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/natural-weaving.jpg"
+                        src="{{ $pageCopy?->data['natural_weaving_photo'] ?? '/themes/crystal/images/salon/natural-weaving.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Natural weaving"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['natural_weaving_photo_alt'] ?? 'Natural weaving' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.natural_weaving_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -527,19 +528,17 @@
           <div class="container position-relative">
             <div class="row justify-content-center">
               <div class="col-md-10 col-lg-8 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Hair products &amp; attachments
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.hair_products_attachments')>
+                  {{ $pageCopy?->data['hair_products_attachments'] ?? 'Hair products & attachments' }}
                 </h2>
-                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp">
-                  Shop hair products &amp; attachments
+                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp" @field($pageCopy, 'data.shop_hair_products_attachments')>
+                  {{ $pageCopy?->data['shop_hair_products_attachments'] ?? 'Shop hair products & attachments' }}
                 </h3>
                 <p
                   class="section-descr mb-40 mb-sm-20 wow fadeInUp"
                   data-wow-delay="0.06s"
-                >
-                  We also sell a wide range of hair treatments, products and
-                  attachments. Follow us on TikTok to see what's available and
-                  place an order.
+                 @field($pageCopy, 'data.we_also_sell_a_wide')>
+                  {{ $pageCopy?->data['we_also_sell_a_wide'] ?? 'We also sell a wide range of hair treatments, products and attachments. Follow us on TikTok to see what\'s available and place an order.' }}
                 </p>
                 <div class="wow fadeInUp" data-wow-delay="0.12s">
                   <a
@@ -547,7 +546,7 @@
                     class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mb-xs-10"
                     target="_blank"
                     rel="noopener noreferrer"
-                    ><span>Follow on TikTok</span></a
+                    ><span @field($pageCopy, 'data.follow_on_tiktok')>{{ $pageCopy?->data['follow_on_tiktok'] ?? 'Follow on TikTok' }}</span></a
                   >
                   <a
                     href="/contact/"

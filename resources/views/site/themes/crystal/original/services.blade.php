@@ -1,3 +1,4 @@
+@php($pageCopy = $cmsSections->get('copy'))
 @php($hero = $cmsSections->get('hero'))
 @php($services = $cmsSections->get('services'))
 <!DOCTYPE html>
@@ -293,11 +294,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/about/services-6.png"
+                        src="{{ $pageCopy?->data['commercial_cleaning_service_photo'] ?? '/themes/crystal/images/about/services-6.png' }}"
                         width="198"
                         height="198"
-                        alt="Commercial cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['commercial_cleaning_service_photo_alt'] ?? 'Commercial cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.commercial_cleaning_service_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -326,11 +327,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/about/services-3.png"
+                        src="{{ $pageCopy?->data['upholstery_cleaning_service_photo'] ?? '/themes/crystal/images/about/services-3.png' }}"
                         width="198"
                         height="198"
-                        alt="Upholstery cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['upholstery_cleaning_service_photo_alt'] ?? 'Upholstery cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.upholstery_cleaning_service_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -359,11 +360,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/about/services-0.png"
+                        src="{{ $pageCopy?->data['end_of_tenancy_cleaning_photo'] ?? '/themes/crystal/images/about/services-0.png' }}"
                         width="198"
                         height="198"
-                        alt="End-of-tenancy cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['end_of_tenancy_cleaning_photo_alt'] ?? 'End-of-tenancy cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.end_of_tenancy_cleaning_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -394,11 +395,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/about/services-2.png"
+                        src="{{ $pageCopy?->data['airbnb_cleaning_service_photo'] ?? '/themes/crystal/images/about/services-2.png' }}"
                         width="198"
                         height="198"
-                        alt="Airbnb cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['airbnb_cleaning_service_photo_alt'] ?? 'Airbnb cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.airbnb_cleaning_service_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -426,11 +427,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/about/services-5.png"
+                        src="{{ $pageCopy?->data['deep_cleaning_service_photo'] ?? '/themes/crystal/images/about/services-5.png' }}"
                         width="198"
                         height="198"
-                        alt="Deep cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['deep_cleaning_service_photo_alt'] ?? 'Deep cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.deep_cleaning_service_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -458,11 +459,11 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/services/project-single-1.jpg"
+                        src="{{ $pageCopy?->data['after_builders_cleaning_service_photo'] ?? '/themes/crystal/images/services/project-single-1.jpg' }}"
                         width="198"
                         height="198"
-                        alt="After builders cleaning service"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['after_builders_cleaning_service_photo_alt'] ?? 'After builders cleaning service' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.after_builders_cleaning_service_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
@@ -500,19 +501,17 @@
               <div
                 class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center"
               >
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Salon &amp; Hairdressing
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.salon_hairdressing')>
+                  {{ $pageCopy?->data['salon_hairdressing'] ?? 'Salon & Hairdressing' }}
                 </h2>
-                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp">
-                  Now offering professional hairdressing
+                <h3 class="section-title mb-30 mb-sm-20 wow fadeInUp" @field($pageCopy, 'data.now_offering_professional_hairdressing')>
+                  {{ $pageCopy?->data['now_offering_professional_hairdressing'] ?? 'Now offering professional hairdressing' }}
                 </h3>
                 <p
                   class="section-descr mb-0 wow fadeInUp"
                   data-wow-delay="0.06s"
-                >
-                  Alongside our cleaning services, we now offer professional
-                  hairdressing. Book a style or shop hair products and
-                  attachments.
+                 @field($pageCopy, 'data.alongside_our_cleaning_services_we')>
+                  {{ $pageCopy?->data['alongside_our_cleaning_services_we'] ?? 'Alongside our cleaning services, we now offer professional hairdressing. Book a style or shop hair products and attachments.' }}
                 </p>
               </div>
             </div>
@@ -526,17 +525,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/braiding.jpg"
+                        src="{{ $pageCopy?->data['braiding_photo'] ?? '/themes/crystal/images/salon/braiding.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Braiding"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['braiding_photo_alt'] ?? 'Braiding' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.braiding_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Braiding</h4>
-                        <p class="services-5-text mb-0">
-                          From box braids and cornrows to knotless and feed-in styles, our braiding is done with care and precision. We keep tension gentle on your scalp so every braid is neat, comfortable and protective — a style that lasts for weeks while keeping your natural hair healthy underneath.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.braiding')>{{ $pageCopy?->data['braiding'] ?? 'Braiding' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.from_box_braids_and_cornrows')>
+                          {{ $pageCopy?->data['from_box_braids_and_cornrows'] ?? 'From box braids and cornrows to knotless and feed-in styles, our braiding is done with care and precision. We keep tension gentle on your scalp so every braid is neat, comfortable and protective — a style that lasts for weeks while keeping your natural hair healthy underneath.' }}
                         </p>
                       </div>
                     </div>
@@ -551,17 +550,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/sew-in.jpg"
+                        src="{{ $pageCopy?->data['sew_in_photo'] ?? '/themes/crystal/images/salon/sew-in.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Sew-in"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['sew_in_photo_alt'] ?? 'Sew-in' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.sew_in_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Sew-in</h4>
-                        <p class="services-5-text mb-0">
-                          Our sew-in weaves are professionally installed on a secure braided foundation for a flawless, natural-looking finish. Whether you want extra length, fuller volume or a whole new look, we blend the weave seamlessly with your own hair and make sure it sits comfortably from day one.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.sew_in')>{{ $pageCopy?->data['sew_in'] ?? 'Sew-in' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.our_sew_in_weaves_are')>
+                          {{ $pageCopy?->data['our_sew_in_weaves_are'] ?? 'Our sew-in weaves are professionally installed on a secure braided foundation for a flawless, natural-looking finish. Whether you want extra length, fuller volume or a whole new look, we blend the weave seamlessly with your own hair and make sure it sits comfortably from day one.' }}
                         </p>
                       </div>
                     </div>
@@ -576,17 +575,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/dreadlocks.jpg"
+                        src="{{ $pageCopy?->data['dreadlocks_photo'] ?? '/themes/crystal/images/salon/dreadlocks.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Dreadlocks"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['dreadlocks_photo_alt'] ?? 'Dreadlocks' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.dreadlocks_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Dreadlocks</h4>
-                        <p class="services-5-text mb-0">
-                          Starting your loc journey or maintaining mature locs? We offer starter locs, root maintenance and styling, all done with healthy hair practices. We help you choose the right size and pattern for your hair type, and keep your locs clean, strong and well-shaped as they grow.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.dreadlocks')>{{ $pageCopy?->data['dreadlocks'] ?? 'Dreadlocks' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.starting_your_loc_journey_or')>
+                          {{ $pageCopy?->data['starting_your_loc_journey_or'] ?? 'Starting your loc journey or maintaining mature locs? We offer starter locs, root maintenance and styling, all done with healthy hair practices. We help you choose the right size and pattern for your hair type, and keep your locs clean, strong and well-shaped as they grow.' }}
                         </p>
                       </div>
                     </div>
@@ -601,17 +600,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/re-locking.jpg"
+                        src="{{ $pageCopy?->data['re_locking_photo'] ?? '/themes/crystal/images/salon/re-locking.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Re-locking"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['re_locking_photo_alt'] ?? 'Re-locking' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.re_locking_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Re-locking</h4>
-                        <p class="services-5-text mb-0">
-                          Regular retwisting keeps your locs looking sharp. We carefully re-lock the new growth at your roots so every loc stays neat and uniform, without over-twisting — protecting your edges and encouraging strong, healthy growth between appointments.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.re_locking')>{{ $pageCopy?->data['re_locking'] ?? 'Re-locking' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.regular_retwisting_keeps_your_locs')>
+                          {{ $pageCopy?->data['regular_retwisting_keeps_your_locs'] ?? 'Regular retwisting keeps your locs looking sharp. We carefully re-lock the new growth at your roots so every loc stays neat and uniform, without over-twisting — protecting your edges and encouraging strong, healthy growth between appointments.' }}
                         </p>
                       </div>
                     </div>
@@ -626,17 +625,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/relaxing.jpg"
+                        src="{{ $pageCopy?->data['relaxing_photo'] ?? '/themes/crystal/images/salon/relaxing.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Relaxing"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['relaxing_photo_alt'] ?? 'Relaxing' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.relaxing_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Relaxing</h4>
-                        <p class="services-5-text mb-0">
-                          Our relaxer treatments are applied with care to smooth and soften your natural texture while keeping your hair healthy. We assess your hair first, choose the right strength for you, and finish with a deep condition, leaving your hair silky, manageable and full of movement.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.relaxing')>{{ $pageCopy?->data['relaxing'] ?? 'Relaxing' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.our_relaxer_treatments_are_applied')>
+                          {{ $pageCopy?->data['our_relaxer_treatments_are_applied'] ?? 'Our relaxer treatments are applied with care to smooth and soften your natural texture while keeping your hair healthy. We assess your hair first, choose the right strength for you, and finish with a deep condition, leaving your hair silky, manageable and full of movement.' }}
                         </p>
                       </div>
                     </div>
@@ -651,17 +650,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/washing-and-setting.jpg"
+                        src="{{ $pageCopy?->data['washing_setting_photo'] ?? '/themes/crystal/images/salon/washing-and-setting.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Washing & setting"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['washing_setting_photo_alt'] ?? 'Washing & setting' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.washing_setting_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Washing &amp; setting</h4>
-                        <p class="services-5-text mb-0">
-                          A thorough cleanse, deep condition and professional set, tailored to your hair. Whether you prefer rollers, a sleek blow-dry or a bouncy curled finish, you leave with fresh, healthy-looking hair that holds its shape for days.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.washing_setting')>{{ $pageCopy?->data['washing_setting'] ?? 'Washing & setting' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.a_thorough_cleanse_deep_condition')>
+                          {{ $pageCopy?->data['a_thorough_cleanse_deep_condition'] ?? 'A thorough cleanse, deep condition and professional set, tailored to your hair. Whether you prefer rollers, a sleek blow-dry or a bouncy curled finish, you leave with fresh, healthy-looking hair that holds its shape for days.' }}
                         </p>
                       </div>
                     </div>
@@ -676,17 +675,17 @@
                   <div class="d-xl-flex wow fadeInUpShort" data-wow-offset="0">
                     <div class="services-5-image mb-lg-20 me-xl-4">
                       <img
-                        src="/themes/crystal/images/salon/natural-weaving.jpg"
+                        src="{{ $pageCopy?->data['natural_weaving_photo'] ?? '/themes/crystal/images/salon/natural-weaving.jpg' }}"
                         width="198"
                         height="198"
-                        alt="Natural weaving"
-                        style="border-radius: 20px; object-fit: cover" loading="lazy" />
+                        alt="{{ $pageCopy?->data['natural_weaving_photo_alt'] ?? 'Natural weaving' }}"
+                        style="border-radius: 20px; object-fit: cover" loading="lazy" @image($pageCopy, 'data.natural_weaving_photo') />
                     </div>
                     <div class="services-5-body d-flex align-items-center">
                       <div class="w-100">
-                        <h4 class="services-5-title">Natural weaving</h4>
-                        <p class="services-5-text mb-0">
-                          Our natural weaving blends quality extensions with your own hair for a look that is full, flowing and completely believable. We match texture and colour carefully and install with a technique that protects your natural hair, so you get a beautiful style without the damage.
+                        <h4 class="services-5-title" @field($pageCopy, 'data.natural_weaving')>{{ $pageCopy?->data['natural_weaving'] ?? 'Natural weaving' }}</h4>
+                        <p class="services-5-text mb-0" @field($pageCopy, 'data.our_natural_weaving_blends_quality')>
+                          {{ $pageCopy?->data['our_natural_weaving_blends_quality'] ?? 'Our natural weaving blends quality extensions with your own hair for a look that is full, flowing and completely believable. We match texture and colour carefully and install with a technique that protects your natural hair, so you get a beautiful style without the damage.' }}
                         </p>
                       </div>
                     </div>
@@ -701,7 +700,7 @@
                 <a
                   href="/salon/"
                   class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mb-xs-10"
-                  ><span>Explore the salon</span></a
+                  ><span @field($pageCopy, 'data.explore_the_salon')>{{ $pageCopy?->data['explore_the_salon'] ?? 'Explore the salon' }}</span></a
                 >
                 <a
                   href="#"
@@ -727,19 +726,18 @@
           <div class="container">
             <div class="row mb-50 mb-sm-30">
               <div class="col-md-8 offset-md-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Let Us Handle the Dirty Work
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.let_us_handle_the_dirty')>
+                  {{ $pageCopy?->data['let_us_handle_the_dirty'] ?? 'Let Us Handle the Dirty Work' }}
                 </h2>
-                <h3 class="section-title mb-0">
-                  Book us today for a professional cleaning and enjoy a spotless
-                  space. Fast, and reliable service tailored to your needs.
+                <h3 class="section-title mb-0" @field($pageCopy, 'data.book_us_today_for_a')>
+                  {{ $pageCopy?->data['book_us_today_for_a'] ?? 'Book us today for a professional cleaning and enjoy a spotless space. Fast, and reliable service tailored to your needs.' }}
                 </h3>
                 <div class="mt-10">
                   <a
                     href="/contact/"
                     class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mt-40 mb-xs-10"
                   >
-                    <span>Book a cleaning session</span>
+                    <span @field($pageCopy, 'data.book_a_cleaning_session')>{{ $pageCopy?->data['book_a_cleaning_session'] ?? 'Book a cleaning session' }}</span>
                   </a>
                 </div>
               </div>
@@ -757,15 +755,10 @@
           <div class="container position-relative">
             <div class="row position-relative">
               <div class="col-md-6 col-lg-5 mb-md-50 mb-sm-30">
-                <h3 class="section-title mb-30">Frequently Asked Questions</h3>
+                <h3 class="section-title mb-30" @field($pageCopy, 'data.frequently_asked_questions')>{{ $pageCopy?->data['frequently_asked_questions'] ?? 'Frequently Asked Questions' }}</h3>
 
-                <p class="text-gray mb-0">
-                  At Crystal Services Limited, we understand that you may have
-                  questions about our professional cleaning services. To help
-                  you make informed decisions, we’ve compiled a list of
-                  frequently asked questions to address common concerns. If your
-                  question isn’t listed, feel free to contact us directly, and
-                  we’ll be happy to assist you.
+                <p class="text-gray mb-0" @field($pageCopy, 'data.at_crystal_services_limited_we')>
+                  {{ $pageCopy?->data['at_crystal_services_limited_we'] ?? 'At Crystal Services Limited, we understand that you may have questions about our professional cleaning services. To help you make informed decisions, we’ve compiled a list of frequently asked questions to address common concerns. If your question isn’t listed, feel free to contact us directly, and we’ll be happy to assist you.' }}
                 </p>
               </div>
 

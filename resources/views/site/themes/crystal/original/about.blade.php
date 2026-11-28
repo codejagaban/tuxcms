@@ -1,3 +1,4 @@
+@php($pageCopy = $cmsSections->get('copy'))
 @php($hero = $cmsSections->get('hero'))
 @php($story = $cmsSections->get('story'))
 <!DOCTYPE html>
@@ -167,13 +168,13 @@
                     <div class="composition-1">
                       <div class="composition-1-image-1">
                         <img
-                          src="/themes/crystal/images/services/airbnb-cleaning.webp"
-                          alt="Airbnb cleaning between guest stays" loading="lazy" />
+                          src="{{ $pageCopy?->data['airbnb_cleaning_between_guest_photo'] ?? '/themes/crystal/images/services/airbnb-cleaning.webp' }}"
+                          alt="{{ $pageCopy?->data['airbnb_cleaning_between_guest_photo_alt'] ?? 'Airbnb cleaning between guest stays' }}" loading="lazy" @image($pageCopy, 'data.airbnb_cleaning_between_guest_photo') />
                       </div>
                       <div class="composition-1-image-2">
                         <img
-                          src="/themes/crystal/images/services/about-bg-6.jpg"
-                          alt="Professional cleaner at work" loading="lazy" />
+                          src="{{ $pageCopy?->data['professional_cleaner_at_work_photo'] ?? '/themes/crystal/images/services/about-bg-6.jpg' }}"
+                          alt="{{ $pageCopy?->data['professional_cleaner_at_work_photo_alt'] ?? 'Professional cleaner at work' }}" loading="lazy" @image($pageCopy, 'data.professional_cleaner_at_work_photo') />
                       </div>
                       <div
                         class="composition-1-decoration-1"
@@ -200,13 +201,13 @@
                     <div class="composition-2">
                       <div class="composition-2-image-1 mt-xs-0">
                         <img
-                          src="/themes/crystal/images/services/features-bg.jpg"
-                          alt="Cleaner wiping down a surface" loading="lazy" />
+                          src="{{ $pageCopy?->data['cleaner_wiping_down_a_photo'] ?? '/themes/crystal/images/services/features-bg.jpg' }}"
+                          alt="{{ $pageCopy?->data['cleaner_wiping_down_a_photo_alt'] ?? 'Cleaner wiping down a surface' }}" loading="lazy" @image($pageCopy, 'data.cleaner_wiping_down_a_photo') />
                       </div>
                       <div class="composition-2-image-2">
                         <img
-                          src="/themes/crystal/images/services/cleaning-supplies.webp"
-                          alt="Professional cleaning supplies and equipment" loading="lazy" />
+                          src="{{ $pageCopy?->data['professional_cleaning_supplies_and_photo'] ?? '/themes/crystal/images/services/cleaning-supplies.webp' }}"
+                          alt="{{ $pageCopy?->data['professional_cleaning_supplies_and_photo_alt'] ?? 'Professional cleaning supplies and equipment' }}" loading="lazy" @image($pageCopy, 'data.professional_cleaning_supplies_and_photo') />
                       </div>
                       <div
                         class="composition-2-decoration"
@@ -225,13 +226,13 @@
                     <div class="composition-3">
                       <div class="composition-3-image-1">
                         <img
-                          src="/themes/crystal/images/services/post-3.jpg"
-                          alt="Deep cleaning in progress" loading="lazy" />
+                          src="{{ $pageCopy?->data['deep_cleaning_in_progress_photo'] ?? '/themes/crystal/images/services/post-3.jpg' }}"
+                          alt="{{ $pageCopy?->data['deep_cleaning_in_progress_photo_alt'] ?? 'Deep cleaning in progress' }}" loading="lazy" @image($pageCopy, 'data.deep_cleaning_in_progress_photo') />
                       </div>
                       <div class="composition-3-image-2">
                         <img
-                          src="/themes/crystal/images/services/post-5.jpg"
-                          alt="Office cleaning service" loading="lazy" />
+                          src="{{ $pageCopy?->data['office_cleaning_service_photo'] ?? '/themes/crystal/images/services/post-5.jpg' }}"
+                          alt="{{ $pageCopy?->data['office_cleaning_service_photo_alt'] ?? 'Office cleaning service' }}" loading="lazy" @image($pageCopy, 'data.office_cleaning_service_photo') />
                       </div>
                       <div
                         class="composition-3-decoration-1"
@@ -267,12 +268,12 @@
           <div class="container position-relative">
             <div class="row mb-60 mb-xs-30">
               <div class="col-md-6">
-                <h2 class="section-caption-fancy mb-xs-10">
-                  Our Cleaning Business
+                <h2 class="section-caption-fancy mb-xs-10" @field($pageCopy, 'data.our_cleaning_business')>
+                  {{ $pageCopy?->data['our_cleaning_business'] ?? 'Our Cleaning Business' }}
                 </h2>
                 <h3 class="section-title mb-0">
                   <span class="wow charsAnimIn" data-splitting="chars"
-                    >Crystal Clean: Your Trusted Cleaning Experts</span
+                     @field($pageCopy, 'data.crystal_clean_your_trusted_cleaning')>{{ $pageCopy?->data['crystal_clean_your_trusted_cleaning'] ?? 'Crystal Clean: Your Trusted Cleaning Experts' }}</span
                   >
                 </h3>
               </div>
@@ -284,34 +285,26 @@
                   <!-- Image -->
                   <div class="position-relative overflow-hidden">
                     <img
-                      src="/themes/crystal/images/services/furnitures-cleaning.webp"
+                      src="{{ $pageCopy?->data['upholstery_and_furniture_cleaning_photo'] ?? '/themes/crystal/images/services/furnitures-cleaning.webp' }}"
                       class="image-fullwidth relative"
-                      alt="Upholstery and furniture cleaning"
-                      style="border-radius: 20px;" loading="lazy" />
+                      alt="{{ $pageCopy?->data['upholstery_and_furniture_cleaning_photo_alt'] ?? 'Upholstery and furniture cleaning' }}"
+                      style="border-radius: 20px;" loading="lazy" @image($pageCopy, 'data.upholstery_and_furniture_cleaning_photo') />
                   </div>
                   <!-- End Image -->
                 </div>
               </div>
 
               <div class="col-lg-6 col-xl-5 offset-xl-1">
-                <h4 class="h5">Our Mission</h4>
+                <h4 class="h5" @field($pageCopy, 'data.our_mission')>{{ $pageCopy?->data['our_mission'] ?? 'Our Mission' }}</h4>
 
-                <p class="text-gray">
-                  Our mission is simple: to provide reliable, efficient, and
-                  top-tier cleaning services tailored to each client’s specific
-                  needs. We take pride in our attention to detail and
-                  customer-first approach, ensuring that every cleaning project
-                  exceeds expectations.
+                <p class="text-gray" @field($pageCopy, 'data.our_mission_is_simple_to')>
+                  {{ $pageCopy?->data['our_mission_is_simple_to'] ?? 'Our mission is simple: to provide reliable, efficient, and top-tier cleaning services tailored to each client’s specific needs. We take pride in our attention to detail and customer-first approach, ensuring that every cleaning project exceeds expectations.' }}
                 </p>
 
-                <h4 class="h5">Our Vision</h4>
+                <h4 class="h5" @field($pageCopy, 'data.our_vision')>{{ $pageCopy?->data['our_vision'] ?? 'Our Vision' }}</h4>
 
-                <p class="text-gray">
-                  From small residential properties to large commercial spaces,
-                  we bring professionalism, trust, and a fresh approach to every
-                  cleaning job. With years of experience, cutting-edge cleaning
-                  methods, and a passionate team, Crystal Service Limited is
-                  your trusted partner for all things clean.
+                <p class="text-gray" @field($pageCopy, 'data.from_small_residential_properties_to')>
+                  {{ $pageCopy?->data['from_small_residential_properties_to'] ?? 'From small residential properties to large commercial spaces, we bring professionalism, trust, and a fresh approach to every cleaning job. With years of experience, cutting-edge cleaning methods, and a passionate team, Crystal Service Limited is your trusted partner for all things clean.' }}
                 </p>
               </div>
             </div>
@@ -329,12 +322,12 @@
           <div class="container position-relative">
             <div class="row mb-60 mb-xs-30">
               <div class="col-md-8">
-                <h2 class="section-caption-fancy mb-xs-10">
-                  Our Salon Business
+                <h2 class="section-caption-fancy mb-xs-10" @field($pageCopy, 'data.our_salon_business')>
+                  {{ $pageCopy?->data['our_salon_business'] ?? 'Our Salon Business' }}
                 </h2>
                 <h3 class="section-title mb-0">
                   <span class="wow charsAnimIn" data-splitting="chars"
-                    >Crystal Salon: Beautiful Hair, Same Trusted Care</span
+                     @field($pageCopy, 'data.crystal_salon_beautiful_hair_same')>{{ $pageCopy?->data['crystal_salon_beautiful_hair_same'] ?? 'Crystal Salon: Beautiful Hair, Same Trusted Care' }}</span
                   >
                 </h3>
               </div>
@@ -342,29 +335,23 @@
 
             <div class="row wow fadeInUp" data-wow-delay="0.5s">
               <div class="col-lg-6 col-xl-5 mb-md-60">
-                <h4 class="h5">Hair, styled with care</h4>
+                <h4 class="h5" @field($pageCopy, 'data.hair_styled_with_care')>{{ $pageCopy?->data['hair_styled_with_care'] ?? 'Hair, styled with care' }}</h4>
 
-                <p class="text-gray">
-                  Crystal isn't only about spotless spaces. Our family-run
-                  salon brings the same care and attention to your hair —
-                  offering braiding, sew-ins, dreadlocks, re-locking, relaxing,
-                  washing &amp; setting and natural weaving, all tailored to
-                  your hair type and the look you want.
+                <p class="text-gray" @field($pageCopy, 'data.crystal_isnt_only_about_spotless')>
+                  {{ $pageCopy?->data['crystal_isnt_only_about_spotless'] ?? 'Crystal isn\'t only about spotless spaces. Our family-run salon brings the same care and attention to your hair — offering braiding, sew-ins, dreadlocks, re-locking, relaxing, washing & setting and natural weaving, all tailored to your hair type and the look you want.' }}
                 </p>
 
-                <h4 class="h5">Products &amp; attachments</h4>
+                <h4 class="h5" @field($pageCopy, 'data.products_attachments')>{{ $pageCopy?->data['products_attachments'] ?? 'Products & attachments' }}</h4>
 
-                <p class="text-gray">
-                  We also sell a wide range of hair treatments, products and
-                  attachments. Follow us on TikTok to see what's available, or
-                  book your next style at our Worcester salon.
+                <p class="text-gray" @field($pageCopy, 'data.we_also_sell_a_wide')>
+                  {{ $pageCopy?->data['we_also_sell_a_wide'] ?? 'We also sell a wide range of hair treatments, products and attachments. Follow us on TikTok to see what\'s available, or book your next style at our Worcester salon.' }}
                 </p>
 
                 <div class="mt-30 local-scroll">
                   <a
                     href="/salon/"
                     class="btn btn-mod btn-color btn-large btn-round btn-hover-anim"
-                    ><span>Visit the salon</span></a
+                    ><span @field($pageCopy, 'data.visit_the_salon')>{{ $pageCopy?->data['visit_the_salon'] ?? 'Visit the salon' }}</span></a
                   >
                 </div>
               </div>
@@ -372,10 +359,10 @@
               <div class="col-lg-6 offset-xl-1">
                 <div class="position-relative overflow-hidden">
                   <img
-                    src="/themes/crystal/images/salon/salon-about.jpg"
+                    src="{{ $pageCopy?->data['crystal_salon_hairdressing_photo'] ?? '/themes/crystal/images/salon/salon-about.jpg' }}"
                     class="image-fullwidth relative"
-                    alt="Crystal Salon &amp; Hairdressing"
-                    style="border-radius: 20px;" loading="lazy" />
+                    alt="{{ $pageCopy?->data['crystal_salon_hairdressing_photo_alt'] ?? 'Crystal Salon & Hairdressing' }}"
+                    style="border-radius: 20px;" loading="lazy" @image($pageCopy, 'data.crystal_salon_hairdressing_photo') />
                 </div>
               </div>
             </div>
@@ -397,10 +384,10 @@
                 <div class="w-100">
                   <div class="mb-20">
                     <img
-                      src="/themes/crystal/images/services/post-2.jpg"
-                      alt="Crystal Services cleaner at work"
+                      src="{{ $pageCopy?->data['crystal_services_cleaner_at_photo'] ?? '/themes/crystal/images/services/post-2.jpg' }}"
+                      alt="{{ $pageCopy?->data['crystal_services_cleaner_at_photo_alt'] ?? 'Crystal Services cleaner at work' }}"
                       class="w-100"
-                      style="border-radius: 20px;" loading="lazy" />
+                      style="border-radius: 20px;" loading="lazy" @image($pageCopy, 'data.crystal_services_cleaner_at_photo') />
                   </div>
                 </div>
               </div>
@@ -411,19 +398,16 @@
                 class="col-lg-6 col-xl-6 d-flex align-items-center order-first order-lg-last mb-md-60 mb-sm-40"
               >
                 <div class="w-100">
-                  <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                    Why Choose Us?
+                  <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.why_choose_us')>
+                    {{ $pageCopy?->data['why_choose_us'] ?? 'Why Choose Us?' }}
                   </h2>
 
-                  <h3 class="section-title-small mb-30">
-                    We're dedicated to providing exceptional cleaning services
-                    that go beyond the ordinary
+                  <h3 class="section-title-small mb-30" @field($pageCopy, 'data.were_dedicated_to_providing_exceptional')>
+                    {{ $pageCopy?->data['were_dedicated_to_providing_exceptional'] ?? 'We\'re dedicated to providing exceptional cleaning services that go beyond the ordinary' }}
                   </h3>
 
-                  <p class="section-descr mb-30">
-                    We go beyond just cleaning – we provide peace of mind.
-                    Here’s why we stand out as the preferred choice for cleaning
-                    services across the UK:
+                  <p class="section-descr mb-30" @field($pageCopy, 'data.we_go_beyond_just_cleaning')>
+                    {{ $pageCopy?->data['we_go_beyond_just_cleaning'] ?? 'We go beyond just cleaning – we provide peace of mind. Here’s why we stand out as the preferred choice for cleaning services across the UK:' }}
                   </p>
 
                   <!-- Features List -->
@@ -433,8 +417,8 @@
                       <div class="features-list-icon">
                         <i class="mi-check"></i>
                       </div>
-                      <div class="features-list-text">
-                        Experienced and Professional Team
+                      <div class="features-list-text" @field($pageCopy, 'data.experienced_and_professional_team')>
+                        {{ $pageCopy?->data['experienced_and_professional_team'] ?? 'Experienced and Professional Team' }}
                       </div>
                     </div>
                     <!-- End Features List Item -->
@@ -446,8 +430,8 @@
                       <div class="features-list-icon">
                         <i class="mi-check"></i>
                       </div>
-                      <div class="features-list-text">
-                        Tailored Cleaning Solutions
+                      <div class="features-list-text" @field($pageCopy, 'data.tailored_cleaning_solutions')>
+                        {{ $pageCopy?->data['tailored_cleaning_solutions'] ?? 'Tailored Cleaning Solutions' }}
                       </div>
                     </div>
                     <!-- End Features List Item -->
@@ -457,8 +441,8 @@
                       <div class="features-list-icon">
                         <i class="mi-check"></i>
                       </div>
-                      <div class="features-list-text">
-                        Reliable and Flexible Scheduling
+                      <div class="features-list-text" @field($pageCopy, 'data.reliable_and_flexible_scheduling')>
+                        {{ $pageCopy?->data['reliable_and_flexible_scheduling'] ?? 'Reliable and Flexible Scheduling' }}
                       </div>
                     </div>
                     <!-- End Features List Item -->
@@ -468,8 +452,8 @@
                       <div class="features-list-icon">
                         <i class="mi-check"></i>
                       </div>
-                      <div class="features-list-text">
-                        Customer Satisfaction Guarantee
+                      <div class="features-list-text" @field($pageCopy, 'data.customer_satisfaction_guarantee')>
+                        {{ $pageCopy?->data['customer_satisfaction_guarantee'] ?? 'Customer Satisfaction Guarantee' }}
                       </div>
                     </div>
                     <!-- End Features List Item -->
@@ -496,18 +480,16 @@
                 class="col-lg-5 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-40"
               >
                 <div class="w-100">
-                  <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                    Testimonials
+                  <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.testimonials')>
+                    {{ $pageCopy?->data['testimonials'] ?? 'Testimonials' }}
                   </h2>
 
-                  <h3 class="section-title-small mb-30">
-                    Trusted by Homes and Businesses Across the UK
+                  <h3 class="section-title-small mb-30" @field($pageCopy, 'data.trusted_by_homes_and_businesses')>
+                    {{ $pageCopy?->data['trusted_by_homes_and_businesses'] ?? 'Trusted by Homes and Businesses Across the UK' }}
                   </h3>
 
-                  <p class="section-descr mb-30">
-                    Hear directly from the individuals and businesses who have
-                    experienced the Crystal Service difference—exceptional
-                    cleaning results, professional teams, and reliable service.
+                  <p class="section-descr mb-30" @field($pageCopy, 'data.hear_directly_from_the_individuals')>
+                    {{ $pageCopy?->data['hear_directly_from_the_individuals'] ?? 'Hear directly from the individuals and businesses who have experienced the Crystal Service difference—exceptional cleaning results, professional teams, and reliable service.' }}
                   </p>
 
                   <!-- Numbers -->
@@ -556,12 +538,8 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            We’ve been using Crystal Service Limited for our
-                            office cleaning, and their attention to detail is
-                            outstanding. The team is always punctual, and the
-                            place looks spotless after every visit. Highly
-                            recommend!
+                          <p class="mb-0" @field($pageCopy, 'data.weve_been_using_crystal_service')>
+                            {{ $pageCopy?->data['weve_been_using_crystal_service'] ?? 'We’ve been using Crystal Service Limited for our office cleaning, and their attention to detail is outstanding. The team is always punctual, and the place looks spotless after every visit. Highly recommend!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
@@ -581,11 +559,8 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            I needed an end-of-tenancy clean, and Crystal
-                            Services came to the rescue. They were professional,
-                            worked quickly, and left the place looking brand
-                            new. Got my deposit back without a hitch!
+                          <p class="mb-0" @field($pageCopy, 'data.i_needed_an_end_of')>
+                            {{ $pageCopy?->data['i_needed_an_end_of'] ?? 'I needed an end-of-tenancy clean, and Crystal Services came to the rescue. They were professional, worked quickly, and left the place looking brand new. Got my deposit back without a hitch!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
@@ -605,11 +580,8 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            The deep cleaning service was a game-changer for our
-                            home. The team was friendly, efficient, and left
-                            every corner of our house looking spotless. We now
-                            use them regularly for our domestic cleaning.
+                          <p class="mb-0" @field($pageCopy, 'data.the_deep_cleaning_service_was')>
+                            {{ $pageCopy?->data['the_deep_cleaning_service_was'] ?? 'The deep cleaning service was a game-changer for our home. The team was friendly, efficient, and left every corner of our house looking spotless. We now use them regularly for our domestic cleaning.' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
@@ -629,11 +601,8 @@
                           <i class="icon-quotation-mark"></i>
                         </div>
                         <blockquote class="testimonials-4-text">
-                          <p class="mb-0">
-                            As an Airbnb host, cleanliness is a top priority for
-                            me. Crystal Service Limited provides timely and
-                            thorough cleans between guests, which has improved
-                            my guest reviews significantly. Highly reliable!
+                          <p class="mb-0" @field($pageCopy, 'data.as_an_airbnb_host_cleanliness')>
+                            {{ $pageCopy?->data['as_an_airbnb_host_cleanliness'] ?? 'As an Airbnb host, cleanliness is a top priority for me. Crystal Service Limited provides timely and thorough cleans between guests, which has improved my guest reviews significantly. Highly reliable!' }}
                           </p>
                           <footer class="testimonials-4-author mt-30 clearfix">
                             <div class="overflow-hidden">
@@ -689,8 +658,8 @@
                 >
                   <div class="row">
                     <div class="col-lg-10">
-                      <h2 class="section-title mb-60 mb-sm-30">
-                        Clean with us in 4 easy steps
+                      <h2 class="section-title mb-60 mb-sm-30" @field($pageCopy, 'data.clean_with_us_in_4')>
+                        {{ $pageCopy?->data['clean_with_us_in_4'] ?? 'Clean with us in 4 easy steps' }}
                       </h2>
                     </div>
                   </div>
@@ -703,11 +672,9 @@
                         <div class="alt-features-icon">
                           <span class="text-gray text">1</span>
                         </div>
-                        <h3 class="alt-features-title">Consultation & Quote</h3>
-                        <div class="alt-features-descr">
-                          Contact us to discuss your cleaning needs. We’ll
-                          assess the job and provide a free, no-obligation
-                          quote.
+                        <h3 class="alt-features-title" @field($pageCopy, 'data.consultation_quote')>{{ $pageCopy?->data['consultation_quote'] ?? 'Consultation & Quote' }}</h3>
+                        <div class="alt-features-descr" @field($pageCopy, 'data.contact_us_to_discuss_your')>
+                          {{ $pageCopy?->data['contact_us_to_discuss_your'] ?? 'Contact us to discuss your cleaning needs. We’ll assess the job and provide a free, no-obligation quote.' }}
                         </div>
                       </div>
                     </div>
@@ -719,14 +686,11 @@
                         <div class="alt-features-icon">
                           <span class="text-gray text">2</span>
                         </div>
-                        <h3 class="alt-features-title">
-                          Tailored Cleaning Plan
+                        <h3 class="alt-features-title" @field($pageCopy, 'data.tailored_cleaning_plan')>
+                          {{ $pageCopy?->data['tailored_cleaning_plan'] ?? 'Tailored Cleaning Plan' }}
                         </h3>
-                        <div class="alt-features-descr">
-                          Once we've assessed your cleaning needs, we’ll create
-                          a customized cleaning plan that fits your specific
-                          requirements. Whether it's a one-time deep clean or
-                          regular maintenance.
+                        <div class="alt-features-descr" @field($pageCopy, 'data.once_weve_assessed_your_cleaning')>
+                          {{ $pageCopy?->data['once_weve_assessed_your_cleaning'] ?? 'Once we\'ve assessed your cleaning needs, we’ll create a customized cleaning plan that fits your specific requirements. Whether it\'s a one-time deep clean or regular maintenance.' }}
                         </div>
                       </div>
                     </div>
@@ -738,13 +702,11 @@
                         <div class="alt-features-icon">
                           <span class="text-gray text">3</span>
                         </div>
-                        <h3 class="alt-features-title">
-                          Professional Cleaning Service
+                        <h3 class="alt-features-title" @field($pageCopy, 'data.professional_cleaning_service')>
+                          {{ $pageCopy?->data['professional_cleaning_service'] ?? 'Professional Cleaning Service' }}
                         </h3>
-                        <div class="alt-features-descr">
-                          Our trained, insured cleaners arrive with all the
-                          necessary supplies and carry out the cleaning tasks to
-                          the highest standards.
+                        <div class="alt-features-descr" @field($pageCopy, 'data.our_trained_insured_cleaners_arrive')>
+                          {{ $pageCopy?->data['our_trained_insured_cleaners_arrive'] ?? 'Our trained, insured cleaners arrive with all the necessary supplies and carry out the cleaning tasks to the highest standards.' }}
                         </div>
                       </div>
                     </div>
@@ -756,12 +718,11 @@
                         <div class="alt-features-icon">
                           <span class="text-gray text">4</span>
                         </div>
-                        <h3 class="alt-features-title">
-                          Final Inspection & Satisfaction
+                        <h3 class="alt-features-title" @field($pageCopy, 'data.final_inspection_satisfaction')>
+                          {{ $pageCopy?->data['final_inspection_satisfaction'] ?? 'Final Inspection & Satisfaction' }}
                         </h3>
-                        <div class="alt-features-descr">
-                          After cleaning, we’ll ensure everything is spotless,
-                          allowing you to review and confirm your satisfaction.
+                        <div class="alt-features-descr" @field($pageCopy, 'data.after_cleaning_well_ensure_everything')>
+                          {{ $pageCopy?->data['after_cleaning_well_ensure_everything'] ?? 'After cleaning, we’ll ensure everything is spotless, allowing you to review and confirm your satisfaction.' }}
                         </div>
                       </div>
                     </div>
@@ -777,8 +738,8 @@
                 <div class="call-action-3-images mt-xs-0 text-end">
                   <div class="call-action-3-image-1">
                     <img
-                      src="/themes/crystal/images/services/about-4.webp"
-                      alt="Crystal Services team cleaning a home"
+                      src="{{ $pageCopy?->data['crystal_services_team_cleaning_photo'] ?? '/themes/crystal/images/services/about-4.webp' }}"
+                      alt="{{ $pageCopy?->data['crystal_services_team_cleaning_photo_alt'] ?? 'Crystal Services team cleaning a home' }}"
                       class="wow scaleOutIn animated"
                       data-wow-duration="1.2s"
                       data-wow-offset="205"
@@ -787,7 +748,7 @@
                         animation-duration: 1.2s;
                         animation-name: scaleOutIn;
                         border-radius: 20px;
-                      " loading="lazy" />
+                      " loading="lazy" @image($pageCopy, 'data.crystal_services_team_cleaning_photo') />
                   </div>
 
                   <div
@@ -801,8 +762,8 @@
                       style="transform: translate3d(0px, 8px, 0px)"
                     >
                       <img
-                        src="/themes/crystal/images/services/glass-cleaning-lg.webp"
-                        alt="Window and glass cleaning"
+                        src="{{ $pageCopy?->data['window_and_glass_cleaning_photo'] ?? '/themes/crystal/images/services/glass-cleaning-lg.webp' }}"
+                        alt="{{ $pageCopy?->data['window_and_glass_cleaning_photo_alt'] ?? 'Window and glass cleaning' }}"
                         class="wow scaleOutIn animated"
                         data-wow-duration="1.2s"
                         style="
@@ -810,7 +771,7 @@
                           animation-duration: 1.2s;
                           animation-name: scaleOutIn;
                           border-radius: 20px;
-                        " loading="lazy" />
+                        " loading="lazy" @image($pageCopy, 'data.window_and_glass_cleaning_photo') />
                     </div>
                   </div>
                 </div>
@@ -827,19 +788,18 @@
           <div class="container">
             <div class="row mb-50 mb-sm-30">
               <div class="col-md-8 offset-md-2 text-center">
-                <h2 class="section-caption-fancy mb-20 mb-xs-10">
-                  Let Us Handle the Dirty Work
+                <h2 class="section-caption-fancy mb-20 mb-xs-10" @field($pageCopy, 'data.let_us_handle_the_dirty')>
+                  {{ $pageCopy?->data['let_us_handle_the_dirty'] ?? 'Let Us Handle the Dirty Work' }}
                 </h2>
-                <h3 class="section-title mb-0">
-                  Book us today for a professional cleaning and enjoy a spotless
-                  space. Fast, and reliable service tailored to your needs.
+                <h3 class="section-title mb-0" @field($pageCopy, 'data.book_us_today_for_a')>
+                  {{ $pageCopy?->data['book_us_today_for_a'] ?? 'Book us today for a professional cleaning and enjoy a spotless space. Fast, and reliable service tailored to your needs.' }}
                 </h3>
                 <div class="mt-10">
                   <a
                     href="/contact/"
                     class="btn btn-mod btn-color btn-large btn-round btn-hover-anim me-1 mt-40 mb-xs-10"
                   >
-                    <span>Book a cleaning session</span>
+                    <span @field($pageCopy, 'data.book_a_cleaning_session')>{{ $pageCopy?->data['book_a_cleaning_session'] ?? 'Book a cleaning session' }}</span>
                   </a>
                 </div>
               </div>

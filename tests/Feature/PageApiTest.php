@@ -205,13 +205,12 @@ class PageApiTest extends TestCase
     {
         Sanctum::actingAs($this->editor());
 
-        // Shopfront ships with the CMS, so its folder is always there. Its
-        // pages are built from sections alone, so there is nothing to override.
+        // Shopfront ships with the CMS, so its folder is always there.
         $this->postJson('/api/v1/pages', ['title' => 'Themed', 'template' => 'shopfront'])
-            ->assertCreated()->assertJsonPath('data.supports_overrides', false);
+            ->assertCreated()->assertJsonPath('data.template', 'shopfront');
 
         $this->postJson('/api/v1/pages', ['title' => 'Plain', 'template' => 'landing'])
-            ->assertCreated()->assertJsonPath('data.supports_overrides', false);
+            ->assertCreated()->assertJsonPath('data.template', 'landing');
     }
 
     public function test_an_editor_can_preview_a_page_that_is_not_on_the_site_yet(): void

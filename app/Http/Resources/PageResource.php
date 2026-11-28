@@ -16,8 +16,6 @@ class PageResource extends JsonResource
             'content' => $this->content,
             'excerpt' => $this->excerpt,
             'template' => $this->template,
-            // Whether the editor may store overrides for this page's theme.
-            'supports_overrides' => \App\Support\Site::hasHandBuiltPages($this->template),
             'status' => $this->status,
             // Published, but dated in the future: not on the site until then.
             'is_scheduled' => $this->status === 'published' && $this->published_at?->isFuture() === true,

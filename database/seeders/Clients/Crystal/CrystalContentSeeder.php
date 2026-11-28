@@ -203,6 +203,11 @@ class CrystalContentSeeder extends Seeder
             PageSection::create($section + ['page_id' => $page->id, 'order' => $index, 'is_visible' => true]);
         }
 
+        // The copy written into the hand-built templates is edited through
+        // this section's data. Empty, every piece shows the template's own
+        // wording; an edit on the page fills in its field.
+        PageSection::create($this->section('copy', 'text', 'Page copy') + ['page_id' => $page->id, 'order' => count($sections), 'is_visible' => true]);
+
         $page->seo()->create($seo);
 
         return $page;

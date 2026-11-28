@@ -1,3 +1,4 @@
+@php($pageCopy = $cmsSections->get('copy'))
 @php($hero = $cmsSections->get('hero'))
 @php($details = $cmsSections->get('details'))
 <!DOCTYPE html>
@@ -185,9 +186,9 @@
                       <div class="ci-icon">
                         <i class="mi-location"></i>
                       </div>
-                      <h4 class="ci-title visually-hidden">Our Address</h4>
-                      <div class="ci-text">
-                        56 Northfield Street, Worcester, Worcestershire, WR1 1NT.
+                      <h4 class="ci-title visually-hidden" @field($pageCopy, 'data.our_address')>{{ $pageCopy?->data['our_address'] ?? 'Our Address' }}</h4>
+                      <div class="ci-text" @field($pageCopy, 'data.56_northfield_street_worcester_worcestershire')>
+                        {{ $pageCopy?->data['56_northfield_street_worcester_worcestershire'] ?? '56 Northfield Street, Worcester, Worcestershire, WR1 1NT.' }}
                       </div>
                       <div>
                         <a
@@ -207,10 +208,9 @@
                       <div class="ci-icon">
                         <i class="mi-email"></i>
                       </div>
-                      <h4 class="ci-title visually-hidden">Our Email</h4>
-                      <div class="ci-text">
-                        info@crystalservicesltd.co.uk
-                        support@crystalservicesltd.co.uk
+                      <h4 class="ci-title visually-hidden" @field($pageCopy, 'data.our_email')>{{ $pageCopy?->data['our_email'] ?? 'Our Email' }}</h4>
+                      <div class="ci-text" @field($pageCopy, 'data.info_crystalservicesltd_co_uk_support')>
+                        {{ $pageCopy?->data['info_crystalservicesltd_co_uk_support'] ?? 'info@crystalservicesltd.co.uk support@crystalservicesltd.co.uk' }}
                       </div>
                       <div>
                         <a
@@ -228,7 +228,7 @@
                       <div class="ci-icon">
                         <i class="mi-mobile"></i>
                       </div>
-                      <h4 class="ci-title visually-hidden">Call Us</h4>
+                      <h4 class="ci-title visually-hidden" @field($pageCopy, 'data.call_us')>{{ $pageCopy?->data['call_us'] ?? 'Call Us' }}</h4>
                       <div class="ci-text">
                         <a href="tel:+447717299921">+44 771 729 9921</a>
                         <div class="small">(Monday-Friday: 9am to 7pm)</div>
@@ -265,7 +265,7 @@
                   <div
                     class="box-shadow round p-4 p-sm-5 bg-gradient-gray-light-1 bg-scroll"
                   >
-                    <h4 class="h3 mb-30 form-title">Get in touch </h4>
+                    <h4 class="h3 mb-30 form-title" @field($pageCopy, 'data.get_in_touch')>{{ $pageCopy?->data['get_in_touch'] ?? 'Get in touch' }} </h4>
 
                     <!-- Contact Form -->
                     <form
@@ -445,15 +445,10 @@
           <div class="container position-relative">
             <div class="row position-relative">
               <div class="col-md-6 col-lg-5 mb-md-50 mb-sm-30">
-                <h3 class="section-title mb-30">Frequently Asked Questions</h3>
+                <h3 class="section-title mb-30" @field($pageCopy, 'data.frequently_asked_questions')>{{ $pageCopy?->data['frequently_asked_questions'] ?? 'Frequently Asked Questions' }}</h3>
 
-                <p class="text-gray mb-0">
-                  At Crystal Services Limited, we understand that you may have
-                  questions about our professional cleaning services. To help
-                  you make informed decisions, we’ve compiled a list of
-                  frequently asked questions to address common concerns. If your
-                  question isn’t listed, feel free to contact us directly, and
-                  we’ll be happy to assist you.
+                <p class="text-gray mb-0" @field($pageCopy, 'data.at_crystal_services_limited_we')>
+                  {{ $pageCopy?->data['at_crystal_services_limited_we'] ?? 'At Crystal Services Limited, we understand that you may have questions about our professional cleaning services. To help you make informed decisions, we’ve compiled a list of frequently asked questions to address common concerns. If your question isn’t listed, feel free to contact us directly, and we’ll be happy to assist you.' }}
                 </p>
               </div>
 
