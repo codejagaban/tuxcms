@@ -37,7 +37,7 @@
                     @if (filled($job->summary))
                         <div class="hero__say"><p>{{ $job->summary }}</p></div>
                     @endif
-                    <div class="hero__do"><a href="#apply" class="button">@include('site.themes.shopfront.partials.chip')<span>Apply for this role</span></a></div>
+                    <div class="hero__do"><a href="#apply" class="button"><span>Apply for this role</span>@include('site.themes.shopfront.partials.arrow')</a></div>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
                     <div class="field"><label for="apply-letter">Cover letter</label><textarea id="apply-letter" name="cover_letter" rows="8" required></textarea></div>
                     <div class="field"><label for="apply-cv">CV <small>PDF, DOC or DOCX, up to 5 MB</small></label><input id="apply-cv" type="file" name="cv" accept=".pdf,.doc,.docx" required></div>
 
-                    <div><button type="submit" class="button">@include('site.themes.shopfront.partials.chip')<span>Submit application</span></button></div>
+                    <div><button type="submit" class="button"><span>Submit application</span>@include('site.themes.shopfront.partials.arrow')</button></div>
                     <p class="form__result" role="status" aria-live="polite"></p>
                 </form>
             </section>

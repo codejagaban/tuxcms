@@ -174,46 +174,37 @@ ul, ol { padding: 0; list-style: none; }
 .soft { color: var(--muted); }
 
 /* ── Icons ─────────────────────────────────────────────────
-   The theme's own set: a stroke in the colour of the text and one part
-   filled in the button chip's lime. */
+   The theme's own set, drawn in the dashboard's manner: a line in the
+   icon's colour with one part washed in a tint of the same colour, the way
+   Phosphor's duotone weight is. Where it marks something, an icon takes one
+   of the dashboard's four marker colours. */
 .glyph { width: 1.25rem; height: 1.25rem; flex: none; }
 .glyph__lit { fill: #cdf57e; }
 .social { width: 1.2rem; height: 1.2rem; display: block; }
 
 /* ── Actions ───────────────────────────────────────────────
-   A dark pill carrying a lime chip with the arrow in it. On hover the arrow
-   leaves the chip at the top right and a twin follows it in from the bottom
-   left; nothing else moves. The link beside it is text with the same arrow. */
+   The dashboard's own buttons: rounded pills. The main one is solid ink,
+   the quiet one white with a hairline edge, and over a photograph the quiet
+   one turns to the dashboard's frosted glass. They press down a pixel when
+   clicked, as the dashboard's do; only the arrow moves on hover. */
 .button {
-  display: inline-flex; align-items: center; gap: 0.85rem;
-  min-height: 3rem; padding: 0.25rem 1.35rem 0.25rem 0.25rem;
-  border: 0; border-radius: 999px; cursor: pointer;
-  background: #1a1a1c; color: #fff;
-  font: 600 1rem/1.2 var(--body); text-decoration: none;
-  transition: background-color 0.18s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 2.875rem; padding: 0.65rem 1.3rem;
+  border: 1px solid transparent; border-radius: 999px; cursor: pointer;
+  background: var(--action); color: var(--action-ink);
+  font: 500 1rem/1.2 var(--body); text-decoration: none; white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-.button:hover { background: #2b2b2f; }
-.button:disabled { opacity: 0.55; cursor: default; }
-.button__chip {
-  position: relative; overflow: hidden;
-  display: grid; place-items: center; flex: none;
-  width: 3.4rem; height: 2.5rem; border-radius: 999px;
-  background: linear-gradient(180deg, #daff95 0%, #bfee67 100%);
-  color: #1a1a1c;
+.button:hover { background: var(--action-hot); }
+.button:active { transform: translateY(1px); }
+.button:disabled { opacity: 0.4; cursor: not-allowed; }
+.button--quiet { background: var(--paper); color: var(--ink); border-color: var(--rule); }
+.button--quiet:hover { background: var(--paper-3); }
+.hero .button--quiet {
+  background: oklch(100% 0 0 / .62); color: oklch(14.5% 0 0); border-color: oklch(100% 0 0 / .7);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8);
 }
-.button__chip .arrow { width: 0.95rem; height: 0.95rem; }
-.button__chip::after {
-  content: ""; position: absolute; left: 50%; top: 50%;
-  width: 0.95rem; height: 0.95rem; margin: -0.475rem 0 0 -0.475rem;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l6-6M4.25 3H9v4.75'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l6-6M4.25 3H9v4.75'/%3E%3C/svg%3E") center / contain no-repeat;
-  transform: translate(-150%, 150%);
-  transition: transform 0.4s var(--ease);
-}
-.button .button__chip .arrow { transition: transform 0.4s var(--ease); }
-.button:hover .button__chip .arrow { transform: translate(150%, -150%); }
-.button:hover .button__chip::after { transform: translate(0, 0); }
+.hero .button--quiet:hover { background: oklch(100% 0 0 / .85); }
 
 .arrow { width: 0.85em; height: 0.85em; flex: none; transition: transform 0.25s var(--ease); }
 a:hover > .arrow, button:hover > .arrow { transform: translate(2px, -2px); }
@@ -664,7 +655,7 @@ details[open] > summary .caret { transform: rotate(180deg); }
   transition: transform 0.3s var(--ease), background-color 0.2s ease;
 }
 .ask__mark svg { width: 0.8rem; height: 0.8rem; }
-.ask[open] .ask__mark { transform: rotate(45deg); background: linear-gradient(180deg, #daff95 0%, #bfee67 100%); color: #1a1a1c; }
+.ask[open] .ask__mark { transform: rotate(45deg); background: var(--action); color: var(--action-ink); }
 .ask__answer { padding: 0 1.4rem 1.4rem; color: var(--muted); white-space: pre-line; max-width: 62ch; }
 
 /* Call to action: a card of the meadow, everything centred. */
@@ -774,7 +765,7 @@ details[open] > summary .caret { transform: rotate(180deg); }
 .foot__reach .glyph { margin-top: 0.15rem; color: var(--ink); }
 .foot__social { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.4rem; }
 .foot__social a { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; color: var(--ink-2); transition: color 0.18s ease; }
-.foot__social a:hover { color: #cdf57e; }
+.foot__social a:hover { color: var(--ink); }
 .foot__social li + li { margin-top: 0; }
 .foot__small { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; padding: 1.25rem 0 1.75rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 .foot__small ul { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
