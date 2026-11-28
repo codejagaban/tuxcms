@@ -13,6 +13,8 @@ const Settings = () => {
   // The kinds of enquiry this site's forms send, each of which can be
   // emailed to an address of its own.
   const [enquiryKinds, setEnquiryKinds] = useState([]);
+  // Settings the site's theme declares in its theme.json, in groups.
+  const [themeGroups, setThemeGroups] = useState([]);
   const [settings, setSettings] = useState({
     site_name: '',
     site_description: '',
@@ -64,13 +66,17 @@ const Settings = () => {
   const fetchSettings = async () => {
     try {
       setIsLoading(true);
-      const [response, kindsResponse] = await Promise.all([
+      const [response, kindsResponse, themeResponse] = await Promise.all([
         settingsAPI.get(),
         enquiryAPI.kinds().catch(() => ({ data: { data: [] } })),
+        settingsAPI.theme().catch(() => ({ data: { data: [] } })),
       ]);
       const data = response.data.data || {};
       const kinds = kindsResponse.data.data || [];
       setEnquiryKinds(kinds);
+      const groups = themeResponse.data.data || [];
+      setThemeGroups(groups);
+      const themeKeys = groups.flatMap((group) => group.fields.map((field) => field.key));
 
       setDirectories(directoryKeys(data));
       setSettings({
@@ -105,6 +111,7 @@ const Settings = () => {
         cookie_url: data.cookie_url || '',
         enquiry_email: data.enquiry_email || '',
         ...Object.fromEntries(kinds.map((kind) => [kind.setting, data[kind.setting] || ''])),
+        ...Object.fromEntries(themeKeys.map((key) => [key, data[key] || ''])),
         contact_phone_2: data.contact_phone_2 || '',
         whatsapp_number: data.whatsapp_number || '',
         whatsapp_message: data.whatsapp_message || '',
@@ -343,6 +350,27 @@ const Settings = () => {
         onSave={() => saveGroup('Forms', ['web3forms_access_key'])}
         isSaving={savingGroups.Forms}
       />
+
+      {/* Whatever the site's theme lets editors change, as its theme.json
+          declares it. Each group saves on its own, like the cards above. */}
+      {themeGroups.map((group) => (
+        <SettingsGroup
+          key={group.group}
+          title={group.group}
+          description="Set by this site's theme."
+          fields={group.fields.map((field) => ({
+            key: field.key,
+            label: field.label,
+            type: field.type,
+            placeholder: field.placeholder || '',
+            help: field.help || undefined,
+          }))}
+          settings={settings}
+          onChange={handleInputChange}
+          onSave={() => saveGroup(group.group, group.fields.map((field) => field.key))}
+          isSaving={savingGroups[group.group]}
+        />
+      ))}
     </div>
   );
 };

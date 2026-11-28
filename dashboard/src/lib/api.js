@@ -160,6 +160,8 @@ export const settingsAPI = {
     return { data: { data: flat } };
   },
   update: (settings) => api.put('/settings', { settings }),
+  // Settings the site's theme declares in its theme.json, in groups.
+  theme: () => api.get('/theme-settings'),
   updateOne: (key, data) => api.put(`/settings/${key}`, data),
   delete: (key) => api.delete(`/settings/${key}`),
 };
