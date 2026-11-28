@@ -173,6 +173,13 @@ ul, ol { padding: 0; list-style: none; }
 .prose--lead { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--ink-2); }
 .soft { color: var(--muted); }
 
+/* ── Icons ─────────────────────────────────────────────────
+   The theme's own set: a stroke in the colour of the text and one part
+   filled in the button chip's lime. */
+.glyph { width: 1.25rem; height: 1.25rem; flex: none; }
+.glyph__lit { fill: #cdf57e; }
+.social { width: 1.2rem; height: 1.2rem; display: block; }
+
 /* ── Actions ───────────────────────────────────────────────
    A dark pill carrying a lime chip with the arrow in it. On hover the arrow
    leaves the chip at the top right and a twin follows it in from the bottom
@@ -509,7 +516,6 @@ details[open] > summary .caret { transform: rotate(180deg); }
    share a height and their pieces share a line. */
 .bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; }
 .card {
-  --hue: var(--blue);
   grid-column: span var(--span, 6);
   display: flex; flex-direction: column; gap: 1.75rem;
   padding: clamp(1.4rem, 2.4vw, 2rem);
@@ -526,11 +532,8 @@ details[open] > summary .caret { transform: rotate(180deg); }
   .card--12 { flex-direction: column; }
   .card--12 .bit { flex: none; }
 }
-.card--green { --hue: var(--green); }
-.card--amber { --hue: var(--amber); }
-.card--rose { --hue: var(--rose); }
 .card__text { display: grid; gap: 0.55rem; justify-items: start; align-content: start; }
-.card__mark { width: 1.5rem; height: 1.5rem; color: var(--hue); stroke-width: 1.7; margin-bottom: 0.6rem; }
+.card__mark { width: 2.4rem; height: 2.4rem; margin-bottom: 0.75rem; }
 .card__name { font: 600 clamp(1.35rem, 2vw, 1.65rem)/1.15 var(--display); letter-spacing: -0.03em; }
 .card__what { color: var(--muted); max-width: 46ch; }
 .card__go { margin-top: 0.3rem; }

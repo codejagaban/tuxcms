@@ -2,8 +2,6 @@
     $items = data_get($d, 'items', []);
     // With photographs the list becomes a wall; without, a bento of cards.
     $pictured = collect($items)->contains(fn ($item) => filled(data_get($item, 'image')));
-    // The dashboard's own marker colours, taken in turn.
-    $hues = ['blue', 'green', 'amber', 'rose'];
 @endphp
 @if (count($items))
 <section class="block" @tuxsection($section)>
@@ -46,9 +44,9 @@
             <ul class="bento">
                 @foreach ($items as $i => $item)
                     @php $span = ($i === count($items) - 1 && $i % 2 === 0) ? 12 : $spans[$i % 4]; @endphp
-                    <li class="card card--{{ $span }} card--{{ $hues[$i % count($hues)] }}">
+                    <li class="card card--{{ $span }}">
                         <div class="card__text">
-                            @include('site.partials.icon', ['name' => data_get($item, 'icon', 'box'), 'class' => 'card__mark'])
+                            @include('site.themes.shopfront.partials.glyph', ['name' => data_get($item, 'icon', 'box'), 'class' => 'card__mark'])
                             <h3 class="card__name" @field($section, "data.items.{$i}.title")>{{ data_get($item, 'title') }}</h3>
                             @if (filled(data_get($item, 'description')))
                                 <p class="card__what" @field($section, "data.items.{$i}.description")>{{ data_get($item, 'description') }}</p>
