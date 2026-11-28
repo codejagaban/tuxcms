@@ -17,9 +17,7 @@
 <section class="block" @tuxsection($section)>
     <div class="wrap split">
         <div>
-            @if (filled($section->title))
-                <h2 class="display head" @field($section, 'title')>{{ $section->title }}</h2>
-            @endif
+            @include('site.themes.shopfront.partials.head', ['side' => true])
         </div>
 
         <form id="{{ $formId }}" class="form" method="POST"
@@ -71,7 +69,7 @@
             @endif
 
             <div>
-                <button type="submit" class="button">@include('site.themes.shopfront.partials.chip')<span @field($section, 'data.button_label')>{{ data_get($d, 'button_label', 'Send message') }}</span></button>
+                <button type="submit" class="button"><span @field($section, 'data.button_label')>{{ data_get($d, 'button_label', 'Send message') }}</span>@include('site.themes.shopfront.partials.arrow')</button>
             </div>
             <p class="form__result" role="status" aria-live="polite" data-result></p>
         </form>

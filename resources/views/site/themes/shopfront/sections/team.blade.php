@@ -5,9 +5,7 @@
 @if (count($members))
 <section class="block" @tuxsection($section)>
     <div class="wrap">
-        @if (filled($section->title))
-            <h2 class="display head head--over" @field($section, 'title')>{{ $section->title }}</h2>
-        @endif
+        @include('site.themes.shopfront.partials.head')
         <ul class="staff">
             @foreach ($members as $i => $member)
                 <li class="person">

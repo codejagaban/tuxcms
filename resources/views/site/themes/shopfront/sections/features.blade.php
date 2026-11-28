@@ -40,11 +40,17 @@
         @else
             {{-- A bento of cards, wide and narrow in turn, each with a piece of
                  the product at its foot. An odd card out takes the full row. --}}
-            @php $spans = [5, 7, 7, 5]; @endphp
+            @php
+                // Two columns, or none chosen, makes the bento; three or four
+                // make even rows of that many.
+                $columns = (int) data_get($d, 'columns', 2);
+                $even = in_array($columns, [3, 4], true) ? intdiv(12, $columns) : null;
+                $spans = [5, 7, 7, 5];
+            @endphp
             <ul class="bento">
                 @foreach ($items as $i => $item)
-                    @php $span = ($i === count($items) - 1 && $i % 2 === 0) ? 12 : $spans[$i % 4]; @endphp
-                    <li class="card card--{{ $span }}">
+                    @php $span = $even ?? (($i === count($items) - 1 && $i % 2 === 0) ? 12 : $spans[$i % 4]); @endphp
+                    <li class="card card--{{ $span }}" style="--hue: var(--{{ ['blue', 'green', 'amber', 'rose'][$i % 4] }})">
                         <div class="card__text">
                             @include('site.themes.shopfront.partials.glyph', ['name' => data_get($item, 'icon', 'box'), 'class' => 'card__mark'])
                             <h3 class="card__name" @field($section, "data.items.{$i}.title")>{{ data_get($item, 'title') }}</h3>

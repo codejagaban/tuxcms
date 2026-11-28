@@ -84,14 +84,14 @@ class DemoContentSeeder extends Seeder
                     'primary_cta' => ['label' => 'Open the demo dashboard', 'url' => '/admin/'],
                     'secondary_cta' => ['label' => 'See how editing works', 'url' => '/features/editing/'],
                     'background_image' => '',
-                    'alignment' => 'left',
+                    'alignment' => 'center',
                 ],
             ],
             [
                 'key' => 'features', 'type' => 'features', 'title' => 'Everything one site needs',
                 'content' => 'Pages, careers, an inbox and a media library, in one dashboard your whole team can use.',
                 'data' => [
-                    'columns' => 3,
+                    'columns' => 2,
                     'items' => [
                         ['icon' => 'layers', 'title' => 'Pages from sections', 'description' => 'Build a page from eleven section types and reorder them by dragging. Nest pages under each other and the menu follows.', 'url' => '/features/editing/', 'link_label' => 'Editing'],
                         ['icon' => 'zap', 'title' => 'Static, so it is fast', 'description' => 'Publishing writes every page out as HTML. Visitors never wait on a database, and there is nothing on the server to break into.', 'url' => '/features/publishing/', 'link_label' => 'Publishing'],

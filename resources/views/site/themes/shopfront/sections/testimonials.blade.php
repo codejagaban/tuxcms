@@ -2,9 +2,7 @@
 @if (count($items))
 <section class="block" @tuxsection($section)>
     <div class="wrap">
-        @if (filled($section->title))
-            <h2 class="display head head--over" @field($section, 'title')>{{ $section->title }}</h2>
-        @endif
+        @include('site.themes.shopfront.partials.head')
         <div @class(['words', 'words--one' => count($items) === 1])>
             @foreach ($items as $i => $item)
                 <figure class="word">

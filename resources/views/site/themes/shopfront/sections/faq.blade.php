@@ -3,9 +3,7 @@
 <section class="block" @tuxsection($section)>
     <div class="wrap split">
         <div>
-            @if (filled($section->title))
-                <h2 class="display head" @field($section, 'title')>{{ $section->title }}</h2>
-            @endif
+            @include('site.themes.shopfront.partials.head', ['side' => true])
         </div>
         {{-- Native <details> keeps every answer in the page for crawlers with
              no JavaScript, which is what makes the FAQPage schema honest. --}}

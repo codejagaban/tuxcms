@@ -24,12 +24,15 @@
                 </div>
             @endif
 
-            @if ($contact || $social)
+            @if ($contact || $social || filled(\App\Models\Setting::getString('footer_support_email')))
                 <div>
                     <h2>Get in touch</h2>
                     <ul>
                         @if (! empty($contact['email']))
                             <li><a href="mailto:{{ $contact['email'] }}" class="foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'mail'])<span>{{ $contact['email'] }}</span></a></li>
+                        @endif
+                        @if (filled($support = \App\Models\Setting::getString('footer_support_email')))
+                            <li><a href="mailto:{{ $support }}" class="foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'mail'])<span>Support: {{ $support }}</span></a></li>
                         @endif
                         @if (! empty($contact['phone']))
                             <li><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}" class="foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'phone'])<span>{{ $contact['phone'] }}</span></a></li>

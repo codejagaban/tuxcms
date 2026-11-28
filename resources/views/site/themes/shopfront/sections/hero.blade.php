@@ -1,6 +1,7 @@
 @php
     $front = $page->is_homepage ?? false;
-    $centred = ! $front && data_get($d, 'alignment') === 'center';
+    // The editor's alignment: centred unless the section asks for left.
+    $left = data_get($d, 'alignment') === 'left';
     $photo = data_get($d, 'background_image');
     $primary = data_get($d, 'primary_cta');
     $secondary = data_get($d, 'secondary_cta');
@@ -9,8 +10,12 @@
     $scale = $length <= 16 ? 'short' : ($length <= 36 ? 'medium' : 'long');
     $hasAside = filled(data_get($d, 'subheading')) || filled($section->content) || filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label'));
 @endphp
-<section @class(['hero', 'hero--front' => $front, 'hero--page' => ! $front, 'hero--centred' => $centred]) @tuxsection($section)>
-    @if ($front)
+<section @class(['hero', 'hero--front' => $front, 'hero--page' => ! $front, 'hero--left' => $left]) @tuxsection($section)>
+    @if (filled($photo))
+        {{-- The section's own photograph, when it has one, stands where the
+             meadow would, behind the title. --}}
+        <div class="hero__sky hero__sky--photo" style="background-image: url('{{ e($photo) }}')" role="presentation" @image($section, 'data.background_image')></div>
+    @elseif ($front)
         {{-- A meadow under a moving sky, behind the title and the editor. Its
              foot melts into the page. Decorative, so it is hidden from
              assistive technology; the still frame stands in until it plays,
@@ -40,10 +45,10 @@
                     @if (filled(data_get($primary, 'label')) || filled(data_get($secondary, 'label')))
                         <div class="hero__do">
                             @if (filled(data_get($primary, 'label')))
-                                <a href="{{ data_get($primary, 'url', '#') }}" class="button">@include('site.themes.shopfront.partials.chip')<span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span></a>
+                                <a href="{{ data_get($primary, 'url', '#') }}" class="button"><span @field($section, 'data.primary_cta.label')>{{ data_get($primary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
                             @endif
                             @if (filled(data_get($secondary, 'label')))
-                                <a href="{{ data_get($secondary, 'url', '#') }}" class="link"><span @field($section, 'data.secondary_cta.label')>{{ data_get($secondary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
+                                <a href="{{ data_get($secondary, 'url', '#') }}" class="button button--quiet"><span @field($section, 'data.secondary_cta.label')>{{ data_get($secondary, 'label') }}</span>@include('site.themes.shopfront.partials.arrow')</a>
                             @endif
                         </div>
                     @endif
@@ -57,11 +62,6 @@
             @include('site.themes.shopfront.partials.studio', ['hero' => $section, 'sections' => $sections ?? collect([$section])])
         @endif
 
-        @if (filled($photo))
-            <figure class="frame frame--banner">
-                <img src="{{ $photo }}" alt="" @image($section, 'data.background_image')>
-            </figure>
-        @endif
         @if (filled(data_get($d, 'image')))
             <figure class="frame frame--banner">
                 <img src="{{ data_get($d, 'image') }}" alt="{{ data_get($d, 'image_alt', '') }}" @image($section, 'data.image')>

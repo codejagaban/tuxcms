@@ -111,6 +111,43 @@ class ShopfrontThemeTest extends TestCase
         );
     }
 
+    public function test_the_theme_shows_every_field_the_editor_offers(): void
+    {
+        \App\Models\Setting::set('footer_support_email', 'help@example.test', 'contact');
+        $page = Page::create(['title' => 'Home', 'template' => 'landing', 'status' => 'published', 'is_homepage' => true]);
+        $sections = [
+            ['hero', 'Left and pictured', null, ['alignment' => 'left', 'background_image' => '/media/backdrop.jpg']],
+            ['features', 'Three across', null, ['columns' => 3, 'items' => [['icon' => 'zap', 'title' => 'One'], ['icon' => 'star', 'title' => 'Two'], ['icon' => 'box', 'title' => 'Three']]]],
+            ['stats', 'Counts', 'Stats intro.', ['items' => [['value' => '3', 'label' => 'Things']]]],
+            ['testimonials', 'Words', 'Testimonials intro.', ['items' => [['quote' => 'Good.', 'author' => 'A']]]],
+            ['team', 'People', 'Team intro.', ['members' => [['name' => 'B']]]],
+            ['faq', 'Asked', 'FAQ intro.', ['items' => [['question' => 'Q?', 'answer' => 'A.']]]],
+            ['contact', 'Reach us', 'Contact intro.', ['email' => 'a@example.test', 'eyebrow' => 'Contact eyebrow', 'image' => '/media/door.jpg', 'image_alt' => 'The front door']],
+            ['map', 'Where', 'Map intro.', ['query' => '4 Mill Lane, Leeds', 'label' => 'The shop']],
+        ];
+        foreach ($sections as $order => [$type, $title, $content, $data]) {
+            $page->sections()->create(['key' => $type, 'type' => $type, 'title' => $title, 'content' => $content, 'data' => $data, 'order' => $order, 'is_visible' => true]);
+        }
+
+        app(SiteBuilder::class)->build();
+        $html = $this->contents('index.html');
+
+        // The hero's alignment and its own photograph, behind the title.
+        $this->assertStringContainsString('hero--left', $html);
+        $this->assertMatchesRegularExpression('#hero__sky--photo"[^>]*/media/backdrop\.jpg#', $html);
+        $this->assertStringNotContainsString('meadow.mp4', $html);
+        // Three columns asked for, three across.
+        $this->assertSame(3, substr_count($html, 'card card--4'));
+        // Every section's intro, and the contact section's eyebrow and photo.
+        foreach (['Stats intro.', 'Testimonials intro.', 'Team intro.', 'FAQ intro.', 'Contact intro.', 'Map intro.', 'Contact eyebrow', 'The front door'] as $text) {
+            $this->assertStringContainsString($text, $html);
+        }
+        // A map with only a place to search for still opens it.
+        $this->assertStringContainsString('openstreetmap.org/search?query=4+Mill+Lane%2C+Leeds', $html);
+        // The support email in the footer.
+        $this->assertStringContainsString('mailto:help@example.test', $html);
+    }
+
     public function test_careers_and_the_error_page_use_the_theme(): void
     {
         $this->homepageWithEverySection();
