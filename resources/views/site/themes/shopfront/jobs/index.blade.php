@@ -29,8 +29,8 @@
                                 <div>
                                     <h2 class="role__title">{{ $job->title }}</h2>
                                     <div class="role__facts">
-                                        @foreach (array_filter([$job->location, $job->job_type, $job->salary]) as $fact)
-                                            <span>{{ $fact }}</span>
+                                        @foreach (array_filter(['pin' => $job->location, 'briefcase' => $job->job_type, 'coin' => $job->salary]) as $glyph => $fact)
+                                            <span class="role__fact">@include('site.themes.shopfront.partials.glyph', ['name' => $glyph]){{ $fact }}</span>
                                         @endforeach
                                     </div>
                                 </div>

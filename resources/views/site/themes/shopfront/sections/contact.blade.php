@@ -1,5 +1,5 @@
 @php
-    $rows = [['email', 'Email'], ['phone', 'Phone'], ['address', 'Address'], ['hours', 'Hours']];
+    $rows = [['email', 'Email', 'mail'], ['phone', 'Phone', 'phone'], ['address', 'Address', 'pin'], ['hours', 'Hours', 'clock']];
 @endphp
 <section class="block" @tuxsection($section)>
     <div class="wrap split">
@@ -9,10 +9,10 @@
             @endif
         </div>
         <dl class="reach">
-            @foreach ($rows as [$key, $label])
+            @foreach ($rows as [$key, $label, $glyph])
                 @continue(blank(data_get($d, $key)))
                 <div @class(['reach__row', 'reach__row--big' => in_array($key, ['email', 'phone'], true)])>
-                    <dt>{{ $label }}</dt>
+                    <dt>@include('site.themes.shopfront.partials.glyph', ['name' => $glyph, 'class' => 'reach__glyph']){{ $label }}</dt>
                     {{-- A link carries its own marker; otherwise the line itself does. --}}
                     <dd @field($section, in_array($key, ['email', 'phone'], true) ? '' : "data.{$key}")>
                         @if ($key === 'email')

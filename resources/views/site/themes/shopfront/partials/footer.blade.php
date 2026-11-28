@@ -29,19 +29,19 @@
                     <h2>Get in touch</h2>
                     <ul>
                         @if (! empty($contact['email']))
-                            <li><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
+                            <li><a href="mailto:{{ $contact['email'] }}" class="foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'mail'])<span>{{ $contact['email'] }}</span></a></li>
                         @endif
                         @if (! empty($contact['phone']))
-                            <li><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
+                            <li><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}" class="foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'phone'])<span>{{ $contact['phone'] }}</span></a></li>
                         @endif
                         @if (! empty($contact['address']))
-                            <li class="soft">{{ $contact['address'] }}</li>
+                            <li class="soft foot__reach">@include('site.themes.shopfront.partials.glyph', ['name' => 'pin'])<span>{{ $contact['address'] }}</span></li>
                         @endif
                     </ul>
                     @if ($social)
                         <ul class="foot__social">
                             @foreach ($social as $network => $url)
-                                <li><a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $network }}</a></li>
+                                <li><a href="{{ $url }}" rel="noopener noreferrer" target="_blank" aria-label="{{ ucfirst($network === 'twitter' ? 'X' : $network) }}">@include('site.themes.shopfront.partials.social', ['network' => $network])</a></li>
                             @endforeach
                         </ul>
                     @endif

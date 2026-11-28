@@ -14,7 +14,7 @@
             ? ['@type' => 'Place', 'address' => ['@type' => 'PostalAddress', 'addressLocality' => $job->location]]
             : null,
     ]);
-    $facts = array_filter(['Location' => $job->location, 'Job type' => $job->job_type, 'Hours' => $job->hours, 'Salary' => $job->salary]);
+    $facts = array_filter(['Location' => $job->location, 'Job type' => $job->job_type, 'Hours' => $job->hours, 'Salary' => $job->salary, 'Closes' => $job->closes_at?->format('j F Y')]);
     $lists = ['responsibilities' => 'Key responsibilities', 'essential' => 'Essential skills and experience', 'desirable' => 'Desirable', 'benefits' => 'What we offer'];
 @endphp
 @extends('site.themes.shopfront.layout', [
@@ -50,7 +50,7 @@
             @if ($facts)
                 <dl class="facts">
                     @foreach ($facts as $label => $value)
-                        <div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
+                        <div><dt>@include('site.themes.shopfront.partials.glyph', ['name' => ['Location' => 'pin', 'Job type' => 'briefcase', 'Hours' => 'clock', 'Salary' => 'coin', 'Closes' => 'calendar'][$label] ?? 'box', 'class' => 'facts__glyph']){{ $label }}</dt><dd>{{ $value }}</dd></div>
                     @endforeach
                 </dl>
             @endif
