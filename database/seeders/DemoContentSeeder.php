@@ -88,6 +88,13 @@ class DemoContentSeeder extends Seeder
                 ],
             ],
             [
+                // The template's opening "team behind it" block: a tall photograph,
+                // a heading and the words beside it.
+                'key' => 'story', 'type' => 'text', 'title' => 'Made by site builders',
+                'data' => ['image' => $this->photos['laptop-and-notebook'], 'image_alt' => 'A laptop and an open notebook'],
+                'content' => "For years we built websites for clinics, studios and shops, and every one of them went stale because nobody dared to touch it.\n\nTuxCMS is what we wished we could have handed over: the page you edit is the page you get, and the published site is plain files that are fast and hard to break.",
+            ],
+            [
                 'key' => 'features', 'type' => 'features', 'title' => 'Everything one site needs',
                 'content' => 'Pages, careers, an inbox and a media library, in one dashboard your whole team can use.',
                 'data' => [
@@ -131,6 +138,28 @@ class DemoContentSeeder extends Seeder
                     'items' => [
                         ['quote' => 'I change the opening hours myself now. I click them, type, and press Publish. That used to be an email and a week.', 'author' => 'Practice manager', 'role' => 'A dental clinic, sample quote'],
                         ['quote' => 'Applications arrive with the CV attached and the spam set aside. I stopped dreading the careers inbox.', 'author' => 'Office lead', 'role' => 'An architecture studio, sample quote'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'team', 'type' => 'team', 'title' => 'Who you will talk to',
+                'content' => 'A small team, and the same people answer the support inbox.',
+                'data' => [
+                    'members' => [
+                        ['name' => 'Ada Okafor', 'role' => 'Product and design', 'bio' => 'Decides what goes in the dashboard, and mostly what stays out.'],
+                        ['name' => 'Tom Reyes', 'role' => 'Engineering', 'bio' => 'Keeps publishing fast. Cares far too much about load times.'],
+                        ['name' => 'Sofia Bianchi', 'role' => 'Support', 'bio' => 'Answers every question herself, and turns the common ones into features.'],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'faq', 'type' => 'faq', 'title' => 'Frequently asked questions',
+                'data' => [
+                    'items' => [
+                        ['question' => 'Do I need a developer to change my site?', 'answer' => 'No. Words, photographs, sections and pages are all edited in the dashboard. A developer is only needed to make a new theme.'],
+                        ['question' => 'Where does the site run?', 'answer' => 'Anywhere that serves files. The published site is plain HTML, CSS and images, so ordinary shared hosting is plenty.'],
+                        ['question' => 'What happens to spam?', 'answer' => 'It is held in the inbox, marked with the reason, and never emailed on. You can release anything genuine with one click.'],
+                        ['question' => 'Can I undo a change?', 'answer' => 'Yes. Every save keeps a revision, so any page can go back to how it was.'],
                     ],
                 ],
             ],
