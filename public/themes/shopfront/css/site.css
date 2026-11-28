@@ -628,6 +628,25 @@ details[open] > .bar__drop, details[open] > nav { animation: enter-drop 0.2s var
 .bit__pill { padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
 .bit__pill--open { background: var(--green-soft); color: var(--green-ink); }
 .bit__list .bit__path { white-space: nowrap; }
+.bit__pill--look { background: var(--amber-soft); color: var(--amber-ink); }
+.bit__pill--held { background: color-mix(in oklch, var(--rose) 12%, var(--paper)); color: color-mix(in oklch, var(--rose) 75%, var(--ink)); }
+.bit__list .bit__row .bit__pill { flex: none; }
+.bit__held { display: grid; gap: 0.75rem; padding: 1rem 1.1rem; border-radius: 0.6rem; background: var(--paper); box-shadow: var(--edge); }
+.bit__held-top, .bit__held-act { display: flex; align-items: center; gap: 0.6rem; }
+.bit__held-why { font-weight: 600; line-height: 1.4; }
+.bit__button { display: inline-flex; align-items: center; padding: 0.35rem 0.9rem; border-radius: 999px; background: var(--action); color: var(--action-ink); font-size: 0.8rem; font-weight: 600; }
+.bit__bar { position: relative; width: 4.5rem; height: 0.4rem; flex: none; border-radius: 999px; background: var(--paper-3); overflow: hidden; }
+.bit__bar::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--fill); border-radius: 999px; background: var(--blue); }
+.bit__fields { display: grid; gap: 0.6rem; }
+.bit__fields > div { display: grid; gap: 0.25rem; }
+.bit__fields dt { color: var(--muted); font-size: 0.75rem; font-weight: 600; }
+.bit__fields dd { padding: 0.5rem 0.75rem; border-radius: 0.5rem; background: var(--paper); box-shadow: var(--edge); font-size: 0.85rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 2.1rem; }
+.bit__fields--form dd { color: var(--muted); }
+.bit__fields--form .bit__button { justify-self: start; }
+.bit__seg { display: inline-flex; justify-self: start; padding: 3px; border-radius: 999px; background: var(--paper); box-shadow: var(--edge); font-size: 0.78rem; }
+.bit__seg span { padding: 0.25rem 0.75rem; border-radius: 999px; color: var(--muted); }
+.bit__seg .is-on { background: var(--action); color: var(--action-ink); }
+.bit__code { margin: 0; padding: 1rem 1.1rem; border-radius: 0.6rem; background: var(--paper); box-shadow: var(--edge); font: 0.78rem/1.6 var(--mono); color: var(--ink-2); white-space: pre; overflow: hidden; }
 @media (max-width: 40rem) { .bit__tree .bit__path { display: none; } }
 /* How the page reads in a search result. */
 .bit__serp { display: grid; gap: 0.35rem; padding: 1rem 1.1rem; border-radius: 0.6rem; background: var(--paper); box-shadow: var(--edge); }

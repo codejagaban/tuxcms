@@ -3,10 +3,13 @@
     use App\Support\Site;
 
     // A piece of the product drawn into a feature card, chosen by the item's
-    // icon. Every piece is built from this site's real, public data: its page
-    // tree, the paths a publish writes, this page's sections, its open roles,
-    // the photographs its pages show, how this page reads in a search result,
-    // or the card's own title under the editor's marker.
+    // icon. Every piece is built from this site's real, public data or the
+    // product's own wording: its page tree, the paths a publish writes, this
+    // page's sections, its open roles, the photographs its pages show, how
+    // this page reads in a search result, the spam filter's real verdicts,
+    // the roles people sign in with, the site's settings, its contact form,
+    // this page's structured data, the publish panel, the "Add section" menu,
+    // or, for any other icon, the card's own title under the editor's marker.
     $icon = data_get($item, 'icon');
     $kind = match ($icon) {
         'compass' => 'tree',
@@ -15,6 +18,14 @@
         'briefcase' => 'jobs',
         'image' => 'media',
         'search' => 'serp',
+        'mail' => 'inbox',
+        'shield' => 'held',
+        'users' => 'roles',
+        'star' => 'settings',
+        'pen-tool' => 'form',
+        'code' => 'schema',
+        'calendar', 'clock' => 'schedule',
+        'sparkles' => 'menu',
         default => 'mark',
     };
     $nav = collect($navigation ?? []);
@@ -33,6 +44,15 @@
             ->filter(fn ($media) => str_contains($shown, (string) parse_url($media->getUrl(), PHP_URL_PATH)))
             ->take(3);
         $kind = $photos->isEmpty() ? 'mark' : 'media';
+    }
+    if ($kind === 'roles') {
+        $people = \Spatie\Permission\Models\Role::withCount('permissions')->orderByDesc('permissions_count')->take(4)->get();
+        $kind = $people->isEmpty() ? 'mark' : 'roles';
+    }
+    if ($kind === 'form') {
+        // The fields of the site's own contact form, as an editor set them.
+        $asks = collect(data_get(\App\Models\PageSection::where('type', 'contact_form')->whereIn('page_id', Page::published()->pluck('id'))->value('data'), 'fields', []))->take(3);
+        $kind = $asks->isEmpty() ? 'mark' : 'form';
     }
     $labels = [
         'hero' => 'Hero', 'text' => 'Text', 'features' => 'Features', 'stats' => 'Stats', 'testimonials' => 'Testimonials',
@@ -114,6 +134,84 @@
                     <p class="bit__serp-text">{{ $meta['description'] }}</p>
                 @endif
             </div>
+            @break
+
+        @case('inbox')
+            {{-- The spam filter's three outcomes, in its own words. --}}
+            <ul class="bit__list">
+                <li class="bit__row"><span class="bit__what"><span class="bit__name">Emailed to you</span><span class="bit__type">Contact form</span></span><span class="bit__pill bit__pill--open">Sent</span></li>
+                <li class="bit__row"><span class="bit__what"><span class="bit__name">Possible sales pitch: mentions seo</span><span class="bit__type">Contact form</span></span><span class="bit__pill bit__pill--look">Flagged</span></li>
+                <li class="bit__row"><span class="bit__what"><span class="bit__name">Sent faster than a person could fill in the form</span><span class="bit__type">Job application</span></span><span class="bit__pill bit__pill--held">Held</span></li>
+            </ul>
+            @break
+
+        @case('held')
+            <div class="bit__held">
+                <p class="bit__held-top"><span class="bit__pill bit__pill--held">Held</span><span class="bit__type">Not emailed</span></p>
+                <p class="bit__held-why">Sales pitch for website redesign ("free audit")</p>
+                <p class="bit__held-act"><span class="bit__button">Release</span><span class="bit__type">Kept with its reason</span></p>
+            </div>
+            @break
+
+        @case('roles')
+            <ul class="bit__list">
+                @foreach ($people as $role)
+                    <li class="bit__row">
+                        <span class="bit__what"><span class="bit__name">{{ ucfirst($role->name) }}</span><span class="bit__type">{{ $role->permissions_count }} {{ $role->permissions_count === 1 ? 'permission' : 'permissions' }}</span></span>
+                        <span class="bit__bar" style="--fill: {{ round(100 * $role->permissions_count / max(1, $people->max('permissions_count'))) }}%"></span>
+                    </li>
+                @endforeach
+            </ul>
+            @break
+
+        @case('settings')
+            @php
+                $values = collect([
+                    'Site name' => Site::name(),
+                    'Contact email' => \App\Models\Setting::getString('contact_email'),
+                    'Phone' => \App\Models\Setting::getString('contact_phone'),
+                ])->filter();
+            @endphp
+            <dl class="bit__fields">
+                @foreach ($values as $label => $value)
+                    <div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
+                @endforeach
+            </dl>
+            @break
+
+        @case('form')
+            <div class="bit__fields bit__fields--form">
+                @foreach ($asks as $ask)
+                    <div><dt>{{ data_get($ask, 'label') }}</dt><dd>{{ data_get($ask, 'placeholder') ?: ' ' }}</dd></div>
+                @endforeach
+                <span class="bit__button">Send</span>
+            </div>
+            @break
+
+        @case('schema')
+            <pre class="bit__code data">{"@type": "WebPage",
+ "name": "{{ $page->title }}",
+ "isPartOf": {
+   "@type": "WebSite",
+   "name": "{{ Site::name() }}"
+ }}</pre>
+            @break
+
+        @case('schedule')
+            <div class="bit__fields">
+                <p class="bit__seg"><span>Publish now</span><span class="is-on">On a date</span></p>
+                <div><dt>Goes live</dt><dd class="data">{{ now()->addWeek()->startOfDay()->addHours(9)->format('D j M Y, H:i') }}</dd></div>
+                <p class="bit__held-top"><span class="bit__pill bit__pill--look">Scheduled</span><span class="bit__type">Publishes by itself</span></p>
+            </div>
+            @break
+
+        @case('menu')
+            @php $types = collect(\App\Support\SectionTypes::schema(\App\Support\Site::pageTheme($page->template ?? null)))->reverse()->take(4)->reverse(); @endphp
+            <ul class="bit__list">
+                @foreach ($types as $type)
+                    <li class="bit__row"><span class="bit__what"><span class="bit__name">{{ $type['label'] }}</span><span class="bit__type">{{ $type['blurb'] }}</span></span>@if ($type['source'] === 'theme')<span class="bit__pill bit__pill--look">Theme</span>@endif</li>
+                @endforeach
+            </ul>
             @break
 
         @default
