@@ -172,6 +172,37 @@ class PostTest extends TestCase
             ->assertOk()->assertJsonPath('data.excerpt', 'Written by hand.');
     }
 
+    public function test_the_publish_date_is_a_day(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $this->travelTo(now()->setDate(2026, 11, 28)->setTime(15, 30));
+
+        // Today means now.
+        $id = $this->postJson('/api/v1/posts', [...$this->payload(), 'status' => 'published', 'published_at' => '2026-11-28'])
+            ->assertCreated()->assertJsonPath('data.is_scheduled', false)->json('data.id');
+        $this->assertSame('2026-11-28 15:30', Post::find($id)->published_at->format('Y-m-d H:i'));
+
+        // The same day again keeps the exact moment, even later on.
+        $this->travel(2)->hours();
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'status' => 'published', 'published_at' => '2026-11-28'])->assertOk();
+        $this->assertSame('2026-11-28 15:30', Post::find($id)->published_at->format('Y-m-d H:i'));
+
+        // A later day schedules it for the start of that day.
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'status' => 'published', 'published_at' => '2026-12-05'])
+            ->assertOk()->assertJsonPath('data.is_scheduled', true);
+        $this->assertSame('2026-12-05 00:00', Post::find($id)->published_at->format('Y-m-d H:i'));
+
+        // Cleared on a published post, it keeps its date; on a draft, it has none.
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'status' => 'published', 'published_at' => null])->assertOk();
+        $this->assertSame('2026-12-05', Post::find($id)->published_at->toDateString());
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'status' => 'draft', 'published_at' => null])->assertOk();
+        $this->assertNull(Post::find($id)->published_at);
+
+        // A full date and time from another client is used as it is.
+        $this->putJson('/api/v1/posts/'.$id, [...$this->payload(), 'status' => 'published', 'published_at' => '2026-11-20T09:15:00Z'])->assertOk();
+        $this->assertSame('2026-11-20 09:15', Post::find($id)->published_at->utc()->format('Y-m-d H:i'));
+    }
+
     public function test_saving_a_post_marks_the_site_as_changed(): void
     {
         PublishState::markPublished(now());

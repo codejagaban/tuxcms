@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Services\Site\SiteBuilder;
 use App\Support\PublishState;
 use App\Support\RichText;
+use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -58,9 +59,7 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $data['author_id'] = $request->user()->id;
-        if ($data['status'] === 'published' && empty($data['published_at'])) {
-            $data['published_at'] = now();
-        }
+        $data['published_at'] = $this->publishMoment($data['published_at'] ?? null, null, $data['status']);
         $post = Post::create(Arr::except($data, 'tags'));
         $this->syncTags($post, $data);
 
@@ -70,8 +69,8 @@ class PostController extends Controller
     public function update(PostRequest $request, Post $post): JsonResponse
     {
         $data = $request->validated();
-        if ($data['status'] === 'published' && ! $post->published_at && empty($data['published_at'])) {
-            $data['published_at'] = now();
+        if (array_key_exists('published_at', $data) || $data['status'] === 'published') {
+            $data['published_at'] = $this->publishMoment($data['published_at'] ?? null, $post->published_at, $data['status']);
         }
         $post->update(Arr::except($data, 'tags'));
         $this->syncTags($post, $data);
@@ -111,7 +110,7 @@ class PostController extends Controller
         $post->title = filled($data['title'] ?? null) ? $data['title'] : 'Untitled post';
         $post->slug = filled($data['slug'] ?? null) ? $data['slug'] : 'preview';
         $post->body = app(RichText::class)->clean($data['body'] ?? null);
-        $post->published_at = isset($data['published_at']) ? Carbon::parse($data['published_at']) : ($saved?->published_at ?? now());
+        $post->published_at = $this->publishMoment($data['published_at'] ?? null, $saved?->published_at, 'published');
         $post->updated_at = now();
         $post->setRelation('author', $saved?->author ?? $request->user());
         $post->setRelation('tags', collect($data['tags'] ?? [])->map(fn (string $name) => tap(new Tag, function (Tag $tag) use ($name) {
@@ -145,6 +144,36 @@ class PostController extends Controller
             ->values();
 
         return response()->json(['data' => $tags]);
+    }
+
+    /**
+     * The moment a post goes live, from the date the editor chose.
+     *
+     * The editor chooses a day, not a time. Today means now, a later day
+     * means the start of that day, and an earlier one is taken as the day
+     * it was first published. A post keeps its exact moment while its day
+     * is unchanged, so posts published the same day keep their order. A
+     * full date and time, from another client, is used as it is. With no
+     * date, a published post keeps the moment it has, or takes now, and a
+     * draft has none.
+     */
+    private function publishMoment(?string $chosen, ?CarbonInterface $current, string $status): ?CarbonInterface
+    {
+        if (blank($chosen)) {
+            return $status === 'published' ? ($current ?? now()) : null;
+        }
+
+        if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $chosen)) {
+            return Carbon::parse($chosen);
+        }
+
+        $day = Carbon::parse($chosen)->startOfDay();
+
+        return match (true) {
+            $current?->isSameDay($day) === true => $current,
+            $day->isToday() => now(),
+            default => $day,
+        };
     }
 
     /** Tags are only changed when the request names them. */
