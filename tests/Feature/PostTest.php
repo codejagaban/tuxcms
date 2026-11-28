@@ -81,7 +81,7 @@ class PostTest extends TestCase
         $this->assertStringContainsString('<strong>there</strong>', $stored);
         $this->assertStringContainsString('<a href="https://example.com/page" rel="noopener noreferrer" target="_blank">good</a>', $stored);
         $this->assertStringContainsString('<a href="/contact/">local</a>', $stored);
-        $this->assertStringContainsString('<img src="/storage/1/photo.jpg" alt="A photo">', $stored);
+        $this->assertStringContainsString('<img src="/storage/1/photo.jpg" alt="A photo" />', $stored);
         $this->assertStringContainsString('Loose words', $stored);
         foreach (['script', 'alert', 'onclick', 'onerror', 'style=', 'javascript:', 'data:image', 'iframe', '<div', 'steal'] as $gone) {
             $this->assertStringNotContainsString($gone, $stored);

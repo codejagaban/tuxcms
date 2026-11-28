@@ -2,17 +2,18 @@
 
 namespace App\Support;
 
-use DOMDocument;
-use DOMElement;
-use DOMNode;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 /**
  * Cleans the HTML written in the dashboard's post editor before it is stored.
  *
  * A post body is printed straight into a public page, so only the formatting
- * the editor offers survives: headings, paragraphs, lists, quotes, links,
- * images and inline emphasis. Scripts, styles, event handlers, inline CSS and
- * any link or image address that is not a normal web address are removed.
+ * the editor offers survives: headings, paragraphs, lists, quotes, code,
+ * links, images and inline emphasis. Scripts, styles, event handlers, inline
+ * CSS and any link or image address that is not a normal web address are
+ * removed. The work is done by Symfony's HTML sanitizer; this class only says
+ * what the editor is allowed to produce.
  */
 class RichText
 {
@@ -29,8 +30,15 @@ class RichText
         'figure' => [], 'figcaption' => [],
     ];
 
-    /** Removed together with everything inside them. */
-    private const DROPPED = ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select', 'noscript', 'template', 'svg', 'math', 'link', 'meta', 'base'];
+    /** Wrappers that are removed while the words inside them are kept. */
+    private const UNWRAPPED = [
+        'div', 'span', 'section', 'article', 'header', 'footer', 'main', 'aside',
+        'h1', 'h5', 'h6', 'font', 'center', 'small', 'big', 'mark', 'sub', 'sup',
+        'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption',
+        'dl', 'dt', 'dd', 'label',
+    ];
+
+    private ?HtmlSanitizer $sanitizer = null;
 
     public function clean(?string $html): ?string
     {
@@ -38,113 +46,48 @@ class RichText
             return null;
         }
 
-        $doc = new DOMDocument();
-        $previous = libxml_use_internal_errors(true);
-        $doc->loadHTML('<?xml encoding="UTF-8"><div id="rich-text-root">'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
-        libxml_use_internal_errors($previous);
+        $out = trim($this->sanitizer()->sanitize($html));
 
-        $root = $doc->getElementById('rich-text-root');
-        if (! $root) {
-            return null;
-        }
+        // A link to another site opens safely in a new tab. The sanitizer has
+        // already quoted and escaped every attribute, so the tag can be read
+        // reliably here.
+        $out = preg_replace_callback('/<a\s([^>]*)>/i', function (array $match): string {
+            if (! preg_match('/\bhref="(?:https?:)?\/\//i', $match[1])) {
+                return $match[0];
+            }
 
-        $this->cleanChildren($root);
+            return '<a '.$match[1].' rel="noopener noreferrer" target="_blank">';
+        }, $out);
 
-        $out = '';
-        foreach ($root->childNodes as $child) {
-            $out .= $doc->saveHTML($child);
-        }
-        $out = trim($out);
+        // An image whose address was not safe loses its src; drop what is left.
+        $out = preg_replace('/<img(?![^>]*\ssrc=")[^>]*>/i', '', $out);
 
         // An editor left empty still sends "<p></p>".
         return trim(strip_tags($out, '<img><hr>')) === '' ? null : $out;
     }
 
-    private function cleanChildren(DOMNode $parent): void
+    private function sanitizer(): HtmlSanitizer
     {
-        foreach (iterator_to_array($parent->childNodes) as $node) {
-            if ($node->nodeType === XML_COMMENT_NODE || $node->nodeType === XML_PI_NODE || $node->nodeType === XML_CDATA_SECTION_NODE) {
-                $parent->removeChild($node);
-
-                continue;
-            }
-
-            if (! $node instanceof DOMElement) {
-                continue;
-            }
-
-            $tag = strtolower($node->nodeName);
-
-            if (in_array($tag, self::DROPPED, true)) {
-                $parent->removeChild($node);
-
-                continue;
-            }
-
-            $this->cleanChildren($node);
-
-            if (! array_key_exists($tag, self::ALLOWED)) {
-                // Keep the words, lose the wrapper.
-                while ($node->firstChild) {
-                    $parent->insertBefore($node->firstChild, $node);
-                }
-                $parent->removeChild($node);
-
-                continue;
-            }
-
-            foreach (iterator_to_array($node->attributes) as $attribute) {
-                if (! in_array(strtolower($attribute->nodeName), self::ALLOWED[$tag], true)) {
-                    $node->removeAttribute($attribute->nodeName);
-                }
-            }
-
-            if ($tag === 'a') {
-                $this->cleanLink($node);
-            }
-
-            if ($tag === 'img' && ! $this->safeAddress($node->getAttribute('src'), image: true)) {
-                $parent->removeChild($node);
-            }
-        }
-    }
-
-    private function cleanLink(DOMElement $link): void
-    {
-        $href = trim($link->getAttribute('href'));
-
-        if (! $this->safeAddress($href)) {
-            $link->removeAttribute('href');
-
-            return;
+        if ($this->sanitizer) {
+            return $this->sanitizer;
         }
 
-        // A link to another site opens safely in a new tab.
-        if (preg_match('#^https?://#i', $href)) {
-            $link->setAttribute('rel', 'noopener noreferrer');
-            $link->setAttribute('target', '_blank');
-        }
-    }
+        $config = (new HtmlSanitizerConfig)
+            ->allowLinkSchemes(['http', 'https', 'mailto', 'tel'])
+            ->allowRelativeLinks()
+            ->allowMediaSchemes(['http', 'https'])
+            ->allowRelativeMedias()
+            // A whole post is far longer than the default limit of 20,000 characters.
+            ->withMaxInputLength(-1);
 
-    /** Web addresses, paths on this site, and (for links) email, phone and anchors. */
-    private function safeAddress(string $address, bool $image = false): bool
-    {
-        // Control characters and spaces can hide a scheme from the check below.
-        $address = preg_replace('/[\x00-\x20]+/', '', $address);
-
-        if ($address === '') {
-            return false;
+        foreach (self::ALLOWED as $tag => $attributes) {
+            $config = $config->allowElement($tag, $attributes);
         }
 
-        if (preg_match('#^(https?:)?//#i', $address) || (str_starts_with($address, '/') )) {
-            return true;
+        foreach (self::UNWRAPPED as $tag) {
+            $config = $config->blockElement($tag);
         }
 
-        if ($image) {
-            return false;
-        }
-
-        return (bool) preg_match('/^(mailto:|tel:|#)/i', $address);
+        return $this->sanitizer = new HtmlSanitizer($config);
     }
 }
