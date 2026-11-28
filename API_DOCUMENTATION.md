@@ -122,7 +122,10 @@ A section:
 ```
 
 `type` is one of `hero`, `text`, `features`, `stats`, `testimonials`, `team`,
-`faq`, `cta`, `contact`, `contact_form`, `map`.
+`faq`, `cta`, `contact`, `contact_form`, `map`, or a type declared in the
+`theme.json` of the theme that renders the page (see
+[GET /section-types](#get-section-typestemplate-token)). A theme type's `title`,
+`content` and `data` are checked against its schema.
 
 ### GET /pages
 
@@ -191,6 +194,42 @@ any stored section missing from the list is deleted along with its media. Leave
 `sections` out to keep them untouched.
 
 A change is snapshotted, so the previous state can be restored.
+
+A `template` change that would leave sections the new theme cannot draw is a
+`422` on `template` naming them. Remove or replace them in the same request,
+or first.
+
+### GET /section-types?template= *(token)*
+
+The section types a page with this template may hold: the built-in ones, then
+those declared by the theme that renders it (the template's theme, else
+`SITE_THEME`). Leave `template` out for a page with none. An unknown template
+is a `422`.
+
+```json
+{
+  "data": {
+    "theme": "shopfront",
+    "types": [
+      {
+        "type": "hero",
+        "source": "base",
+        "label": "Hero",
+        "blurb": "Large banner with heading and call-to-action.",
+        "fields": {
+          "title": { "type": "text", "label": "Headline", "inspector": false },
+          "data.alignment": { "type": "select", "label": "Alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }] }
+        },
+        "defaults": { "title": "Your headline goes here", "content": "…", "data": { "alignment": "center" } }
+      }
+    ]
+  }
+}
+```
+
+`source` is `base` or `theme`. `fields` maps a path (`title`, `content`,
+`data.<key>`) to its field; ARCHITECTURE.md lists the field types. `defaults`
+is what a new section of the type starts with.
 
 ### GET /pages/{page}/revisions *(token)*
 

@@ -124,6 +124,44 @@ the section types, nested feature pages, photographs in the media library, a
 draft and a scheduled page, vacancies in each status, and an inbox with
 messages the spam filter is holding. Its uploads go to a directory of their own as well.
 
+### A theme's own section types
+
+Every theme can use the eleven built-in section types. A theme that needs
+blocks of its own declares them in an optional `theme.json` beside its views:
+
+```json
+{
+  "sections": {
+    "packages": {
+      "label": "Packages",
+      "blurb": "Priced packages with what each includes.",
+      "fields": {
+        "title": { "type": "text", "label": "Heading" },
+        "data.items": {
+          "type": "list",
+          "label": "Package",
+          "item": {
+            "name": { "type": "text", "label": "Name", "required": true },
+            "features": { "type": "list", "label": "Included", "item": "text" },
+            "url": { "type": "url", "label": "Booking link" }
+          }
+        }
+      },
+      "defaults": { "title": "Packages", "data": { "items": [] } }
+    }
+  }
+}
+```
+
+The theme draws each one in `sections/<type-with-dashes>.blade.php` and marks
+its fields as it would a built-in type's. Field types are `text`, `textarea`,
+`richtext`, `url`, `image`, `number`, `boolean`, `select` (with `options`) and
+`list` (of an object `item`, or of one of the single-value types). A page may
+hold its theme's types only while that theme draws it, through its template or
+`SITE_THEME`. The editor fetches each page's types from
+`GET /api/v1/section-types?template=<template>` and builds its menu and side
+panel from them. ARCHITECTURE.md has the details.
+
 ## Tests
 
 ```bash

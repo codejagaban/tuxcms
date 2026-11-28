@@ -250,11 +250,74 @@ that field's text, and a field written as several paragraphs is marked on the
 element that wraps them.
 
 `tests/Feature/ThemeMarkerContractTest.php` holds every theme to this. It
-renders every section type, with the defaults a new section starts with
-(`dashboard/src/lib/sectionDefaults.json`, which the editor reads too), through
-each installed theme and the base views, and fails naming the theme, section
-type, view and field for any field shown without its marker. Text a view
-deliberately leaves to the panel is listed in the test with its reason.
+renders every built-in section type, with the defaults a new section starts
+with (`resources/sections/base.json`, which the editor receives too), and every
+type the theme declares itself, through each installed theme and the base
+views, and fails naming the theme, section type, view and field for any field
+shown without its marker. A theme's own types start from their manifest
+defaults with one sample item in each empty list, and their schema says which
+fields are text (marked with `@field`) and which are pictures (`@image`). Text
+a view deliberately leaves to the panel is listed in the test with its reason.
+
+### Section types and theme.json
+
+A page may hold the built-in section types (`config/tuxcms.pages.section_types`)
+plus the ones declared by the theme that renders it: the page's template theme
+when it has a `page.blade.php`, else `SITE_THEME`, else none
+(`Site::pageTheme()`, which the builder uses to pick the page view too).
+
+A theme declares its types in an optional `theme.json` beside its views,
+read and checked by `App\Support\ThemeManifest`:
+
+```json
+{
+  "sections": {
+    "<type>": {
+      "label": "Packages",
+      "blurb": "One line for the editor's menu.",
+      "fields": { "<path>": { "type": "text", "label": "Heading" } },
+      "defaults": { "title": "Packages", "content": "", "data": { "items": [] } }
+    }
+  }
+}
+```
+
+- A type name matches `^[a-z][a-z0-9_]*$` and may not be a built-in type.
+- `defaults` are required: they are what "Add section" creates.
+- A field's path is `title`, `content` or `data.<key>[.<key>…]`, the same paths
+  the markers name. A field has a `type` and a `label`, and may have
+  `required`, `placeholder`, `default` (what a new list item starts with) and
+  `inspector: false` (left out of the side panel because it is edited on the
+  preview).
+- Field types: `text`, `textarea`, `richtext`, `url`, `image`, `number`,
+  `boolean`, `select` (with `options`: strings, or `{value, label}` where a
+  value may be a number) and `list` (with `item`: an object of fields keyed by
+  name, or the name of a single-value type). Lists may nest.
+
+A bad manifest throws `InvalidThemeManifest`, naming the theme, the type and
+the problem; nothing is overridden or skipped silently. Parsed manifests are
+cached for the process, keyed by file, size and time.
+
+`StorePageRequest` and `UpdatePageRequest` accept a section type only when the
+page's renderer provides it, and check a theme type's fields against its
+schema: required fields, url (a web address or a path, anchor, `mailto:` or
+`tel:` link), number and boolean values, select options and list shapes. The
+built-in types keep their existing rules. A template change sent without the
+sections that would leave stored sections on a theme that cannot draw them is
+a `422` on `template` naming those sections; sent with them, each is named on
+its own `type`. Nothing is dropped.
+
+The built-in types are described the same way in `resources/sections/base.json`
+(it lives outside `dashboard/` because a release ships without it), and
+`GET /api/v1/section-types?template=` returns them followed by the theme's. The
+editor builds its "Add section" menu, new sections and side panel from that
+list, and fetches it again when the page's template changes. A theme type with
+no view in its theme renders the theme's fallback and logs a warning while
+previewed.
+
+`tests/Fixtures/views/site/themes/schematest` is a fixture theme with one
+declared type, used by the manifest, API, endpoint, rendering and contract
+tests.
 
 `php artisan media:import-theme` copies the photographs a theme's pages use
 into the media library once, so editors can reuse them without hunting through
