@@ -108,6 +108,25 @@ if (!editing) {
   document.querySelectorAll('[data-studio]').forEach(studio);
 }
 
+// The tour's rail marks the card in view. The cards themselves stack in
+// plain CSS; this only moves the mark.
+document.querySelectorAll('[data-tour]').forEach((tour) => {
+  const cards = [...tour.querySelectorAll('[data-tour-card]')];
+  const steps = [...tour.querySelectorAll('[data-tour-step]')];
+  const mark = (index) => steps.forEach((step, i) => step.classList.toggle('is-here', i === index));
+  // The card on top of the stack is the last one whose top has reached the
+  // line where the cards hold, or the first card before any has.
+  const update = () => {
+    const line = window.innerHeight * 0.45;
+    let index = 0;
+    cards.forEach((card, i) => { if (card.getBoundingClientRect().top <= line) index = i; });
+    mark(index);
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+});
+
 // The front page's scene plays only for visitors who welcome motion, and
 // never in the dashboard's preview. Otherwise its still frame stays.
 const film = document.querySelector('.hero__film');
@@ -139,7 +158,7 @@ if (!calm && !editing) {
   });
 
   // Lists arrive one item after another.
-  const groups = ['.bento > *', '.bit__log > *', '.bit__stack > *', '.wall > *', '.tally__list > *', '.words > *', '.staff > *', '.asks > *', '.roles > *', '.reach > *'];
+  const groups = ['.bento > *', '.bit__log > *', '.bit__stack > *', '.tally__list > *', '.words > *', '.staff > *', '.asks > *', '.roles > *', '.reach > *'];
   groups.forEach((selector) => {
     const items = document.querySelectorAll(selector);
     if (!items.length) return;
