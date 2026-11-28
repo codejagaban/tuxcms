@@ -69,6 +69,7 @@ Route::prefix('v1')->group(function () {
         Route::get('job-applications', [JobApplicationController::class, 'index']);
         Route::get('job-applications/{application}/cv', [JobApplicationController::class, 'download']);
         Route::get('enquiries', [EnquiryController::class, 'index']);
+        Route::get('enquiry-kinds', [EnquiryController::class, 'kinds']);
         // Held by the spam filter by mistake: send it on.
         Route::post('enquiries/{enquiry}/release', [EnquiryController::class, 'release']);
         Route::post('job-applications/{application}/release', [JobApplicationController::class, 'release']);

@@ -12,6 +12,14 @@ use Tests\TestCase;
 
 class EnquiryTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Staff requests are Crystal's kind of enquiry, declared in its theme.json.
+        config(['site.theme' => 'crystal']);
+    }
+
     private function payload(array $overrides = []): array
     {
         return array_merge([

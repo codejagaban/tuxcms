@@ -1,0 +1,6 @@
+{
+  "enquiries": {
+    "staff_request": { "label": "Staff request", "plural": "Staff requests" },
+    "registration": { "label": "Candidate registration", "plural": "Registrations" }
+  }
+}

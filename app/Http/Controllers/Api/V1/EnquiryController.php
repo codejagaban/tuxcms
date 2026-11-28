@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\EnquiryReceived;
 use App\Models\Enquiry;
 use App\Models\Setting;
+use App\Support\EnquiryKinds;
 use App\Support\SpamFilter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class EnquiryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => ['required', Rule::in(Enquiry::TYPES)],
+            'type' => ['required', Rule::in(array_keys(EnquiryKinds::declared()))],
             'name' => ['required', 'string', 'max:255'],
             'organisation' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email:rfc', 'max:255'],
@@ -154,6 +155,8 @@ class EnquiryController extends Controller
                 'total' => $enquiries->total(),
                 // How many the spam filter is holding, whatever the filter.
                 'held' => Enquiry::where('delivery_status', 'spam')->count(),
+                // The tabs: the kinds this site's forms send.
+                'kinds' => $this->kindList(),
             ],
         ]);
     }
@@ -187,5 +190,23 @@ class EnquiryController extends Controller
         }
 
         return $clean;
+    }
+
+    /** The kinds of enquiry this site takes, for the inbox's tabs and Settings. */
+    public function kinds(): JsonResponse
+    {
+        return response()->json(['data' => $this->kindList()]);
+    }
+
+    /** @return array<int, array{value: string, label: string, plural: string, setting: string}> */
+    private function kindList(): array
+    {
+        return collect(EnquiryKinds::shown())->map(fn (array $kind, string $value) => [
+            'value' => $value,
+            'label' => $kind['label'],
+            'plural' => $kind['plural'],
+            // Where a different notification address for this kind is kept.
+            'setting' => 'enquiry_email_'.$value,
+        ])->values()->all();
     }
 }

@@ -4,25 +4,83 @@
       "label": "Offers",
       "blurb": "Priced offers with what each includes.",
       "fields": {
-        "title": { "type": "text", "label": "Heading" },
-        "data.intro": { "type": "textarea", "label": "Intro" },
-        "data.layout": { "type": "select", "label": "Layout", "options": ["grid", "list"] },
+        "title": {
+          "type": "text",
+          "label": "Heading"
+        },
+        "data.intro": {
+          "type": "textarea",
+          "label": "Intro"
+        },
+        "data.layout": {
+          "type": "select",
+          "label": "Layout",
+          "options": [
+            "grid",
+            "list"
+          ]
+        },
         "data.items": {
           "type": "list",
           "label": "Offer",
           "item": {
-            "name": { "type": "text", "label": "Name", "required": true },
-            "price": { "type": "text", "label": "Price", "required": true },
-            "features": { "type": "list", "label": "Included", "item": "text" },
-            "seats": { "type": "number", "label": "Seats" },
-            "featured": { "type": "boolean", "label": "Featured" },
-            "url": { "type": "url", "label": "Booking link" },
-            "image": { "type": "image", "label": "Photo" },
-            "image_alt": { "type": "text", "label": "Photo description", "preview": false }
+            "name": {
+              "type": "text",
+              "label": "Name",
+              "required": true
+            },
+            "price": {
+              "type": "text",
+              "label": "Price",
+              "required": true
+            },
+            "features": {
+              "type": "list",
+              "label": "Included",
+              "item": "text"
+            },
+            "seats": {
+              "type": "number",
+              "label": "Seats"
+            },
+            "featured": {
+              "type": "boolean",
+              "label": "Featured"
+            },
+            "url": {
+              "type": "url",
+              "label": "Booking link"
+            },
+            "image": {
+              "type": "image",
+              "label": "Photo"
+            },
+            "image_alt": {
+              "type": "text",
+              "label": "Photo description",
+              "preview": false
+            }
           }
         }
       },
-      "defaults": { "title": "Offers", "data": { "intro": "", "layout": "grid", "items": [] } }
+      "defaults": {
+        "title": "Offers",
+        "data": {
+          "intro": "",
+          "layout": "grid",
+          "items": []
+        }
+      }
+    }
+  },
+  "enquiries": {
+    "contact": {
+      "label": "Message",
+      "plural": "Messages"
+    },
+    "quote_request": {
+      "label": "Quote request",
+      "plural": "Quote requests"
     }
   }
 }

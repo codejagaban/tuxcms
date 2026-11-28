@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
+use App\Support\EnquiryKinds;
 use Illuminate\Database\Eloquent\Model;
 
 class Enquiry extends Model
 {
-    public const TYPES = ['staff_request', 'registration', 'contact'];
-
     protected $fillable = [
         'type', 'name', 'organisation', 'email', 'phone', 'message',
         'details', 'delivery_status', 'emailed_at', 'spam_reason',
@@ -21,12 +20,9 @@ class Enquiry extends Model
         ];
     }
 
+    /** What this kind of message is called; the site's theme decides. */
     public function typeLabel(): string
     {
-        return match ($this->type) {
-            'staff_request' => 'Staff request',
-            'registration' => 'Candidate registration',
-            default => 'Enquiry',
-        };
+        return EnquiryKinds::label((string) $this->type);
     }
 }

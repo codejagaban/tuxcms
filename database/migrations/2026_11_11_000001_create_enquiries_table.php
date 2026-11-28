@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('enquiries', function (Blueprint $table) {
             $table->id();
-            // staff_request, registration or contact — decides the inbox
+            // contact, or a kind the site theme declares: decides the inbox
             // grouping and the email subject, nothing else.
             $table->string('type')->default('contact')->index();
             $table->string('name');
