@@ -391,7 +391,8 @@ tag's slug; `per_page` is 1 to 50, default 10.
 | `excerpt` | Optional, up to 500 characters. A post published without one gets one written from the opening sentences of its body, headings and code left out |
 | `cover_image`, `cover_image_alt` | Optional image address and its description |
 | `tags` | Optional list of up to 20 names, each up to 50 characters, no two the same. Sent, it replaces the post's tags (an empty list clears them); left out, they are kept |
-| `published_at` | Optional date. One in the future schedules the post |
+| `published_at` | Optional. A day (`2026-12-05`): today means now, a later day the start of that day, and a post keeps its exact moment while its day is unchanged. A full date and time is used as it is. One in the future schedules the post |
+| `autosave` | Optional boolean, sent by the editor when a draft saves itself. Such saves keep at most one earlier version every ten minutes |
 | `meta_title`, `meta_description` | Optional; what search engines are shown |
 
 Publishing a post with no `published_at` stamps it with the current time. A
@@ -403,10 +404,33 @@ the post's public `path`, and `tags` as `{ name, slug }` pairs.
 
 Answers `204`.
 
+### GET /posts/{id}/revisions
+
+Up to the last 30 earlier states of the post, newest first, each taken just
+before a save changed it: `id`, `created_at`, `author` and the `snapshot`
+(title, slug, excerpt, body, cover, tags, status, publish date and search
+fields). Restoring is done by saving a snapshot's fields back.
+
+### POST /posts/preview
+
+The post as the site would show it, as HTML, from the fields sent (those of
+`PUT /posts/{id}`, all optional, plus `id` for a saved post). Nothing is saved.
+The body is cleaned exactly as it is on save.
+
 ### GET /post-tags
 
 Every blog tag that is on at least one post, by name, each with its `slug` and
 `posts_count`. A tag is made the first time a post is saved with it.
+
+### PUT /post-tags/{slug}
+
+`name` is required, up to 50 characters. Renames the tag, and its address
+follows. Given the name of another tag (in any case), the two are merged: the
+posts move to that tag and this one is deleted. Answers with the tag list.
+
+### DELETE /post-tags/{slug}
+
+Answers `204`. The tag comes off every post; the posts stay.
 
 ## Applications and enquiries
 

@@ -107,6 +107,16 @@ canonical address, share image and structured data. That lets the shared
 
 A post dated in the future is scheduled. It goes live at the next build after
 that date, which the scheduled build takes care of (see Scheduled publishing).
+The editor picks a day, not a time: today means now and a later day its start.
+
+Like pages, a post keeps its last 30 earlier states in `post_revisions`, each
+taken by `PostRevisionService` just before a save changed it, and the editor
+restores one into the form to be saved again. Drafts save themselves a few
+seconds after the writing stops, and a new post does once it has a title.
+Those autosaves keep at most one state every ten minutes per person, so the
+history holds steps rather than every few words. A published post never saves
+itself: a saved change would go live at the next scheduled build, so it waits
+for Update.
 
 ### The page tree and the path column
 
